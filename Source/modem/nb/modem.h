@@ -6,75 +6,73 @@
 
 // 모뎀 H/W 연결핀 정보
 // #define MODEM_LORA_BOOT0_P2_PIN         5 // P2.5
-#define MODEM_NBIOT_RST_P2_PIN          5 // P2.5
-#define MODEM_NRST_P2_PIN               3 // P2.3
-#define MODEM_VCC1_P2_PIN               0 // P2.0
-#define MODEM_VCC2_P1_PIN               1 // P1.1
+#define MODEM_NBIOT_RST_P2_PIN 5  // P2.5
+#define MODEM_NRST_P2_PIN      3  // P2.3
+#define MODEM_VCC1_P2_PIN      0  // P2.0
+#define MODEM_VCC2_P1_PIN      1  // P1.1
 
 // 모뎀 동작에 필요한 데이터 길이
-#define LEN_MAX_MODEM_TX                0x200 // Modem UART Tx max length
-#define LEN_MAX_MODEM_RX                0x500 // Modem UART Rx max length
-#define LEN_MAX_DL_DATA                 0x20  // NB-IoT downlink max length
+#define LEN_MAX_MODEM_TX 0x200  // Modem UART Tx max length
+#define LEN_MAX_MODEM_RX 0x500  // Modem UART Rx max length
+#define LEN_MAX_DL_DATA  0x20   // NB-IoT downlink max length
 
 // NB-IoT specific data length
-#define LEN_MODEM_IMEI_IMSI             15
-#define LEN_MODEM_BS_PARAM              100
-#define LEN_MODEM_EP_NAME               25
-#define LEN_MODEM_ICCID                 19
-#define LEN_MODEM_UUID                  36
-#define LEN_MODEM_CTN                   11
-#define LEN_MODEM_SERVICE_CODE          4
+#define LEN_MODEM_IMEI_IMSI    15
+#define LEN_MODEM_BS_PARAM     100
+#define LEN_MODEM_EP_NAME      25
+#define LEN_MODEM_ICCID        19
+#define LEN_MODEM_UUID         36
+#define LEN_MODEM_CTN          11
+#define LEN_MODEM_SERVICE_CODE 4
 
 // LG platform 품질관리 서버
-#define ONEM2M_QA_SERVER_IP             "10.120.182.10"
-#define ONEM2M_QA_SERVER_PORT           50000
-#define ONEM2M_ERR_SERVER_IP            "10.120.182.11"
-#define ONEM2M_ERR_SERVER_PORT          50001
+#define ONEM2M_QA_SERVER_IP    "10.120.182.10"
+#define ONEM2M_QA_SERVER_PORT  50000
+#define ONEM2M_ERR_SERVER_IP   "10.120.182.11"
+#define ONEM2M_ERR_SERVER_PORT 50001
 
-#define ONEM2M_FOTA_SERVER_IP           "106.103.250.108" // "106.103.233.155"
-#define ONEM2M_FOTA_SERVER_PORT         5783
-#define ONEM2M_FOTA_DAY_INTERVAL        15
+#define ONEM2M_FOTA_SERVER_IP    "106.103.250.108"  // "106.103.233.155"
+#define ONEM2M_FOTA_SERVER_PORT  5783
+#define ONEM2M_FOTA_DAY_INTERVAL 15
 
 // NB-IoT 총 재시도 횟수 (마지막 1회는 H/W reset, 그 외 재시도는 S/W reset)
-#define MODEM_BIP_RETRY                 2
-#define MODEM_ATTACH_RETRY              2
-#define MODEM_ONEM2M_RETRY              0
+#define MODEM_BIP_RETRY    2
+#define MODEM_ATTACH_RETRY 2
+#define MODEM_ONEM2M_RETRY 0
 
 // NB-IoT task event
-#define MODEM_EVENT_SEND_ATCMD          BM(0) // Send registered AT command
-#define MODEM_EVENT_RECV_ATCMD          BM(1) // Receive AT command reponse from modem
-#define MODEM_EVENT_RUN_PROC            BM(2) // Run & register AT command
-#define MODEM_EVENT_FIN_PROC            BM(3) // Finish modem working
-#define MODEM_EVENT_TIMEOUT_ATCMD       BM(4) // Retry AT command
+#define MODEM_EVENT_SEND_ATCMD    BM(0)  // Send registered AT command
+#define MODEM_EVENT_RECV_ATCMD    BM(1)  // Receive AT command reponse from modem
+#define MODEM_EVENT_RUN_PROC      BM(2)  // Run & register AT command
+#define MODEM_EVENT_FIN_PROC      BM(3)  // Finish modem working
+#define MODEM_EVENT_TIMEOUT_ATCMD BM(4)  // Retry AT command
 
 // modem type definition
 typedef enum {
-    MODEM_PROC_EVENT_REPORT = 0,
-    MODEM_PROC_PERIODIC_REPORT = 1,
-    MODEM_PROC_SET_CONFIG = 2,
-    MODEM_PROC_TEST_REPORT = 3,
-    MODEM_PROC_UNKNOWN = 99,
+  MODEM_PROC_EVENT_REPORT    = 0,
+  MODEM_PROC_PERIODIC_REPORT = 1,
+  MODEM_PROC_SET_CONFIG      = 2,
+  MODEM_PROC_TEST_REPORT     = 3,
+  MODEM_PROC_UNKNOWN         = 99,
 } ModemProc_t;
 
+void MODEM_turnOn();
+void MODEM_turnOff();
+void MODEM_wakeup();
+void MODEM_sleep();
+void MODEM_init(uint8 taskId);
+void MODEM_enable();
+void MODEM_disable();
+void MODEM_write(const char* pCmd);
+int  MODEM_read(char* buf);
+void MODEM_run(ModemProc_t proc, BOOL isLcdOn);
+void MODEM_stop(BOOL isVccOff, BOOL isLcdOn);
 
-
-void   MODEM_turnOn();
-void   MODEM_turnOff();
-void   MODEM_wakeup();
-void   MODEM_sleep();
-void   MODEM_init(uint8 taskId);
-void   MODEM_enable();
-void   MODEM_disable();
-void   MODEM_write(const char* pCmd);
-int    MODEM_read(char* buf);
-void   MODEM_run(ModemProc_t proc, BOOL isLcdOn);
-void   MODEM_stop(BOOL isVccOff, BOOL isLcdOn);
-
-void   MODEM_getImei(uchar *imei);
-void   MODEM_getImsi(uchar *imsi);
-void   MODEM_getCtn(uchar *ctn);
-void   MODEM_getIccid(uchar *iccid);
-void   MODEM_getCseId(uchar *cseid);
+void MODEM_getImei(uchar* imei);
+void MODEM_getImsi(uchar* imsi);
+void MODEM_getCtn(uchar* ctn);
+void MODEM_getIccid(uchar* iccid);
+void MODEM_getCseId(uchar* cseid);
 
 int    MODEM_getAbsRssi();
 int    MODEM_getAbsRsrp();
@@ -84,12 +82,16 @@ int    MODEM_getCid();
 int    MODEM_getTxPower();
 uint32 MODEM_getCgi();
 
-int    MODEM_getState();
-int    MODEM_getResult();
-Date_t MODEM_getLastAccessTime();
-BOOL   MODEM_makeCseID(const char* sc, const char* ctnStr, const char* iccidStr, char* buffer, int bufLen);
-uchar* MODEM_getErrorLog(uint8 idx);
-int    MODEM_getTaskId();
+int         MODEM_getState();
+int         MODEM_getResult();
+Date_t      MODEM_getLastAccessTime();
+BOOL        MODEM_makeCseID(const char* sc,
+                            const char* ctnStr,
+                            const char* iccidStr,
+                            char*       buffer,
+                            int         bufLen);
+uchar*      MODEM_getErrorLog(uint8 idx);
+int         MODEM_getTaskId();
 ModemProc_t MODEM_getCurrentProc();
 
 /* 추가해야 할 인터페이스 */

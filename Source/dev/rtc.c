@@ -1,23 +1,20 @@
-#include "device.h"
 #include "rtc.h"
+#include "device.h"
 #include "misc.h"
 
-static int setYEAR(int year)
-{
-    RTCYEAR = year;
-    return RTCYEAR;
+static int setYEAR(int year) {
+  RTCYEAR = year;
+  return RTCYEAR;
 }
 
-static int setMON(int month)
-{
-    RTCMON = month;
-    return RTCMON;
+static int setMON(int month) {
+  RTCMON = month;
+  return RTCMON;
 }
 
-static int setDAY(int day)
-{
-    RTCDAY = day;
-    return RTCDAY;
+static int setDAY(int day) {
+  RTCDAY = day;
+  return RTCDAY;
 }
 
 // static int setDOW(int dow)
@@ -26,22 +23,19 @@ static int setDAY(int day)
 //     return RTCDOW;
 // }
 
-static int setHOUR(int hour)
-{
-    RTCHOUR = hour;
-    return RTCHOUR;
+static int setHOUR(int hour) {
+  RTCHOUR = hour;
+  return RTCHOUR;
 }
 
-static int setMIN(int min)
-{
-    RTCMIN = min;
-    return RTCMIN;
+static int setMIN(int min) {
+  RTCMIN = min;
+  return RTCMIN;
 }
 
-static int setSEC(int sec)
-{
-    RTCSEC = sec;
-    return RTCSEC;
+static int setSEC(int sec) {
+  RTCSEC = sec;
+  return RTCSEC;
 }
 
 // static int getTIM0(void)
@@ -59,14 +53,12 @@ static int setSEC(int sec)
 //     return RTCDATE;
 // }
 
-static int getYEAR(void)
-{
-    return RTCYEAR;
+static int getYEAR(void) {
+  return RTCYEAR;
 }
 
-static int getMON(void)
-{
-    return RTCMON;
+static int getMON(void) {
+  return RTCMON;
 }
 
 // static int getDOW(void)
@@ -74,49 +66,43 @@ static int getMON(void)
 //     return RTCDOW;
 // }
 
-static int getDAY(void)
-{
-    return RTCDAY;
+static int getDAY(void) {
+  return RTCDAY;
 }
 
-static int getHOUR(void)
-{
-    return RTCHOUR;
+static int getHOUR(void) {
+  return RTCHOUR;
 }
 
-static int getMIN(void)
-{
-    return RTCMIN;
+static int getMIN(void) {
+  return RTCMIN;
 }
 
-static int getSEC(void)
-{
-    return RTCSEC;
+static int getSEC(void) {
+  return RTCSEC;
 }
 
-void RTC_read(struct Time *date)
-{
-    date->year = getYEAR();
-    date->mon  = getMON();
-    date->day  = getDAY();
-    date->hour = getHOUR();
-    date->min  = getMIN();
-    date->sec  = getSEC();
+void RTC_read(struct Time* date) {
+  date->year = getYEAR();
+  date->mon  = getMON();
+  date->day  = getDAY();
+  date->hour = getHOUR();
+  date->min  = getMIN();
+  date->sec  = getSEC();
 }
 
-void RTC_set(struct Time* date)
-{
-    if(MISC_isValidDate(date)) {
-        RTCCTL01 |= RTCMODE;
-        RTCCTL01 &= ~(RTCHOLD);
+void RTC_set(struct Time* date) {
+  if (MISC_isValidDate(date)) {
+    RTCCTL01 |= RTCMODE;
+    RTCCTL01 &= ~(RTCHOLD);
 
-        setYEAR(date->year);
-        setMON (date->mon);
-        setDAY (date->day);
-        setHOUR(date->hour);
-        setMIN (date->min);
-        setSEC (date->sec);
-    }
+    setYEAR(date->year);
+    setMON(date->mon);
+    setDAY(date->day);
+    setHOUR(date->hour);
+    setMIN(date->min);
+    setSEC(date->sec);
+  }
 }
 
 /**
@@ -129,40 +115,34 @@ void RTC_set(struct Time* date)
  *      every day, 12:00 alarm : RTC_setAlarm(0xFF, 12, 0xFF)
  *      every month, 1st 15:30 alarm : RTC_setAlarm(1, 15, 30)
  */
-void RTC_alarm(uint8 day, uint8 hour, uint8 min)
-{
-    uint16 minhr = 0;
-    uint16 dowday = 0;
+void RTC_alarm(uint8 day, uint8 hour, uint8 min) {
+  uint16 minhr  = 0;
+  uint16 dowday = 0;
 
-    //clearing and disable alarm
-    RTCCTL01 &= ~(RTCAIE + RTCAIFG);
-    RTCAMINHR = 0x0000;
-    RTCADOWDAY = 0x0000;
+  // clearing and disable alarm
+  RTCCTL01 &= ~(RTCAIE + RTCAIFG);
+  RTCAMINHR  = 0x0000;
+  RTCADOWDAY = 0x0000;
 
-    if(hour != 0xFF) {
-        minhr |= (0x8000 | hour<<8); //alarm enable bit ON
-    }
+  if (hour != 0xFF) {
+    minhr |= (0x8000 | hour << 8);  // alarm enable bit ON
+  }
 
-    if(min != 0xFF) {
-        minhr |= (0x0080 | min);
-    }
+  if (min != 0xFF) { minhr |= (0x0080 | min); }
 
-    if(day != 0xFF) {
-        dowday |= (0x8000 | day<<8);
-    }
+  if (day != 0xFF) { dowday |= (0x8000 | day << 8); }
 
-    RTCCTL01 |= RTCAIE;
-    RTCAMINHR = minhr;
-    RTCADOWDAY = dowday;
+  RTCCTL01 |= RTCAIE;
+  RTCAMINHR  = minhr;
+  RTCADOWDAY = dowday;
 }
 
 // RTC interrupt service routine
-#pragma vector=RTC_VECTOR
-__interrupt void RTC_ISR(void)
-{
-    if(RTCIV & RTCAIFG){
-        RTCIV &= ~(RTCAIFG);
-        RTC_ISR_HANDLER();
-        WAKEUP_DEVICE();
-    }
+#pragma vector = RTC_VECTOR
+__interrupt void RTC_ISR(void) {
+  if (RTCIV & RTCAIFG) {
+    RTCIV &= ~(RTCAIFG);
+    RTC_ISR_HANDLER();
+    WAKEUP_DEVICE();
+  }
 }

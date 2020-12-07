@@ -10,8 +10,8 @@
 
 #include "var_type.h"
 
-uint16 CRC16_ansi(uint8 *data, uint16 len);
-uint16 CRC16_ccitt(uint8 *data, uint16 len);
+uint16 CRC16_ansi(uint8* data, uint16 len);
+uint16 CRC16_ccitt(uint8* data, uint16 len);
 uint16 CRC16_ccittByte(uint16 fcs, uint8 c);
 
 #endif
