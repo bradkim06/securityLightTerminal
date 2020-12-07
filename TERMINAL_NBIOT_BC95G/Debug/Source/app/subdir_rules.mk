@@ -1,0 +1,50 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+SHELL = cmd.exe
+
+# Each subdirectory must supply rules for building sources it contributes
+Source/app/alarm.obj: C:/Users/User/workspace_v8/terminal/Source/app/alarm.c $(GEN_OPTS) | $(GEN_FILES)
+	@echo 'Building file: "$<"'
+	@echo 'Invoking: MSP430 Compiler'
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/bin/cl430" -vmspx --data_model=small -O0 --opt_for_speed=0 --use_hw_mpy=F5 --include_path="C:/ti/ccsv8/ccs_base/msp430/include" --include_path="C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include" --include_path="C:/Users/User/workspace_v8/terminal/Source" --include_path="C:/Users/User/workspace_v8/terminal/Source/app" --include_path="C:/Users/User/workspace_v8/terminal/Source/dev" --include_path="C:/Users/User/workspace_v8/terminal/Source/misc" --include_path="C:/Users/User/workspace_v8/terminal/Source/osal" --include_path="C:/Users/User/workspace_v8/terminal/Source/test" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb/uuid" --advice:power="1,3,4,7,9" --define=__MSP430F5419A__ --define=__MODEM_BC95G__ --define=DEBUG --define=REPEATER_DEVICE=0 --define=LORA_DEVICE=0 --define=NBIOT_DEVICE=1 -g --c99 --float_operations_allowed=none --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU23 --silicon_errata=CPU40 --preproc_with_compile --preproc_dependency="Source/app/$(basename $(<F)).d_raw" --obj_directory="Source/app" $(GEN_OPTS__FLAG) "$<"
+	@echo 'Finished building: "$<"'
+	@echo ' '
+
+Source/app/app.obj: C:/Users/User/workspace_v8/terminal/Source/app/app.c $(GEN_OPTS) | $(GEN_FILES)
+	@echo 'Building file: "$<"'
+	@echo 'Invoking: MSP430 Compiler'
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/bin/cl430" -vmspx --data_model=small -O0 --opt_for_speed=0 --use_hw_mpy=F5 --include_path="C:/ti/ccsv8/ccs_base/msp430/include" --include_path="C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include" --include_path="C:/Users/User/workspace_v8/terminal/Source" --include_path="C:/Users/User/workspace_v8/terminal/Source/app" --include_path="C:/Users/User/workspace_v8/terminal/Source/dev" --include_path="C:/Users/User/workspace_v8/terminal/Source/misc" --include_path="C:/Users/User/workspace_v8/terminal/Source/osal" --include_path="C:/Users/User/workspace_v8/terminal/Source/test" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb/uuid" --advice:power="1,3,4,7,9" --define=__MSP430F5419A__ --define=__MODEM_BC95G__ --define=DEBUG --define=REPEATER_DEVICE=0 --define=LORA_DEVICE=0 --define=NBIOT_DEVICE=1 -g --c99 --float_operations_allowed=none --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU23 --silicon_errata=CPU40 --preproc_with_compile --preproc_dependency="Source/app/$(basename $(<F)).d_raw" --obj_directory="Source/app" $(GEN_OPTS__FLAG) "$<"
+	@echo 'Finished building: "$<"'
+	@echo ' '
+
+Source/app/flash.obj: C:/Users/User/workspace_v8/terminal/Source/app/flash.c $(GEN_OPTS) | $(GEN_FILES)
+	@echo 'Building file: "$<"'
+	@echo 'Invoking: MSP430 Compiler'
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/bin/cl430" -vmspx --data_model=small -O0 --opt_for_speed=0 --use_hw_mpy=F5 --include_path="C:/ti/ccsv8/ccs_base/msp430/include" --include_path="C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include" --include_path="C:/Users/User/workspace_v8/terminal/Source" --include_path="C:/Users/User/workspace_v8/terminal/Source/app" --include_path="C:/Users/User/workspace_v8/terminal/Source/dev" --include_path="C:/Users/User/workspace_v8/terminal/Source/misc" --include_path="C:/Users/User/workspace_v8/terminal/Source/osal" --include_path="C:/Users/User/workspace_v8/terminal/Source/test" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb/uuid" --advice:power="1,3,4,7,9" --define=__MSP430F5419A__ --define=__MODEM_BC95G__ --define=DEBUG --define=REPEATER_DEVICE=0 --define=LORA_DEVICE=0 --define=NBIOT_DEVICE=1 -g --c99 --float_operations_allowed=none --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU23 --silicon_errata=CPU40 --preproc_with_compile --preproc_dependency="Source/app/$(basename $(<F)).d_raw" --obj_directory="Source/app" $(GEN_OPTS__FLAG) "$<"
+	@echo 'Finished building: "$<"'
+	@echo ' '
+
+Source/app/meter.obj: C:/Users/User/workspace_v8/terminal/Source/app/meter.c $(GEN_OPTS) | $(GEN_FILES)
+	@echo 'Building file: "$<"'
+	@echo 'Invoking: MSP430 Compiler'
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/bin/cl430" -vmspx --data_model=small -O0 --opt_for_speed=0 --use_hw_mpy=F5 --include_path="C:/ti/ccsv8/ccs_base/msp430/include" --include_path="C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include" --include_path="C:/Users/User/workspace_v8/terminal/Source" --include_path="C:/Users/User/workspace_v8/terminal/Source/app" --include_path="C:/Users/User/workspace_v8/terminal/Source/dev" --include_path="C:/Users/User/workspace_v8/terminal/Source/misc" --include_path="C:/Users/User/workspace_v8/terminal/Source/osal" --include_path="C:/Users/User/workspace_v8/terminal/Source/test" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb/uuid" --advice:power="1,3,4,7,9" --define=__MSP430F5419A__ --define=__MODEM_BC95G__ --define=DEBUG --define=REPEATER_DEVICE=0 --define=LORA_DEVICE=0 --define=NBIOT_DEVICE=1 -g --c99 --float_operations_allowed=none --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU23 --silicon_errata=CPU40 --preproc_with_compile --preproc_dependency="Source/app/$(basename $(<F)).d_raw" --obj_directory="Source/app" $(GEN_OPTS__FLAG) "$<"
+	@echo 'Finished building: "$<"'
+	@echo ' '
+
+Source/app/metering.obj: C:/Users/User/workspace_v8/terminal/Source/app/metering.c $(GEN_OPTS) | $(GEN_FILES)
+	@echo 'Building file: "$<"'
+	@echo 'Invoking: MSP430 Compiler'
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/bin/cl430" -vmspx --data_model=small -O0 --opt_for_speed=0 --use_hw_mpy=F5 --include_path="C:/ti/ccsv8/ccs_base/msp430/include" --include_path="C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include" --include_path="C:/Users/User/workspace_v8/terminal/Source" --include_path="C:/Users/User/workspace_v8/terminal/Source/app" --include_path="C:/Users/User/workspace_v8/terminal/Source/dev" --include_path="C:/Users/User/workspace_v8/terminal/Source/misc" --include_path="C:/Users/User/workspace_v8/terminal/Source/osal" --include_path="C:/Users/User/workspace_v8/terminal/Source/test" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb/uuid" --advice:power="1,3,4,7,9" --define=__MSP430F5419A__ --define=__MODEM_BC95G__ --define=DEBUG --define=REPEATER_DEVICE=0 --define=LORA_DEVICE=0 --define=NBIOT_DEVICE=1 -g --c99 --float_operations_allowed=none --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU23 --silicon_errata=CPU40 --preproc_with_compile --preproc_dependency="Source/app/$(basename $(<F)).d_raw" --obj_directory="Source/app" $(GEN_OPTS__FLAG) "$<"
+	@echo 'Finished building: "$<"'
+	@echo ' '
+
+Source/app/nfc_app.obj: C:/Users/User/workspace_v8/terminal/Source/app/nfc_app.c $(GEN_OPTS) | $(GEN_FILES)
+	@echo 'Building file: "$<"'
+	@echo 'Invoking: MSP430 Compiler'
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/bin/cl430" -vmspx --data_model=small -O0 --opt_for_speed=0 --use_hw_mpy=F5 --include_path="C:/ti/ccsv8/ccs_base/msp430/include" --include_path="C:/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include" --include_path="C:/Users/User/workspace_v8/terminal/Source" --include_path="C:/Users/User/workspace_v8/terminal/Source/app" --include_path="C:/Users/User/workspace_v8/terminal/Source/dev" --include_path="C:/Users/User/workspace_v8/terminal/Source/misc" --include_path="C:/Users/User/workspace_v8/terminal/Source/osal" --include_path="C:/Users/User/workspace_v8/terminal/Source/test" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb" --include_path="C:/Users/User/workspace_v8/terminal/Source/modem/nb/uuid" --advice:power="1,3,4,7,9" --define=__MSP430F5419A__ --define=__MODEM_BC95G__ --define=DEBUG --define=REPEATER_DEVICE=0 --define=LORA_DEVICE=0 --define=NBIOT_DEVICE=1 -g --c99 --float_operations_allowed=none --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU23 --silicon_errata=CPU40 --preproc_with_compile --preproc_dependency="Source/app/$(basename $(<F)).d_raw" --obj_directory="Source/app" $(GEN_OPTS__FLAG) "$<"
+	@echo 'Finished building: "$<"'
+	@echo ' '
+
+
