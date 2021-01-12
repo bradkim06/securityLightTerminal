@@ -18,83 +18,96 @@
 // below in osalInitTask.
 
 const pTaskEventHandlerFn TasksArray[] = {
-    APP_tasks,
-    MODEM_tasks,
+	APP_tasks,
+	MODEM_tasks,
 #if REPEATER_DEVICE
-    CC1200_tasks,
-    SLAVE_tasks,
+	CC1200_tasks,
+	SLAVE_tasks,
 #endif
 };
 
 const uint8 TasksTotalCounts = sizeof(TasksArray) / sizeof(TasksArray[0]);
-event32_t*  TasksEvents;
+event32_t *TasksEvents;
 
-void TASKMGR_init(void) {
-  uint8 taskID = 0;
+void TASKMGR_init(void)
+{
+	uint8 taskID = 0;
 
-  TasksEvents = (event32_t*)malloc(sizeof(event32_t) * TasksTotalCounts);
-  if (TasksEvents == NULL) {
-    printf("malloc error - TASKMGR_init\n");
-    return;
-  }
+	TasksEvents = (event32_t *)malloc(sizeof(event32_t) * TasksTotalCounts);
+	if (TasksEvents == NULL) {
+		printf("malloc error - TASKMGR_init\n");
+		return;
+	}
 
-  memset(TasksEvents, 0, (sizeof(event32_t) * TasksTotalCounts));
+	memset(TasksEvents, 0, (sizeof(event32_t) * TasksTotalCounts));
 
-  APP_init(taskID++);
-  MODEM_init(taskID++);
+	APP_init(taskID++);
+	MODEM_init(taskID++);
 #if REPEATER_DEVICE
-  CC1200_init(taskID++);
-  SLAVE_init(taskID++);
+	CC1200_init(taskID++);
+	SLAVE_init(taskID++);
 #endif
 }
 
-void TASKMGR_run(void) {
-  uint8 idx = 0;
+void TASKMGR_run(void)
+{
+	uint8 idx = 0;
 
-  DeviceSleepState = FALSE;
+	DeviceSleepState = FALSE;
 
-  for (;;) {                    // Forever Loop
-    WDTCTL = WDTPW | WDTCNTCL;  // Clear watchdog timer
-    WDTCTL = WDT_ARST_16SEC;    // Start watchdog timer(16 sec)
+	for (;;) { // Forever Loop
+		WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
+		WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 
-    if (++idx >= TasksTotalCounts) { idx = 0; }
+		if (++idx >= TasksTotalCounts) {
+			idx = 0;
+		}
 
-    do {
-      if (TasksEvents[idx]) {  // Task is highest priority that is ready.
-        break;
-      }
-    } while (++idx < TasksTotalCounts);
+		do {
+			if (TasksEvents[idx]) { // Task is highest priority that is ready.
+				break;
+			}
+		} while (++idx < TasksTotalCounts);
 
-    if (idx < TasksTotalCounts) {
-      halIntState_t intState;
-      event32_t     events;
+		if (idx < TasksTotalCounts) {
+			halIntState_t intState;
+			event32_t events;
 
-      HAL_ENTER_CRITICAL_SECTION(intState);  // Hold off interrupts
-      events           = TasksEvents[idx];
-      TasksEvents[idx] = 0;                 // Clear the Events for this task.
-      HAL_EXIT_CRITICAL_SECTION(intState);  // Hold off interrupts
+			HAL_ENTER_CRITICAL_SECTION(
+				intState); // Hold off interrupts
+			events = TasksEvents[idx];
+			TasksEvents[idx] = 0; // Clear the Events for this task.
+			HAL_EXIT_CRITICAL_SECTION(
+				intState); // Hold off interrupts
 
-      events = (TasksArray[idx])(idx, events);
+			events = (TasksArray[idx])(idx, events);
 
-      HAL_ENTER_CRITICAL_SECTION(intState);  // Hold off interrupts
-      TasksEvents[idx] |=
-          events;  // Add back unprocessed events to the current task.
-      HAL_EXIT_CRITICAL_SECTION(intState);  // Hold off interrupts
+			HAL_ENTER_CRITICAL_SECTION(
+				intState); // Hold off interrupts
+			TasksEvents[idx] |=
+				events; // Add back unprocessed events to the current task.
+			HAL_EXIT_CRITICAL_SECTION(
+				intState); // Hold off interrupts
 
-    } else {
-      if (OSAL_isExistEvent() != TRUE) {
-        int taskIdx;
-        for (taskIdx = 0; taskIdx < TasksTotalCounts; taskIdx++) {
-          if (TasksEvents[taskIdx] != 0x00000000) { break; }
-        }
+		} else {
+			if (OSAL_isExistEvent() != TRUE) {
+				int taskIdx;
+				for (taskIdx = 0; taskIdx < TasksTotalCounts;
+				     taskIdx++) {
+					if (TasksEvents[taskIdx] !=
+					    0x00000000) {
+						break;
+					}
+				}
 
-        if (taskIdx >= TasksTotalCounts) {
-          WDTCTL = WDTPW | WDTHOLD;  // Stop watchdog timer
-          printf("--sleep--\n\n");
-          MISC_delayMs(100);
-          SLEEP_DEVICE();
-        }
-      }
-    }
-  }
+				if (taskIdx >= TasksTotalCounts) {
+					WDTCTL = WDTPW |
+						 WDTHOLD; // Stop watchdog timer
+					printf("--sleep--\n\n");
+					MISC_delayMs(100);
+					SLEEP_DEVICE();
+				}
+			}
+		}
+	}
 }

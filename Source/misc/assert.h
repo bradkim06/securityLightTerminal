@@ -9,18 +9,19 @@ extern "C" {
 #include "var_type.h"
 
 #ifdef NDEBUG /* required by ANSI standard */
-#define ASSERT(__e)            ((void)0)
+#define ASSERT(__e) ((void)0)
 #define ASSERT_PRINT(__e, str) ((void)0)
 #else
-#define __FILENAME__ (strrchr(__FILE__, '\\') + 1)  // windows style
+#define __FILENAME__ (strrchr(__FILE__, '\\') + 1) // windows style
 //# define __FILENAME__  (strrchr(__FILE__, '/') + 1)   // unix style
 
-#define ASSERT(__e) \
-  ((__e) ? (void)0 : __assert_func(__FILENAME__, __LINE__, __ASSERT_FUNC, #__e))
-#define ASSERT_PRINT(__e, str)                                              \
-  ((__e) ? (void)0                                                          \
-         : __assert_print_func(__FILENAME__, __LINE__, __ASSERT_FUNC, #__e, \
-                               str))
+#define ASSERT(__e)                                                            \
+	((__e) ? (void)0 :                                                     \
+		 __assert_func(__FILENAME__, __LINE__, __ASSERT_FUNC, #__e))
+#define ASSERT_PRINT(__e, str)                                                 \
+	((__e) ? (void)0 :                                                     \
+		 __assert_print_func(__FILENAME__, __LINE__, __ASSERT_FUNC,    \
+				     #__e, str))
 
 #ifndef __ASSERT_FUNC
 /* Use g++'s demangled names in C++.  */
@@ -33,28 +34,26 @@ extern "C" {
 
 /* failed to detect __func__ support.  */
 #else
-#define __ASSERT_FUNC ((char*)0)
+#define __ASSERT_FUNC ((char *)0)
 #endif
 #endif /* !__ASSERT_FUNC */
 #endif /* !NDEBUG */
 
-static inline void __assert_func(const char* file,
-                                 int         line,
-                                 const char* func,
-                                 const char* expr) {
-  printf("ASSERT:%s:%d:%s:(%s)\n", file, line, func, expr);
-  while (1)
-    ;
+static inline void __assert_func(const char *file, int line, const char *func,
+				 const char *expr)
+{
+	printf("ASSERT:%s:%d:%s:(%s)\n", file, line, func, expr);
+	while (1)
+		;
 }
 
-static inline void __assert_print_func(const char* file,
-                                       int         line,
-                                       const char* func,
-                                       const char* expr,
-                                       char*       str) {
-  printf("ASSERT:%s:%d:%s:(%s):%s\n", file, line, func, expr, str);
-  while (1)
-    ;
+static inline void __assert_print_func(const char *file, int line,
+				       const char *func, const char *expr,
+				       char *str)
+{
+	printf("ASSERT:%s:%d:%s:(%s):%s\n", file, line, func, expr, str);
+	while (1)
+		;
 }
 
 #ifdef __cplusplus

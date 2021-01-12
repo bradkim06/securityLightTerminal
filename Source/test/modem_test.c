@@ -18,38 +18,38 @@
 #define LEN_TEST_LORA_APPEUI 16
 #define LEN_TEST_LORA_DEVEUI 16
 #define LEN_TEST_LORA_APPKEY 32
-#else  // NBIOT_DEVICE
-#define LEN_TEST_NBIOT_IMEI  15
-#define LEN_TEST_NBIOT_IMSI  15
+#else // NBIOT_DEVICE
+#define LEN_TEST_NBIOT_IMEI 15
+#define LEN_TEST_NBIOT_IMSI 15
 #define LEN_TEST_NBIOT_ICCID 19
 #endif
 
 struct {
-  // will be set '1' when reading success MODEM booting message
-  BOOL isAlive;
-  // will be set '1' when want to show MODEM response
-  BOOL isPrintOn;
-  // 대다수의 AT COMMAND에 대해 적절한 응답이 올 경우 '1'로 설정.
-  // 다만, 일부 AT COMMAND에 대해 처리가 안될 수 있으므로 사전 동작확인이 필요.
-  BOOL isAcked;
-  BOOL isError;
+	// will be set '1' when reading success MODEM booting message
+	BOOL isAlive;
+	// will be set '1' when want to show MODEM response
+	BOOL isPrintOn;
+	// 대다수의 AT COMMAND에 대해 적절한 응답이 올 경우 '1'로 설정.
+	// 다만, 일부 AT COMMAND에 대해 처리가 안될 수 있으므로 사전 동작확인이 필요.
+	BOOL isAcked;
+	BOOL isError;
 #if LORA_DEVICE
-  char appEUI[LEN_TEST_LORA_APPEUI +
-              1];  // +1 wii be set 0. '0' is for string print.
-  char devEUI[LEN_TEST_LORA_DEVEUI +
-              1];  // +1 wii be set 0. '0' is for string print.
-  char appKey[LEN_TEST_LORA_APPKEY +
-              1];  // +1 wii be set 0. '0' is for string print.
-#else              // NBIOT_DEVICE
-  BOOL   isBipOk;
-  BOOL   isBootup;
-  uint32 bootupMsec;
-  char   imei[LEN_TEST_NBIOT_IMEI +
-            1];  // +1 will be set 0. '0' is for string print.
-  char   imsi[LEN_TEST_NBIOT_IMSI +
-            1];  // +1 will be set 0. '0' is for string print.
-  char   iccid[LEN_TEST_NBIOT_ICCID +
-             1];  // +1 will be set 0. '0' is for string print.
+	char appEUI[LEN_TEST_LORA_APPEUI +
+		    1]; // +1 wii be set 0. '0' is for string print.
+	char devEUI[LEN_TEST_LORA_DEVEUI +
+		    1]; // +1 wii be set 0. '0' is for string print.
+	char appKey[LEN_TEST_LORA_APPKEY +
+		    1]; // +1 wii be set 0. '0' is for string print.
+#else // NBIOT_DEVICE
+	BOOL isBipOk;
+	BOOL isBootup;
+	uint32 bootupMsec;
+	char imei[LEN_TEST_NBIOT_IMEI +
+		  1]; // +1 will be set 0. '0' is for string print.
+	char imsi[LEN_TEST_NBIOT_IMSI +
+		  1]; // +1 will be set 0. '0' is for string print.
+	char iccid[LEN_TEST_NBIOT_ICCID +
+		   1]; // +1 will be set 0. '0' is for string print.
 #endif
 } modemTestCtx;
 
@@ -59,398 +59,448 @@ struct {
  ***************************************************************
  */
 
-static void waitModem(int ms) {
-  int count = ms / 100;
-  if (count == 0) count = 1;
+static void waitModem(int ms)
+{
+	int count = ms / 100;
+	if (count == 0)
+		count = 1;
 
-  uint32 startMs = TIMER_getMsec();
-  do {
-    TEST_runTasks();
-  } while (TIMER_getMsecDiff(startMs) <= ms);
+	uint32 startMs = TIMER_getMsec();
+	do {
+		TEST_runTasks();
+	} while (TIMER_getMsecDiff(startMs) <= ms);
 }
 
-static BOOL waitModemReady(int waitSec) {
+static BOOL waitModemReady(int waitSec)
+{
 #if LORA_DEVICE
 #if LORA_THINGPLUG
 #define MODEM_CHECK_AT_CMD "AT+FWI"
 #else
 #define MODEM_CHECK_AT_CMD "AT+ADR"
 #endif
-#else  // NBIOT_DEVICE
+#else // NBIOT_DEVICE
 #define MODEM_CHECK_AT_CMD "AT"
 #endif
 
-  if (modemTestCtx.isAlive) { return TRUE; }
+	if (modemTestCtx.isAlive) {
+		return TRUE;
+	}
 
-  if (waitSec > 100) { waitSec = 100; }
+	if (waitSec > 100) {
+		waitSec = 100;
+	}
 
-  uint32 sendMs  = 0;
-  uint32 waitMs  = waitSec * 1000;
-  uint32 startMs = TIMER_getMsec();
-  do {
-    if (TIMER_getMsecDiff(sendMs) >= 1500) {
-      sendMs = TIMER_getMsec();
-      MODEM_write(MODEM_CHECK_AT_CMD);
-    }
-    TEST_runTasks();
-    if (modemTestCtx.isAlive) { return TRUE; }
-  } while (TIMER_getMsecDiff(startMs) <= waitMs);
+	uint32 sendMs = 0;
+	uint32 waitMs = waitSec * 1000;
+	uint32 startMs = TIMER_getMsec();
+	do {
+		if (TIMER_getMsecDiff(sendMs) >= 1500) {
+			sendMs = TIMER_getMsec();
+			MODEM_write(MODEM_CHECK_AT_CMD);
+		}
+		TEST_runTasks();
+		if (modemTestCtx.isAlive) {
+			return TRUE;
+		}
+	} while (TIMER_getMsecDiff(startMs) <= waitMs);
 
-  return FALSE;
+	return FALSE;
 }
 
-static BOOL waitModemAck(int waitSec) {
-  if (waitSec > 100) { waitSec = 100; }
+static BOOL waitModemAck(int waitSec)
+{
+	if (waitSec > 100) {
+		waitSec = 100;
+	}
 
-  uint32 waitMs  = waitSec * 1000;
-  uint32 startMs = TIMER_getMsec();
-  do {
-    TEST_runTasks();
-    if (modemTestCtx.isAcked) { return TRUE; }
-    if (modemTestCtx.isError) { return FALSE; }
-  } while (TIMER_getMsecDiff(startMs) <= waitMs);
+	uint32 waitMs = waitSec * 1000;
+	uint32 startMs = TIMER_getMsec();
+	do {
+		TEST_runTasks();
+		if (modemTestCtx.isAcked) {
+			return TRUE;
+		}
+		if (modemTestCtx.isError) {
+			return FALSE;
+		}
+	} while (TIMER_getMsecDiff(startMs) <= waitMs);
 
-  return FALSE;
+	return FALSE;
 }
 
 #if NBIOT_DEVICE
-static BOOL waitModemBipOk(int waitSec) {
+static BOOL waitModemBipOk(int waitSec)
+{
 #define MODEM_BIP_CHECK_AT_CMD "AT+MBIPST?"
 
-  if (modemTestCtx.isBipOk) { return TRUE; }
+	if (modemTestCtx.isBipOk) {
+		return TRUE;
+	}
 
-  if (waitSec > 100) { waitSec = 100; }
+	if (waitSec > 100) {
+		waitSec = 100;
+	}
 
-  uint32 sendMs  = 0;
-  uint32 waitMs  = waitSec * 1000;
-  uint32 startMs = TIMER_getMsec();
-  do {
-    if (TIMER_getMsecDiff(sendMs) >= 1500) {
-      sendMs = TIMER_getMsec();
-      MODEM_write(MODEM_BIP_CHECK_AT_CMD);
-    }
-    TEST_runTasks();
-    if (modemTestCtx.isBipOk) { return TRUE; }
-  } while (TIMER_getMsecDiff(startMs) <= waitMs);
+	uint32 sendMs = 0;
+	uint32 waitMs = waitSec * 1000;
+	uint32 startMs = TIMER_getMsec();
+	do {
+		if (TIMER_getMsecDiff(sendMs) >= 1500) {
+			sendMs = TIMER_getMsec();
+			MODEM_write(MODEM_BIP_CHECK_AT_CMD);
+		}
+		TEST_runTasks();
+		if (modemTestCtx.isBipOk) {
+			return TRUE;
+		}
+	} while (TIMER_getMsecDiff(startMs) <= waitMs);
 
-  return FALSE;
+	return FALSE;
 }
 #endif
 
-static void sendToModem(char* p) {
-  // If modem ready is checked fail, do not send AT command to modem
-  if (waitModemReady(5) == FALSE) {
-    printf("Modem is not alive.\n");
-    return;
-  }
+static void sendToModem(char *p)
+{
+	// If modem ready is checked fail, do not send AT command to modem
+	if (waitModemReady(5) == FALSE) {
+		printf("Modem is not alive.\n");
+		return;
+	}
 
-  modemTestCtx.isAcked = FALSE;  // 이전 AT command에 대한 Ack 수신 Flag 초기화
-  modemTestCtx.isError =
-      FALSE;  // 이전 AT command에 대한 Error 수신 Flag 초기화
-  MODEM_write(p);
+	modemTestCtx.isAcked =
+		FALSE; // 이전 AT command에 대한 Ack 수신 Flag 초기화
+	modemTestCtx.isError =
+		FALSE; // 이전 AT command에 대한 Error 수신 Flag 초기화
+	MODEM_write(p);
 }
 
 #if NBIOT_DEVICE
-static void resetModem() {
-  // 모뎀 S/W 리셋
-  sendToModem("AT+NRB");
-  // 부팅 재확인 및 CFUN=0 재실행을 위해 Flag 초기화.
-  modemTestCtx.isBootup = FALSE;
-  modemTestCtx.isAlive  = FALSE;
-  modemTestCtx.isBipOk  = FALSE;
+static void resetModem()
+{
+	// 모뎀 S/W 리셋
+	sendToModem("AT+NRB");
+	// 부팅 재확인 및 CFUN=0 재실행을 위해 Flag 초기화.
+	modemTestCtx.isBootup = FALSE;
+	modemTestCtx.isAlive = FALSE;
+	modemTestCtx.isBipOk = FALSE;
 }
 #endif
 
-static void printAtCmdList() {
-  printf("\n");
-  printf(TP_ANSI_FG_GREEN);
-  printf("Mainly Used AT command List\n");
+static void printAtCmdList()
+{
+	printf("\n");
+	printf(TP_ANSI_FG_GREEN);
+	printf("Mainly Used AT command List\n");
 #if LORA_DEVICE
 #if (LORA_THINGPLUG == 0)
-  printf(" AT+AK   : Read Application Key \n");
-  printf(" AT+DEUI : Read Device EUI \n");
-  printf(" AT+AEUI : Read Application EUI \n");
-  printf(" AT+POW  : Get/Set Tx Power (Range: 0~6) \n");
-  printf(" AT+REG  : Get/Set region \n");
-  printf(
-      "     (0:AS923, 1:AU915, 2:CN470, 3:CN779, 4:EU433, 5:EU868, 6:KR920, "
-      "7:IN865, 8:US915, 9:US915_HYBRID) \n");
-  printf(" AT+ADR  : Get Current Adaptive Data Rate\n");
-  printf(" AT+CLS  : Get Current Select Class\n");
-  printf(" AT+GCFG : Get Configuration \n");
-  printf(" AT+LOG  : Set Log Message (0:Disable, 1:Enable) \n");
-  printf(" AT+CFM  : Set Confirm Message (0:Disable, 1:Enable) \n");
-  printf(" AT+SEND : SEND Message \n");
-  printf("     Eample) 'AT+SEND 02112233' Port:02, Data:112233 \n");
-  printf(" AT+RST  : Reset the LoRa Module \n");
+	printf(" AT+AK   : Read Application Key \n");
+	printf(" AT+DEUI : Read Device EUI \n");
+	printf(" AT+AEUI : Read Application EUI \n");
+	printf(" AT+POW  : Get/Set Tx Power (Range: 0~6) \n");
+	printf(" AT+REG  : Get/Set region \n");
+	printf("     (0:AS923, 1:AU915, 2:CN470, 3:CN779, 4:EU433, 5:EU868, 6:KR920, "
+	       "7:IN865, 8:US915, 9:US915_HYBRID) \n");
+	printf(" AT+ADR  : Get Current Adaptive Data Rate\n");
+	printf(" AT+CLS  : Get Current Select Class\n");
+	printf(" AT+GCFG : Get Configuration \n");
+	printf(" AT+LOG  : Set Log Message (0:Disable, 1:Enable) \n");
+	printf(" AT+CFM  : Set Confirm Message (0:Disable, 1:Enable) \n");
+	printf(" AT+SEND : SEND Message \n");
+	printf("     Eample) 'AT+SEND 02112233' Port:02, Data:112233 \n");
+	printf(" AT+RST  : Reset the LoRa Module \n");
 #else
-  printf(" AT+AK   : Read Application Key \n");
-  printf(" AT+DEUI : Read Device EUI \n");
-  printf(" AT+AEUI : Read Application EUI \n");
-  printf(" AT+SIG  : Get Latest SNR and RSSI Value \n");
-  printf(" AT+CH   : Get Current Tx Channel \n");
-  printf(" AT+ADR  : Get Current Adaptive Data Rate\n");
-  printf(" AT+CLS  : Get Current Select Class\n");
-  printf(" AT+FWI  : Get Firmware version \n");
-  printf(" AT+GCFG : Get Configuration \n");
-  printf(" AT+DUTC : Get duty cycle time\n");
-  printf(" AT+LOG  : Set Log Message (0:Disable, 1:Enable) \n");
-  printf(" AT+CFM  : Set Confirm Message (0:Disable, 1:Enable) \n");
-  printf(" AT+CHTX : Set Channel & TX power\n");
-  printf("     Eample) 'AT+CHTX 2701' CH:27, Power index:1\n");
-  printf(" AT+SEND : SEND Message \n");
-  printf("     Eample) 'AT+SEND 02112233' Port:02, Data:112233 \n");
-  printf(" AT+RST  : Reset the LoRa Module \n");
-#endif  // (LORA_THINGPLUG == 0)
-#else   // NBIOT_DEVICE
-  printf(
-      " AT+CEREG?   : Get Current Attach Status (0:Nothing, 1:OK, 2:Running, "
-      "3:Reject)\n");
-  printf("               Eample) '+CEREG:x,N' 'N' is status\n");
-  printf(" AT+MBIPST?  : Get Current BIP Status (0:OK, 1:Running)\n");
-  printf(
-      " AT+CFUN?    : Get Current Modem Fuctionality (0:Disable, 1:All Enable) "
-      "\n");
-  printf(" AT+NCONFIG? : Get Modem Setting \n");
-  printf(" AT+CMEE?    : Get Termination Error Code (0:None, Others:Error)\n");
-  printf(" AT+CEER     : Get Extended Error\n");
-  printf(" AT+NUESTATS : Get Current Signal Quality \n");
-  printf(" AT+CGMR     : Get Firmware version \n");
-  printf(" AT+CSGN=1   : Read IMEI \n");
-  printf(" AT+CIMI     : Read IMSI \n");
-  printf(" AT+NCCID    : Read ICCID \n");
-  printf(" AT+NRB      : Reset the NB-IoT Module\n");
+	printf(" AT+AK   : Read Application Key \n");
+	printf(" AT+DEUI : Read Device EUI \n");
+	printf(" AT+AEUI : Read Application EUI \n");
+	printf(" AT+SIG  : Get Latest SNR and RSSI Value \n");
+	printf(" AT+CH   : Get Current Tx Channel \n");
+	printf(" AT+ADR  : Get Current Adaptive Data Rate\n");
+	printf(" AT+CLS  : Get Current Select Class\n");
+	printf(" AT+FWI  : Get Firmware version \n");
+	printf(" AT+GCFG : Get Configuration \n");
+	printf(" AT+DUTC : Get duty cycle time\n");
+	printf(" AT+LOG  : Set Log Message (0:Disable, 1:Enable) \n");
+	printf(" AT+CFM  : Set Confirm Message (0:Disable, 1:Enable) \n");
+	printf(" AT+CHTX : Set Channel & TX power\n");
+	printf("     Eample) 'AT+CHTX 2701' CH:27, Power index:1\n");
+	printf(" AT+SEND : SEND Message \n");
+	printf("     Eample) 'AT+SEND 02112233' Port:02, Data:112233 \n");
+	printf(" AT+RST  : Reset the LoRa Module \n");
+#endif // (LORA_THINGPLUG == 0)
+#else // NBIOT_DEVICE
+	printf(" AT+CEREG?   : Get Current Attach Status (0:Nothing, 1:OK, 2:Running, "
+	       "3:Reject)\n");
+	printf("               Eample) '+CEREG:x,N' 'N' is status\n");
+	printf(" AT+MBIPST?  : Get Current BIP Status (0:OK, 1:Running)\n");
+	printf(" AT+CFUN?    : Get Current Modem Fuctionality (0:Disable, 1:All Enable) "
+	       "\n");
+	printf(" AT+NCONFIG? : Get Modem Setting \n");
+	printf(" AT+CMEE?    : Get Termination Error Code (0:None, Others:Error)\n");
+	printf(" AT+CEER     : Get Extended Error\n");
+	printf(" AT+NUESTATS : Get Current Signal Quality \n");
+	printf(" AT+CGMR     : Get Firmware version \n");
+	printf(" AT+CSGN=1   : Read IMEI \n");
+	printf(" AT+CIMI     : Read IMSI \n");
+	printf(" AT+NCCID    : Read ICCID \n");
+	printf(" AT+NRB      : Reset the NB-IoT Module\n");
 #endif
-  printf(TP_ANSI_RESET);
-  printf("\n");
+	printf(TP_ANSI_RESET);
+	printf("\n");
 }
 
 #if LORA_DEVICE
 
-static void parseLoraModemResp(char* pStr) {
-  char* p = NULL;
+static void parseLoraModemResp(char *pStr)
+{
+	char *p = NULL;
 
 #if (LORA_THINGPLUG == 0)
 #define PATTERN_AEUI "+AEUI="
 #else
 #define PATTERN_AEUI "APPLICATION EUI : "
 #endif
-  if ((p = strstr(pStr, PATTERN_AEUI))) {
-    p += strlen(PATTERN_AEUI);
-    int nDigit = 0;
-    while (nDigit < LEN_TEST_LORA_APPEUI) {
-      if (isxdigit(*p)) { modemTestCtx.appEUI[nDigit++] = *p; }
-      p++;
-    }
-  }
+	if ((p = strstr(pStr, PATTERN_AEUI))) {
+		p += strlen(PATTERN_AEUI);
+		int nDigit = 0;
+		while (nDigit < LEN_TEST_LORA_APPEUI) {
+			if (isxdigit(*p)) {
+				modemTestCtx.appEUI[nDigit++] = *p;
+			}
+			p++;
+		}
+	}
 
 #if (LORA_THINGPLUG == 0)
 #define PATTERN_DEUI "+DEUI="
 #else
 #define PATTERN_DEUI "Device EUI : "
 #endif
-  if ((p = strstr(pStr, PATTERN_DEUI))) {
-    p += strlen(PATTERN_DEUI);
-    int nDigit = 0;
-    while (nDigit < LEN_TEST_LORA_DEVEUI) {
-      if (isxdigit(*p)) { modemTestCtx.devEUI[nDigit++] = *p; }
-      p++;
-    }
-  }
+	if ((p = strstr(pStr, PATTERN_DEUI))) {
+		p += strlen(PATTERN_DEUI);
+		int nDigit = 0;
+		while (nDigit < LEN_TEST_LORA_DEVEUI) {
+			if (isxdigit(*p)) {
+				modemTestCtx.devEUI[nDigit++] = *p;
+			}
+			p++;
+		}
+	}
 
 #if (LORA_THINGPLUG == 0)
 #define PATTERN_AKEY "+AK="
 #else
 #define PATTERN_AKEY "Application Key : "
 #endif
-  if ((p = strstr(pStr, PATTERN_AKEY))) {
-    p += strlen(PATTERN_AKEY);
-    int nDigit = 0;
-    while (nDigit < LEN_TEST_LORA_APPKEY) {
-      if (isxdigit(*p)) { modemTestCtx.appKey[nDigit++] = *p; }
-      p++;
-    }
-  }
+	if ((p = strstr(pStr, PATTERN_AKEY))) {
+		p += strlen(PATTERN_AKEY);
+		int nDigit = 0;
+		while (nDigit < LEN_TEST_LORA_APPKEY) {
+			if (isxdigit(*p)) {
+				modemTestCtx.appKey[nDigit++] = *p;
+			}
+			p++;
+		}
+	}
 
-  // Check default AT command response pattern
+	// Check default AT command response pattern
 #if (LORA_THINGPLUG == 0)
 #define PATTERN_ACK_OK "OK"
 #else
 #define PATTERN_ACK_OK "- "
 #endif
-  if (p = strstr(pStr, PATTERN_ACK_OK)) { modemTestCtx.isAcked = TRUE; }
+	if (p = strstr(pStr, PATTERN_ACK_OK)) {
+		modemTestCtx.isAcked = TRUE;
+	}
 }
 
-#else  // NBIOT_DEVICE
+#else // NBIOT_DEVICE
 
-static void parseNbiotModemResp(char* pStr) {
-  char* p = NULL;
+static void parseNbiotModemResp(char *pStr)
+{
+	char *p = NULL;
 
 #define PATTERN_IMEI "+CGSN:"
-  if ((p = strstr(pStr, PATTERN_IMEI))) {
-    p += strlen(PATTERN_IMEI);
-    for (int idx = 0; idx < LEN_TEST_NBIOT_IMEI; idx++) {
-      if (*p >= '0' && *p <= '9') {
-        modemTestCtx.imei[idx] = *p;
-      } else {
-        // 값이 연속된 15자리 숫자값이 아닌 경우 실패로 간주해야 한다.
-        memset(modemTestCtx.imei, 0x00, sizeof(modemTestCtx.imei));
-        modemTestCtx.imei[0] = 'E';
-        modemTestCtx.imei[1] = 'R';
-        modemTestCtx.imei[2] = 'R';
-        break;
-      }
-      p++;
-    }
-  }
+	if ((p = strstr(pStr, PATTERN_IMEI))) {
+		p += strlen(PATTERN_IMEI);
+		for (int idx = 0; idx < LEN_TEST_NBIOT_IMEI; idx++) {
+			if (*p >= '0' && *p <= '9') {
+				modemTestCtx.imei[idx] = *p;
+			} else {
+				// 값이 연속된 15자리 숫자값이 아닌 경우 실패로 간주해야 한다.
+				memset(modemTestCtx.imei, 0x00,
+				       sizeof(modemTestCtx.imei));
+				modemTestCtx.imei[0] = 'E';
+				modemTestCtx.imei[1] = 'R';
+				modemTestCtx.imei[2] = 'R';
+				break;
+			}
+			p++;
+		}
+	}
 
 #define PATTERN_IMSI "450"
-  if ((p = strstr(pStr, PATTERN_IMSI))) {
-    // CTN의 경우 PREFIX가 없어 데이터정합성 유무를 정확히 알기 힘듬.
-    // 위 이유로 IMEI, ICCID와 다르게 ERROR처리를 생략한다.
-    BOOL isCtn = TRUE;
-    for (int idx = 0; idx < LEN_TEST_NBIOT_IMSI; idx++) {
-      if (!isdigit(*(p + idx))) { isCtn = FALSE; }
-    }
-    if (isCtn) {
-      for (int idx = 0; idx < LEN_TEST_NBIOT_IMSI; idx++) {
-        modemTestCtx.imsi[idx] = *(p + idx);
-      }
-    }
-  }
+	if ((p = strstr(pStr, PATTERN_IMSI))) {
+		// CTN의 경우 PREFIX가 없어 데이터정합성 유무를 정확히 알기 힘듬.
+		// 위 이유로 IMEI, ICCID와 다르게 ERROR처리를 생략한다.
+		BOOL isCtn = TRUE;
+		for (int idx = 0; idx < LEN_TEST_NBIOT_IMSI; idx++) {
+			if (!isdigit(*(p + idx))) {
+				isCtn = FALSE;
+			}
+		}
+		if (isCtn) {
+			for (int idx = 0; idx < LEN_TEST_NBIOT_IMSI; idx++) {
+				modemTestCtx.imsi[idx] = *(p + idx);
+			}
+		}
+	}
 
-#define PATTERN_ICCID     "+NCCID:"
-  if ((p = strstr(pStr, PATTERN_ICCID))) {
-    p += strlen(PATTERN_ICCID);
-    for (int idx = 0; idx < LEN_TEST_NBIOT_ICCID; idx++) {
-      if (*p >= '0' && *p <= '9') {
-        modemTestCtx.iccid[idx] = *p;
-      } else {
-        // 값이 연속된 19자리 숫자값이 아닌 경우 실패로 간주해야 한다.
-        memset(modemTestCtx.iccid, 0x00, sizeof(modemTestCtx.iccid));
-        modemTestCtx.iccid[0] = 'E';
-        modemTestCtx.iccid[1] = 'R';
-        modemTestCtx.iccid[2] = 'R';
-        break;
-      }
-      p++;
-    }
-  }
+#define PATTERN_ICCID "+NCCID:"
+	if ((p = strstr(pStr, PATTERN_ICCID))) {
+		p += strlen(PATTERN_ICCID);
+		for (int idx = 0; idx < LEN_TEST_NBIOT_ICCID; idx++) {
+			if (*p >= '0' && *p <= '9') {
+				modemTestCtx.iccid[idx] = *p;
+			} else {
+				// 값이 연속된 19자리 숫자값이 아닌 경우 실패로 간주해야 한다.
+				memset(modemTestCtx.iccid, 0x00,
+				       sizeof(modemTestCtx.iccid));
+				modemTestCtx.iccid[0] = 'E';
+				modemTestCtx.iccid[1] = 'R';
+				modemTestCtx.iccid[2] = 'R';
+				break;
+			}
+			p++;
+		}
+	}
 
 // Check default AT command response pattern
-#define PATTERN_ACK_OK    "OK"
-  if ((p = strstr(pStr, PATTERN_ACK_OK))) { modemTestCtx.isAcked = TRUE; }
+#define PATTERN_ACK_OK "OK"
+	if ((p = strstr(pStr, PATTERN_ACK_OK))) {
+		modemTestCtx.isAcked = TRUE;
+	}
 
 // Check error AT command response pattern
 #define PATTERN_ACK_ERROR "ERROR"
-  if ((p = strstr(pStr, PATTERN_ACK_ERROR))) { modemTestCtx.isError = TRUE; }
+	if ((p = strstr(pStr, PATTERN_ACK_ERROR))) {
+		modemTestCtx.isError = TRUE;
+	}
 
 #if defined(__MODEM_TPB23__)
 #define PATTERN_BIP_OK "+MBIPST:0"
-  if (p = strstr(pStr, PATTERN_BIP_OK)) { modemTestCtx.isBipOk = TRUE; }
+	if (p = strstr(pStr, PATTERN_BIP_OK)) {
+		modemTestCtx.isBipOk = TRUE;
+	}
 #endif
 }
 
 #endif
 
-void TEST_initModem() {
-  memset(&modemTestCtx, 0, sizeof(modemTestCtx));
-  MODEM_init(0xFF);
-  MODEM_turnOn();
-  MODEM_enable();
+void TEST_initModem()
+{
+	memset(&modemTestCtx, 0, sizeof(modemTestCtx));
+	MODEM_init(0xFF);
+	MODEM_turnOn();
+	MODEM_enable();
 }
 
-void TEST_modem() {
-  printf("===========================================\n");
-  printf("    AT command direct input mode \n");
-  printf("    (Use 'exit' to exit mode)  \n");
-  printf("    (Use  '?'   to show command list) \n");
-  printf("===========================================\n");
+void TEST_modem()
+{
+	printf("===========================================\n");
+	printf("    AT command direct input mode \n");
+	printf("    (Use 'exit' to exit mode)  \n");
+	printf("    (Use  '?'   to show command list) \n");
+	printf("===========================================\n");
 
-  modemTestCtx.isPrintOn = TRUE;
+	modemTestCtx.isPrintOn = TRUE;
 
-  // Console을 통해 Shell command를 받아 처리하므로
-  // 최대 길이는 Shell command buffer 최대 길이에 종속 된다. (+1 is for string
-  // end)
-  char shellCmdBuf[MAX_COLUMN + 1];
-  while (1) {
-    while (SHELL_gets(shellCmdBuf) <= 0)
-      ;
+	// Console을 통해 Shell command를 받아 처리하므로
+	// 최대 길이는 Shell command buffer 최대 길이에 종속 된다. (+1 is for string
+	// end)
+	char shellCmdBuf[MAX_COLUMN + 1];
+	while (1) {
+		while (SHELL_gets(shellCmdBuf) <= 0)
+			;
 
-    if (strcmp(shellCmdBuf, "exit") == 0) {
-      break;
-    } else if (strcmp(shellCmdBuf, "?") == 0) {
-      printAtCmdList();
-    } else {
-      sendToModem(shellCmdBuf);
-    }
-  }
+		if (strcmp(shellCmdBuf, "exit") == 0) {
+			break;
+		} else if (strcmp(shellCmdBuf, "?") == 0) {
+			printAtCmdList();
+		} else {
+			sendToModem(shellCmdBuf);
+		}
+	}
 
-  modemTestCtx.isPrintOn = FALSE;
+	modemTestCtx.isPrintOn = FALSE;
 #if NBIOT_DEVICE
-  resetModem();
+	resetModem();
 #endif
 }
 
-void TEST_modemResponse() {
-  char buf[LEN_MAX_MODEM_RX + 1];
-  memset(buf, 0, LEN_MAX_MODEM_RX + 1);
-  int len = UART_receive(UART_A2, buf, LEN_MAX_MODEM_RX);
-  if (modemTestCtx.isPrintOn &&
-      len > 1) {  // 무조건 '\0'이 할당되므로 메세지가 없더라도 len은 0보다 큼.
-    printf(TP_ANSI_FG_RED);
-    PRINT_string(buf, len);
-    printf(TP_ANSI_RESET);
-  }
+void TEST_modemResponse()
+{
+	char buf[LEN_MAX_MODEM_RX + 1];
+	memset(buf, 0, LEN_MAX_MODEM_RX + 1);
+	int len = UART_receive(UART_A2, buf, LEN_MAX_MODEM_RX);
+	if (modemTestCtx.isPrintOn &&
+	    len > 1) { // 무조건 '\0'이 할당되므로 메세지가 없더라도 len은 0보다 큼.
+		printf(TP_ANSI_FG_RED);
+		PRINT_string(buf, len);
+		printf(TP_ANSI_RESET);
+	}
 
-  // semco: REBOOT_CAUSE, solu-m: VERSION(debug=0), LOG Message(debug=1)
-  if (!modemTestCtx.isAlive) {
+	// semco: REBOOT_CAUSE, solu-m: VERSION(debug=0), LOG Message(debug=1)
+	if (!modemTestCtx.isAlive) {
 #if LORA_DEVICE
-    if (strstr(buf, "VERSION") || strstr(buf, "LOG Message")) {
-      modemTestCtx.isAlive = TRUE;
-    }
-#else  // NBIOT_DEVICE
-       // 기타 문제로 모듈이 지속적으로 리셋될 경우를 고려하여
-       // REBOOT이 발생될 경우 Flag 및 시간값 초기화.
-    if (strstr(buf, "REBOOT_CAUSE_")) {
-      modemTestCtx.isBootup = TRUE;
-      modemTestCtx.bootupMsec = TIMER_getMsec();
-    }
+		if (strstr(buf, "VERSION") || strstr(buf, "LOG Message")) {
+			modemTestCtx.isAlive = TRUE;
+		}
+#else // NBIOT_DEVICE                                                          \
+	// 기타 문제로 모듈이 지속적으로 리셋될 경우를 고려하여                \
+	// REBOOT이 발생될 경우 Flag 및 시간값 초기화.
+		if (strstr(buf, "REBOOT_CAUSE_")) {
+			modemTestCtx.isBootup = TRUE;
+			modemTestCtx.bootupMsec = TIMER_getMsec();
+		}
 
-    if (modemTestCtx.isBootup) {
-      // 리셋 후 부팅완료까지 5초가 필요하지만 'REBOOT' 메세지는
-      // 약 4초 후 발생하므로 실제 부팅 완료 까지 추가딜레이가 필요.
-      if (TIMER_getMsecDiff(modemTestCtx.bootupMsec) >= 1000) {
-        modemTestCtx.isAlive = TRUE;
+		if (modemTestCtx.isBootup) {
+			// 리셋 후 부팅완료까지 5초가 필요하지만 'REBOOT' 메세지는
+			// 약 4초 후 발생하므로 실제 부팅 완료 까지 추가딜레이가 필요.
+			if (TIMER_getMsecDiff(modemTestCtx.bootupMsec) >=
+			    1000) {
+				modemTestCtx.isAlive = TRUE;
 #if defined(__MODEM_BC95G__)
-        // BC95G는 BIP 동작 중에도 정상적으로 동작이 가능하므로 BIP체크 생략.
-        modemTestCtx.isBipOk = TRUE;
+				// BC95G는 BIP 동작 중에도 정상적으로 동작이 가능하므로 BIP체크 생략.
+				modemTestCtx.isBipOk = TRUE;
 #endif
-        // Alive 설정 후 AT command 전송.
-        sendToModem("AT+CFUN=0");
-      }
-    }
-    OSAL_startEventTimer(APP_getTaskId(), TEST_EVENT_MODEM_RX, 1000);
+				// Alive 설정 후 AT command 전송.
+				sendToModem("AT+CFUN=0");
+			}
+		}
+		OSAL_startEventTimer(APP_getTaskId(), TEST_EVENT_MODEM_RX,
+				     1000);
 #endif
-  } else {
+	} else {
 #if LORA_DEVICE
-    parseLoraModemResp(buf);
-#else  // NBIOT_DEVICE
-    parseNbiotModemResp(buf);
+		parseLoraModemResp(buf);
+#else // NBIOT_DEVICE
+		parseNbiotModemResp(buf);
 #endif
-  }
+	}
 }
 
-void TEST_pmodem() {
+void TEST_pmodem()
+{
 #if LORA_DEVICE
-  if (waitModemReady(1)) {
-#else  // NBIOT_DEVICE
-  if (waitModemReady(1) && waitModemBipOk(5)) {
+	if (waitModemReady(1)) {
+#else // NBIOT_DEVICE
+	if (waitModemReady(1) && waitModemBipOk(5)) {
 #endif
-    printf("tmodem OK\n");
-  } else {
-    printf("tmodem ERR\n");
-  }
+		printf("tmodem OK\n");
+	} else {
+		printf("tmodem ERR\n");
+	}
 }
 
 /*
@@ -460,109 +510,119 @@ void TEST_pmodem() {
  */
 #if LORA_DEVICE
 
-void TEST_prdeui() {
-  sendToModem("AT+DEUI");
-  if (waitModemAck(2) == FALSE) {
-    printf("trdeui ERR\n");
-  } else {
-    printf("trdeui %s\n", modemTestCtx.devEUI);
-  }
+void TEST_prdeui()
+{
+	sendToModem("AT+DEUI");
+	if (waitModemAck(2) == FALSE) {
+		printf("trdeui ERR\n");
+	} else {
+		printf("trdeui %s\n", modemTestCtx.devEUI);
+	}
 
-  // save devEui in flash
-  FLASH_readConfigInfo(&conf);
+	// save devEui in flash
+	FLASH_readConfigInfo(&conf);
 
-  for (int i = 0; i < 8; i++) {
-    conf.devEui[i] = MISC_asciiToBCD(modemTestCtx.devEUI[2 * i + 0],
-                                     modemTestCtx.devEUI[2 * i + 1]);
-  }
-  FLASH_saveConfigInfo(&conf);
+	for (int i = 0; i < 8; i++) {
+		conf.devEui[i] =
+			MISC_asciiToBCD(modemTestCtx.devEUI[2 * i + 0],
+					modemTestCtx.devEUI[2 * i + 1]);
+	}
+	FLASH_saveConfigInfo(&conf);
 }
 
-void TEST_pwdeui(char* deui) {
-  // By default,LoRa modem prohibit to write Device EUI
-  printf("tdeui ERR\n");
+void TEST_pwdeui(char *deui)
+{
+	// By default,LoRa modem prohibit to write Device EUI
+	printf("tdeui ERR\n");
 }
 
-void TEST_praeui() {
-  sendToModem("AT+AEUI");
-  if (waitModemAck(2) == FALSE) {
-    printf("traeui ERR\n");
-  } else {
-    printf("traeui %s\n", modemTestCtx.appEUI);
-  }
+void TEST_praeui()
+{
+	sendToModem("AT+AEUI");
+	if (waitModemAck(2) == FALSE) {
+		printf("traeui ERR\n");
+	} else {
+		printf("traeui %s\n", modemTestCtx.appEUI);
+	}
 }
 
-void TEST_pwaeui(char* aeui) {
-  if (strlen(aeui) != LEN_TEST_LORA_APPEUI) {
-    printf("traeui ERR\n");
-    return;
-  }
+void TEST_pwaeui(char *aeui)
+{
+	if (strlen(aeui) != LEN_TEST_LORA_APPEUI) {
+		printf("traeui ERR\n");
+		return;
+	}
 
-  // 9 is length of 'AT+AEUI ' and string end
-  char cmd[LEN_TEST_LORA_APPEUI + 9] = "";
-  snprintf(cmd, sizeof(cmd), "AT+AEUI %s", aeui);
+	// 9 is length of 'AT+AEUI ' and string end
+	char cmd[LEN_TEST_LORA_APPEUI + 9] = "";
+	snprintf(cmd, sizeof(cmd), "AT+AEUI %s", aeui);
 
-  sendToModem(cmd);
-  waitModem(500);
-  sendToModem("AT+SCFG");
-  waitModem(500);
+	sendToModem(cmd);
+	waitModem(500);
+	sendToModem("AT+SCFG");
+	waitModem(500);
 
-  TEST_praeui();
+	TEST_praeui();
 }
 
-void TEST_prakey() {
-  sendToModem("AT+AK");
-  if (waitModemAck(2) == FALSE) {
-    printf("trakey ERR\n");
-  } else {
-    printf("trakey %s\n", modemTestCtx.appKey);
-  }
+void TEST_prakey()
+{
+	sendToModem("AT+AK");
+	if (waitModemAck(2) == FALSE) {
+		printf("trakey ERR\n");
+	} else {
+		printf("trakey %s\n", modemTestCtx.appKey);
+	}
 }
 
-void TEST_pwakey(char* akey) {
-  if (strlen(akey) != LEN_TEST_LORA_APPKEY) {
-    printf("trakey ERR\n");
-    return;
-  }
+void TEST_pwakey(char *akey)
+{
+	if (strlen(akey) != LEN_TEST_LORA_APPKEY) {
+		printf("trakey ERR\n");
+		return;
+	}
 
-  // 7 is length of 'AT+AK ' and string end
-  char cmd[LEN_TEST_LORA_APPKEY + 7] = "";
-  snprintf(cmd, sizeof(cmd), "AT+AK %s", akey);
+	// 7 is length of 'AT+AK ' and string end
+	char cmd[LEN_TEST_LORA_APPKEY + 7] = "";
+	snprintf(cmd, sizeof(cmd), "AT+AK %s", akey);
 
-  sendToModem(cmd);
-  waitModem(500);
-  sendToModem("AT+SCFG");
-  waitModem(500);
+	sendToModem(cmd);
+	waitModem(500);
+	sendToModem("AT+SCFG");
+	waitModem(500);
 
-  TEST_prakey();
+	TEST_prakey();
 }
 
-BOOL TEST_writeAppKeyUsingDEUI() {
-  sendToModem("AT+DEUI");
-  waitModem(500);
+BOOL TEST_writeAppKeyUsingDEUI()
+{
+	sendToModem("AT+DEUI");
+	waitModem(500);
 
-  // 7 is length of 'AT+AK ' and string end
-  char modemTx[LEN_TEST_LORA_APPKEY + 7];
-  snprintf(modemTx, sizeof(modemTx), "AT+AK ");
+	// 7 is length of 'AT+AK ' and string end
+	char modemTx[LEN_TEST_LORA_APPKEY + 7];
+	snprintf(modemTx, sizeof(modemTx), "AT+AK ");
 
-  // Dev EUI를 AppKey로 변환 (Hex to ASCII)
-  for (int i = 0; i < LEN_TEST_LORA_DEVEUI; i++) {
-    snprintf(modemTx, sizeof(modemTx), "%s%x", modemTx, modemTestCtx.devEUI[i]);
-  }
+	// Dev EUI를 AppKey로 변환 (Hex to ASCII)
+	for (int i = 0; i < LEN_TEST_LORA_DEVEUI; i++) {
+		snprintf(modemTx, sizeof(modemTx), "%s%x", modemTx,
+			 modemTestCtx.devEUI[i]);
+	}
 
-  sendToModem(modemTx);
-  waitModem(500);
-  // Read AppKey가 기대값과 동일한지 확인.
-  if (memcmp(&modemTx[6], modemTestCtx.appKey, LEN_TEST_LORA_APPKEY) == 0) {
-    // Write한 AppKey 저장.
-    sendToModem("AT+SCFG");
-    waitModem(500);
-    return TRUE;
-  }
-  return FALSE;
+	sendToModem(modemTx);
+	waitModem(500);
+	// Read AppKey가 기대값과 동일한지 확인.
+	if (memcmp(&modemTx[6], modemTestCtx.appKey, LEN_TEST_LORA_APPKEY) ==
+	    0) {
+		// Write한 AppKey 저장.
+		sendToModem("AT+SCFG");
+		waitModem(500);
+		return TRUE;
+	}
+	return FALSE;
 }
 
-#endif  // LORA_DEVICE
+#endif // LORA_DEVICE
 
 /*
  ***************************************************************
@@ -571,166 +631,186 @@ BOOL TEST_writeAppKeyUsingDEUI() {
  */
 #if NBIOT_DEVICE
 
-void TEST_pwserver(char* ip, int port, char* serviceCode) {
-  FLASH_readConfigInfo(&conf);
+void TEST_pwserver(char *ip, int port, char *serviceCode)
+{
+	FLASH_readConfigInfo(&conf);
 
-  strcpy(conf.serverIp, ip);
-  conf.serverPort = port;
+	strcpy(conf.serverIp, ip);
+	conf.serverPort = port;
 
 #if NBIOT_DEVICE
-  int sc_len = sizeof(conf.serviceCode);
-  strncpy(conf.serviceCode, serviceCode, sc_len);
-  // 배열 마지막은 string처리를 위해 '0'으로 설정.
-  conf.serviceCode[sc_len - 1] = 0;
+	int sc_len = sizeof(conf.serviceCode);
+	strncpy(conf.serviceCode, serviceCode, sc_len);
+	// 배열 마지막은 string처리를 위해 '0'으로 설정.
+	conf.serviceCode[sc_len - 1] = 0;
 #endif
 
-  FLASH_saveConfigInfo(&conf);
+	FLASH_saveConfigInfo(&conf);
 
-  TEST_prserver();
+	TEST_prserver();
 }
 
-void TEST_prserver() {
+void TEST_prserver()
+{
 #if NBIOT_DEVICE
-  printf("trserver %s %d %s\n", conf.serverIp, conf.serverPort,
-         conf.serviceCode);
+	printf("trserver %s %d %s\n", conf.serverIp, conf.serverPort,
+	       conf.serviceCode);
 #else
-  printf("trserver %s %d NOTUSE\n", conf.serverIp, conf.serverPort);
+	printf("trserver %s %d NOTUSE\n", conf.serverIp, conf.serverPort);
 #endif
 }
 
-void TEST_pwfota(char* ip, int port, int interval) {
-  FLASH_readConfigInfo(&conf);
+void TEST_pwfota(char *ip, int port, int interval)
+{
+	FLASH_readConfigInfo(&conf);
 
-  strcpy(conf.fotaIp, ip);
-  conf.fotaPort     = port;
-  conf.fotaInterval = interval;
+	strcpy(conf.fotaIp, ip);
+	conf.fotaPort = port;
+	conf.fotaInterval = interval;
 
-  FLASH_saveConfigInfo(&conf);
+	FLASH_saveConfigInfo(&conf);
 
-  TEST_prfota();
+	TEST_prfota();
 }
 
-void TEST_prfota() {
-  printf("trfota %s %d %d\n", conf.fotaIp, conf.fotaPort, conf.fotaInterval);
+void TEST_prfota()
+{
+	printf("trfota %s %d %d\n", conf.fotaIp, conf.fotaPort,
+	       conf.fotaInterval);
 }
 
-void TEST_prnbid() {
-  BOOL isImeiOk  = FALSE;
-  BOOL isImsiOk  = FALSE;
-  BOOL isIccidOk = FALSE;
+void TEST_prnbid()
+{
+	BOOL isImeiOk = FALSE;
+	BOOL isImsiOk = FALSE;
+	BOOL isIccidOk = FALSE;
 
-  if (!waitModemBipOk(1)) {
-    // BIP 완료 전 "+CFUN=1"을 할경우 BIP가 진행되므로 완료 여부를 확인.
-    printf("trnbid ERR ERR ERR ERR\n");
-    return;
-  }
+	if (!waitModemBipOk(1)) {
+		// BIP 완료 전 "+CFUN=1"을 할경우 BIP가 진행되므로 완료 여부를 확인.
+		printf("trnbid ERR ERR ERR ERR\n");
+		return;
+	}
 
-  sendToModem("AT+CGSN=1");
-  isImeiOk = waitModemAck(2);
+	sendToModem("AT+CGSN=1");
+	isImeiOk = waitModemAck(2);
 
-  // USIM IMSI 및 ICCID 읽기의 경우 USIM이 없는 경우도 있으므로
-  // 아래와 같이 '+CFUN=1'이 성공했을 때만 시도한다.
-  sendToModem("AT+CFUN=1");
-  if (waitModemAck(4)) {
-    sendToModem("AT+CIMI");
-    isImsiOk = waitModemAck(2);
-    sendToModem("AT+NCCID");
-    isIccidOk = waitModemAck(2);
-  }
+	// USIM IMSI 및 ICCID 읽기의 경우 USIM이 없는 경우도 있으므로
+	// 아래와 같이 '+CFUN=1'이 성공했을 때만 시도한다.
+	sendToModem("AT+CFUN=1");
+	if (waitModemAck(4)) {
+		sendToModem("AT+CIMI");
+		isImsiOk = waitModemAck(2);
+		sendToModem("AT+NCCID");
+		isIccidOk = waitModemAck(2);
+	}
 
-  if (isImeiOk && isImsiOk && isIccidOk) {
+	if (isImeiOk && isImsiOk && isIccidOk) {
 #if NBIOT_DEVICE
-    char ctnStr[LEN_MODEM_CTN + 1];
-    snprintf(ctnStr, sizeof(ctnStr), "0%s", &modemTestCtx.imsi[5]);
+		char ctnStr[LEN_MODEM_CTN + 1];
+		snprintf(ctnStr, sizeof(ctnStr), "0%s", &modemTestCtx.imsi[5]);
 
-    char cseid[LEN_MODEM_EP_NAME + 1];
-    if (MODEM_makeCseID(conf.serviceCode, ctnStr, modemTestCtx.iccid, cseid,
-                        LEN_MODEM_EP_NAME + 1)) {
-      printf("trnbid %s %s %s %s\n", modemTestCtx.imei, modemTestCtx.imsi,
-             cseid, modemTestCtx.iccid);
-    } else {
-      printf("trnbid %s %s ERR %s\n", modemTestCtx.imei, modemTestCtx.imsi,
-             modemTestCtx.iccid);
-    }
+		char cseid[LEN_MODEM_EP_NAME + 1];
+		if (MODEM_makeCseID(conf.serviceCode, ctnStr,
+				    modemTestCtx.iccid, cseid,
+				    LEN_MODEM_EP_NAME + 1)) {
+			printf("trnbid %s %s %s %s\n", modemTestCtx.imei,
+			       modemTestCtx.imsi, cseid, modemTestCtx.iccid);
+		} else {
+			printf("trnbid %s %s ERR %s\n", modemTestCtx.imei,
+			       modemTestCtx.imsi, modemTestCtx.iccid);
+		}
 #else
-    printf("trnbid %s %s NOTUSE %s\n", modemTestCtx.imei, modemTestCtx.imsi,
-           modemTestCtx.iccid);
+		printf("trnbid %s %s NOTUSE %s\n", modemTestCtx.imei,
+		       modemTestCtx.imsi, modemTestCtx.iccid);
 #endif
-  } else {
-    printf("trnbid %s %s ERR %s\n", (isImeiOk) ? modemTestCtx.imei : "ERR",
-           (isImsiOk) ? modemTestCtx.imsi : "ERR",
-           (isIccidOk) ? modemTestCtx.iccid : "ERR");
-  }
+	} else {
+		printf("trnbid %s %s ERR %s\n",
+		       (isImeiOk) ? modemTestCtx.imei : "ERR",
+		       (isImsiOk) ? modemTestCtx.imsi : "ERR",
+		       (isIccidOk) ? modemTestCtx.iccid : "ERR");
+	}
 
-  if (isImeiOk) {  // IMEI 읽기 성공 시 Flash에 저장.
-    FLASH_readConfigInfo(&conf);
-    for (int i = 0; i < 8; i++) {
-      conf.imei[i] = MISC_asciiToBCD(modemTestCtx.imei[2 * i + 0],
-                                     modemTestCtx.imei[2 * i + 1]);
-    }
-    conf.imei[7] &= 0xf0;
-    FLASH_saveConfigInfo(&conf);
-  }
+	if (isImeiOk) { // IMEI 읽기 성공 시 Flash에 저장.
+		FLASH_readConfigInfo(&conf);
+		for (int i = 0; i < 8; i++) {
+			conf.imei[i] =
+				MISC_asciiToBCD(modemTestCtx.imei[2 * i + 0],
+						modemTestCtx.imei[2 * i + 1]);
+		}
+		conf.imei[7] &= 0xf0;
+		FLASH_saveConfigInfo(&conf);
+	}
 
-  sendToModem("AT+CFUN=0");
-  waitModem(500);
+	sendToModem("AT+CFUN=0");
+	waitModem(500);
 }
 
-void TEST_pnbctx() {
-  if (!waitModemReady(2)) {
-    // "테스트 준비중"을 확인 및 보고 해야하므로
-    // 테스트 시작 전 모뎀 READY 여부를 확인.
-    printf("tnbctx WAIT\n");
-    return;
-  }
-  waitModem(500);  // ready 후 시행하는 command 처리 대기시간.
+void TEST_pnbctx()
+{
+	if (!waitModemReady(2)) {
+		// "테스트 준비중"을 확인 및 보고 해야하므로
+		// 테스트 시작 전 모뎀 READY 여부를 확인.
+		printf("tnbctx WAIT\n");
+		return;
+	}
+	waitModem(500); // ready 후 시행하는 command 처리 대기시간.
 
-  BOOL result = FALSE;
-  // detach and full function disable
-  sendToModem("AT+CFUN=0");
-  result = waitModemAck(2);
-  if (!result) { goto PNBCTX_FINISH; }
+	BOOL result = FALSE;
+	// detach and full function disable
+	sendToModem("AT+CFUN=0");
+	result = waitModemAck(2);
+	if (!result) {
+		goto PNBCTX_FINISH;
+	}
 
-  // chage to Test Mode #1
-  sendToModem("AT+NRDTEST=8,0000400213020000");
-  result = waitModemAck(2);
-  if (!result) { goto PNBCTX_FINISH; }
+	// chage to Test Mode #1
+	sendToModem("AT+NRDTEST=8,0000400213020000");
+	result = waitModemAck(2);
+	if (!result) {
+		goto PNBCTX_FINISH;
+	}
 
-  // chage to Test Mode #2
-  sendToModem("AT+NRDTEST=8,0100400213020000");
-  result = waitModemAck(2);
-  if (!result) { goto PNBCTX_FINISH; }
+	// chage to Test Mode #2
+	sendToModem("AT+NRDTEST=8,0100400213020000");
+	result = waitModemAck(2);
+	if (!result) {
+		goto PNBCTX_FINISH;
+	}
 
-  // start 848.9MHz continuous Tx
-  sendToModem(
-      "AT+NRDTEST=240,"
-      "030040021302e800E0D44735A02F9932590A000000000000000000000200000000580200"
-      "0058020000580200000000000a00000080"
-      "02000000000000c8000000000000000000000000000000000000000a000000000000000b"
-      "0002000001000017000100000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "0000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "0000000000000000000000000000000000"
-      "0000000000000000000000000000000000011900100e000001010000");
-  result = waitModemAck(2);
-  if (!result) { goto PNBCTX_FINISH; }
+	// start 848.9MHz continuous Tx
+	sendToModem(
+		"AT+NRDTEST=240,"
+		"030040021302e800E0D44735A02F9932590A000000000000000000000200000000580200"
+		"0058020000580200000000000a00000080"
+		"02000000000000c8000000000000000000000000000000000000000a000000000000000b"
+		"0002000001000017000100000000000000"
+		"000000000000000000000000000000000000000000000000000000000000000000000000"
+		"0000000000000000000000000000000000"
+		"000000000000000000000000000000000000000000000000000000000000000000000000"
+		"0000000000000000000000000000000000"
+		"0000000000000000000000000000000000011900100e000001010000");
+	result = waitModemAck(2);
+	if (!result) {
+		goto PNBCTX_FINISH;
+	}
 
 PNBCTX_FINISH:
-  if (result) {
-    printf("tnbctx OK\n");
-    while (1) {
-      if (TEST_stop()) { break; }
-      MISC_delayMs(1);
-    }
-  } else {
-    printf("tnbctx ERR\n");
-  }
+	if (result) {
+		printf("tnbctx OK\n");
+		while (1) {
+			if (TEST_stop()) {
+				break;
+			}
+			MISC_delayMs(1);
+		}
+	} else {
+		printf("tnbctx ERR\n");
+	}
 
-  resetModem();
+	resetModem();
 }
 
-#endif  // NBIOT_DEIVCE
+#endif // NBIOT_DEIVCE
 
 // TODO : SKT 테스트 및  10초 주기 unconfirmed message 전송 기능. 추후 구현해야
 // 함. #if (FOR_SKT_TEST && PERIODIC_TX)

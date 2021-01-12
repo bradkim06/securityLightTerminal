@@ -47,37 +47,38 @@
 #define CC120X_SPI_MOSI_P3_PIN_BM BM(1)
 #define CC120X_SPI_MISO_P3_PIN_BM BM(2)
 #define CC120X_SPI_SCLK_P3_PIN_BM BM(3)
-#define CC120X_SPI_NSS_P3_PIN_BM  BM(0)
+#define CC120X_SPI_NSS_P3_PIN_BM BM(0)
 
-#define CC120X_SPI_NSS_LOW()            \
-  do {                                  \
-    P3SEL &= ~CC120X_SPI_NSS_P3_PIN_BM; \
-    P3DIR |= CC120X_SPI_NSS_P3_PIN_BM;  \
-    P3OUT &= ~CC120X_SPI_NSS_P3_PIN_BM; \
-  } while (0);
+#define CC120X_SPI_NSS_LOW()                                                   \
+	do {                                                                   \
+		P3SEL &= ~CC120X_SPI_NSS_P3_PIN_BM;                            \
+		P3DIR |= CC120X_SPI_NSS_P3_PIN_BM;                             \
+		P3OUT &= ~CC120X_SPI_NSS_P3_PIN_BM;                            \
+	} while (0);
 
-#define CC120X_SPI_NSS_HIGH()           \
-  do {                                  \
-    P3SEL &= ~CC120X_SPI_NSS_P3_PIN_BM; \
-    P3DIR |= CC120X_SPI_NSS_P3_PIN_BM;  \
-    P3OUT |= CC120X_SPI_NSS_P3_PIN_BM;  \
-  } while (0);
+#define CC120X_SPI_NSS_HIGH()                                                  \
+	do {                                                                   \
+		P3SEL &= ~CC120X_SPI_NSS_P3_PIN_BM;                            \
+		P3DIR |= CC120X_SPI_NSS_P3_PIN_BM;                             \
+		P3OUT |= CC120X_SPI_NSS_P3_PIN_BM;                             \
+	} while (0);
 
 typedef enum {
-  CC120X_SPI_MODE_0 = 0,
-  CC120X_SPI_MODE_1 = 1,
-  CC120X_SPI_MODE_2 = 2,
-  CC120X_SPI_MODE_3 = 3,
+	CC120X_SPI_MODE_0 = 0,
+	CC120X_SPI_MODE_1 = 1,
+	CC120X_SPI_MODE_2 = 2,
+	CC120X_SPI_MODE_3 = 3,
 } CC120X_SPI_MODE_t;
 
 /******************************************************************************
  * CC120X SPI FUNCTIONS
  */
-void cc120xSpiEnable(uint8 prescaler, CC120X_SPI_MODE_t mode) {
-  /* Keep peripheral in reset state*/
-  UCB0CTL1 |= UCSWRST;
+void cc120xSpiEnable(uint8 prescaler, CC120X_SPI_MODE_t mode)
+{
+	/* Keep peripheral in reset state*/
+	UCB0CTL1 |= UCSWRST;
 
-  /* Configuration
+	/* Configuration
    * -  8-bit
    * -  Master Mode
    * -  3-pin
@@ -90,92 +91,105 @@ void cc120xSpiEnable(uint8 prescaler, CC120X_SPI_MODE_t mode) {
    *    supported by the supported radios: this could be optimized and done
    *    after chip detect.
    */
-  UCB0CTL0 =
-      UCMST + UCSYNC + UCMODE_0 + UCMSB;  // CC1200 : MODE #0, KSHELL : MODE #2
-  switch (mode) {
-    case CC120X_SPI_MODE_0: UCB0CTL0 |= (UCCKPH); break;
-    case CC120X_SPI_MODE_1: /* Do not set */ break;
-    case CC120X_SPI_MODE_2: UCB0CTL0 |= (UCCKPH + UCCKPL); break;
-    case CC120X_SPI_MODE_3: UCB0CTL0 |= (UCCKPL); break;
-    default:
-      while (1)
-        ;
-  }
+	UCB0CTL0 = UCMST + UCSYNC + UCMODE_0 +
+		   UCMSB; // CC1200 : MODE #0, KSHELL : MODE #2
+	switch (mode) {
+	case CC120X_SPI_MODE_0:
+		UCB0CTL0 |= (UCCKPH);
+		break;
+	case CC120X_SPI_MODE_1: /* Do not set */
+		break;
+	case CC120X_SPI_MODE_2:
+		UCB0CTL0 |= (UCCKPH + UCCKPL);
+		break;
+	case CC120X_SPI_MODE_3:
+		UCB0CTL0 |= (UCCKPL);
+		break;
+	default:
+		while (1)
+			;
+	}
 
-  // Set source clock to SMCLK
-  UCB0CTL1 |= UCSSEL_2;
+	// Set source clock to SMCLK
+	UCB0CTL1 |= UCSSEL_2;
 
-  /* Configuring UCB0BR0
+	/* Configuring UCB0BR0
    * Set up spi clk to comply with the maximum spi clk speed for the radios
    * according to userguides. Takes the slowest spi clk into account.
    * SMCLK divide.
    */
-  UCB0BR0 = prescaler;  // no divide
-  UCB0BR1 = 0;
+	UCB0BR0 = prescaler; // no divide
+	UCB0BR1 = 0;
 
-  // MISO/MOSI/SCLK GPIO controlled by peripheral
-  P3SEL |= CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
-           CC120X_SPI_SCLK_P3_PIN_BM;
-  // NSS Output High for deactive slave
-  CC120X_SPI_NSS_HIGH();
+	// MISO/MOSI/SCLK GPIO controlled by peripheral
+	P3SEL |= CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
+		 CC120X_SPI_SCLK_P3_PIN_BM;
+	// NSS Output High for deactive slave
+	CC120X_SPI_NSS_HIGH();
 
-  /* Release for operation */
-  UCB0CTL1 &= ~UCSWRST;
+	/* Release for operation */
+	UCB0CTL1 &= ~UCSWRST;
 
-  return;
+	return;
 }
 
-void cc120xSpiDisable() {
-  P3SEL &= ~(CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
-             CC120X_SPI_SCLK_P3_PIN_BM);
-  P3DIR |= (CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
-            CC120X_SPI_SCLK_P3_PIN_BM);
-  P3OUT &= ~(CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
-             CC120X_SPI_SCLK_P3_PIN_BM);
+void cc120xSpiDisable()
+{
+	P3SEL &= ~(CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
+		   CC120X_SPI_SCLK_P3_PIN_BM);
+	P3DIR |= (CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
+		  CC120X_SPI_SCLK_P3_PIN_BM);
+	P3OUT &= ~(CC120X_SPI_MOSI_P3_PIN_BM + CC120X_SPI_MISO_P3_PIN_BM +
+		   CC120X_SPI_SCLK_P3_PIN_BM);
 
-  CC120X_SPI_NSS_LOW();
+	CC120X_SPI_NSS_LOW();
 
-  UCB0CTL1 |= UCSWRST;
+	UCB0CTL1 |= UCSWRST;
 }
 
-void cc120xSpiBegin() {
-  CC120X_SPI_NSS_LOW();
+void cc120xSpiBegin()
+{
+	CC120X_SPI_NSS_LOW();
 }
 
-void cc120xSpiEnd() {
-  CC120X_SPI_NSS_HIGH();
+void cc120xSpiEnd()
+{
+	CC120X_SPI_NSS_HIGH();
 }
 
-void cc120xSpiSend(uint8 data) {
-  while (!(UCB0IFG & UCTXIFG))
-    ;  // check Tx is ready
-  UCB0TXBUF = (data);
+void cc120xSpiSend(uint8 data)
+{
+	while (!(UCB0IFG & UCTXIFG))
+		; // check Tx is ready
+	UCB0TXBUF = (data);
 }
 
-void cc120xSpiWaitBusy() {
-  while (UCB0STAT & UCBUSY)
-    ;
+void cc120xSpiWaitBusy()
+{
+	while (UCB0STAT & UCBUSY)
+		;
 }
 
-uint8 cc120xSpiRecv() {
-  while (!(UCB0IFG & UCRXIFG))
-    ;  // check Rx is ready
-  UCB0IFG &= ~UCRXIFG;
+uint8 cc120xSpiRecv()
+{
+	while (!(UCB0IFG & UCRXIFG))
+		; // check Rx is ready
+	UCB0IFG &= ~UCRXIFG;
 
-  return (UCB0RXBUF);
+	return (UCB0RXBUF);
 }
 
 /******************************************************************************
  * CC120X DEFINE & MACRO
  */
-#define RADIO_BURST_ACCESS  0x40
+#define RADIO_BURST_ACCESS 0x40
 #define RADIO_SINGLE_ACCESS 0x00
-#define RADIO_READ_ACCESS   0x80
-#define RADIO_WRITE_ACCESS  0x00
+#define RADIO_READ_ACCESS 0x80
+#define RADIO_WRITE_ACCESS 0x00
 
 /* Bit fields in the chip status byte */
-#define STATUS_CHIP_RDYn_BM            0x80
-#define STATUS_STATE_BM                0x70
+#define STATUS_CHIP_RDYn_BM 0x80
+#define STATUS_STATE_BM 0x70
 #define STATUS_FIFO_BYTES_AVAILABLE_BM 0x0F
 
 /******************************************************************************
@@ -210,39 +224,41 @@ uint8 cc120xSpiRecv() {
  *
  * @return      void
  */
-static void cc120xRwBurstSingle(uint8 addr, uint8* pData, uint16 len) {
-  uint16 i;
-  /* Communicate len number of bytes: if RX - the procedure sends 0x00 to push
+static void cc120xRwBurstSingle(uint8 addr, uint8 *pData, uint16 len)
+{
+	uint16 i;
+	/* Communicate len number of bytes: if RX - the procedure sends 0x00 to push
    * bytes from slave*/
-  if (addr & RADIO_READ_ACCESS) {
-    if (addr & RADIO_BURST_ACCESS) {
-      for (i = 0; i < len; i++) {
-        cc120xSpiSend(
-            0); /* Possible to combining read and write as one access type */
-        cc120xSpiWaitBusy();
-        *pData = cc120xSpiRecv(); /* Store pData from last pData RX */
-        pData++;
-      }
-    } else {
-      cc120xSpiSend(0);
-      cc120xSpiWaitBusy();
-      *pData = cc120xSpiRecv();
-    }
-  } else {
-    if (addr & RADIO_BURST_ACCESS) {
-      /* Communicate len number of bytes: if TX - the procedure doesn't
+	if (addr & RADIO_READ_ACCESS) {
+		if (addr & RADIO_BURST_ACCESS) {
+			for (i = 0; i < len; i++) {
+				cc120xSpiSend(
+					0); /* Possible to combining read and write as one access type */
+				cc120xSpiWaitBusy();
+				*pData =
+					cc120xSpiRecv(); /* Store pData from last pData RX */
+				pData++;
+			}
+		} else {
+			cc120xSpiSend(0);
+			cc120xSpiWaitBusy();
+			*pData = cc120xSpiRecv();
+		}
+	} else {
+		if (addr & RADIO_BURST_ACCESS) {
+			/* Communicate len number of bytes: if TX - the procedure doesn't
        * overwrite pData */
-      for (i = 0; i < len; i++) {
-        cc120xSpiSend(*pData);
-        cc120xSpiWaitBusy();
-        pData++;
-      }
-    } else {
-      cc120xSpiSend(*pData);
-      cc120xSpiWaitBusy();
-    }
-  }
-  return;
+			for (i = 0; i < len; i++) {
+				cc120xSpiSend(*pData);
+				cc120xSpiWaitBusy();
+				pData++;
+			}
+		} else {
+			cc120xSpiSend(*pData);
+			cc120xSpiWaitBusy();
+		}
+	}
+	return;
 }
 
 /*******************************************************************************
@@ -266,24 +282,23 @@ static void cc120xRwBurstSingle(uint8 addr, uint8* pData, uint16 len) {
  *
  * @return      chip status
  */
-static rfStatus_t cc120xRead8bitReg(uint8  accessType,
-                                    uint8  addrByte,
-                                    uint8* pData,
-                                    uint16 len) {
-  uint8 readValue;
+static rfStatus_t cc120xRead8bitReg(uint8 accessType, uint8 addrByte,
+				    uint8 *pData, uint16 len)
+{
+	uint8 readValue;
 
-  cc120xSpiBegin();
-  while (P3IN & CC120X_SPI_MISO_P3_PIN_BM)
-    ;
-  /* send register address byte */
-  cc120xSpiSend(accessType | addrByte);
-  cc120xSpiWaitBusy();
-  /* Storing chip status */
-  readValue = cc120xSpiRecv();
-  cc120xRwBurstSingle(accessType | addrByte, pData, len);
-  cc120xSpiEnd();
-  /* return the status byte value */
-  return (readValue);
+	cc120xSpiBegin();
+	while (P3IN & CC120X_SPI_MISO_P3_PIN_BM)
+		;
+	/* send register address byte */
+	cc120xSpiSend(accessType | addrByte);
+	cc120xSpiWaitBusy();
+	/* Storing chip status */
+	readValue = cc120xSpiRecv();
+	cc120xRwBurstSingle(accessType | addrByte, pData, len);
+	cc120xSpiEnd();
+	/* return the status byte value */
+	return (readValue);
 }
 
 /******************************************************************************
@@ -307,28 +322,26 @@ static rfStatus_t cc120xRead8bitReg(uint8  accessType,
  *
  * @return      rfStatus_t
  */
-static rfStatus_t cc120xRead16bitReg(uint8  accessType,
-                                     uint8  extAddr,
-                                     uint8  regAddr,
-                                     uint8* pData,
-                                     uint8  len) {
-  uint8 readValue;
+static rfStatus_t cc120xRead16bitReg(uint8 accessType, uint8 extAddr,
+				     uint8 regAddr, uint8 *pData, uint8 len)
+{
+	uint8 readValue;
 
-  cc120xSpiBegin();
-  while (P3IN & CC120X_SPI_MISO_P3_PIN_BM)
-    ;
-  /* send extended address byte with access type bits set */
-  cc120xSpiSend(accessType | extAddr);
-  cc120xSpiWaitBusy();
-  /* Storing chip status */
-  readValue = cc120xSpiRecv();
-  cc120xSpiSend(regAddr);
-  cc120xSpiWaitBusy();
-  /* Communicate len number of bytes */
-  cc120xRwBurstSingle(accessType | extAddr, pData, len);
-  cc120xSpiEnd();
-  /* return the status byte value */
-  return (readValue);
+	cc120xSpiBegin();
+	while (P3IN & CC120X_SPI_MISO_P3_PIN_BM)
+		;
+	/* send extended address byte with access type bits set */
+	cc120xSpiSend(accessType | extAddr);
+	cc120xSpiWaitBusy();
+	/* Storing chip status */
+	readValue = cc120xSpiRecv();
+	cc120xSpiSend(regAddr);
+	cc120xSpiWaitBusy();
+	/* Communicate len number of bytes */
+	cc120xRwBurstSingle(accessType | extAddr, pData, len);
+	cc120xSpiEnd();
+	/* return the status byte value */
+	return (readValue);
 }
 
 /******************************************************************************
@@ -346,8 +359,9 @@ static rfStatus_t cc120xRead16bitReg(uint8  accessType,
  *
  * @return      void
  */
-void CC120X_init() {
-  cc120xSpiEnable(2, CC120X_SPI_MODE_0);
+void CC120X_init()
+{
+	cc120xSpiEnable(2, CC120X_SPI_MODE_0);
 }
 
 /*******************************************************************************
@@ -365,16 +379,17 @@ void CC120X_init() {
  *
  * @return      status byte
  */
-rfStatus_t CC120X_strobeCmd(uint8 cmd) {
-  uint8 rc;
-  cc120xSpiBegin();
-  while (P3IN & CC120X_SPI_MISO_P3_PIN_BM)
-    ;
-  cc120xSpiSend(cmd);
-  cc120xSpiWaitBusy();
-  rc = cc120xSpiRecv();
-  cc120xSpiEnd();
-  return (rc);
+rfStatus_t CC120X_strobeCmd(uint8 cmd)
+{
+	uint8 rc;
+	cc120xSpiBegin();
+	while (P3IN & CC120X_SPI_MISO_P3_PIN_BM)
+		;
+	cc120xSpiSend(cmd);
+	cc120xSpiWaitBusy();
+	rc = cc120xSpiRecv();
+	cc120xSpiEnd();
+	return (rc);
 }
 
 /******************************************************************************
@@ -394,24 +409,26 @@ rfStatus_t CC120X_strobeCmd(uint8 cmd) {
  *
  * @return      rfStatus_t
  */
-rfStatus_t CC120X_readReg(uint16 addr, uint8* pData, uint8 len) {
-  uint8 tempExt  = (uint8)(addr >> 8);
-  uint8 tempAddr = (uint8)(addr & 0x00FF);
-  uint8 rc;
+rfStatus_t CC120X_readReg(uint16 addr, uint8 *pData, uint8 len)
+{
+	uint8 tempExt = (uint8)(addr >> 8);
+	uint8 tempAddr = (uint8)(addr & 0x00FF);
+	uint8 rc;
 
-  /* Checking if this is a FIFO access -> returns chip not ready  */
-  if ((CC120X_SINGLE_TXFIFO <= tempAddr) && (tempExt == 0))
-    return STATUS_CHIP_RDYn_BM;
+	/* Checking if this is a FIFO access -> returns chip not ready  */
+	if ((CC120X_SINGLE_TXFIFO <= tempAddr) && (tempExt == 0))
+		return STATUS_CHIP_RDYn_BM;
 
-  /* Decide what register space is accessed */
-  if (!tempExt) {
-    rc = cc120xRead8bitReg((RADIO_BURST_ACCESS | RADIO_READ_ACCESS), tempAddr,
-                           pData, len);
-  } else if (tempExt == 0x2F) {
-    rc = cc120xRead16bitReg((RADIO_BURST_ACCESS | RADIO_READ_ACCESS), tempExt,
-                            tempAddr, pData, len);
-  }
-  return (rc);
+	/* Decide what register space is accessed */
+	if (!tempExt) {
+		rc = cc120xRead8bitReg((RADIO_BURST_ACCESS | RADIO_READ_ACCESS),
+				       tempAddr, pData, len);
+	} else if (tempExt == 0x2F) {
+		rc = cc120xRead16bitReg((RADIO_BURST_ACCESS |
+					 RADIO_READ_ACCESS),
+					tempExt, tempAddr, pData, len);
+	}
+	return (rc);
 }
 
 /******************************************************************************
@@ -431,24 +448,27 @@ rfStatus_t CC120X_readReg(uint16 addr, uint8* pData, uint8 len) {
  *
  * @return      rfStatus_t
  */
-rfStatus_t CC120X_writeReg(uint16 addr, uint8* pData, uint8 len) {
-  uint8 tempExt  = (uint8)(addr >> 8);
-  uint8 tempAddr = (uint8)(addr & 0x00FF);
-  uint8 rc;
+rfStatus_t CC120X_writeReg(uint16 addr, uint8 *pData, uint8 len)
+{
+	uint8 tempExt = (uint8)(addr >> 8);
+	uint8 tempAddr = (uint8)(addr & 0x00FF);
+	uint8 rc;
 
-  /* Checking if this is a FIFO access - returns chip not ready */
-  if ((CC120X_SINGLE_TXFIFO <= tempAddr) && (tempExt == 0))
-    return STATUS_CHIP_RDYn_BM;
+	/* Checking if this is a FIFO access - returns chip not ready */
+	if ((CC120X_SINGLE_TXFIFO <= tempAddr) && (tempExt == 0))
+		return STATUS_CHIP_RDYn_BM;
 
-  /* Decide what register space is accessed */
-  if (!tempExt) {
-    rc = cc120xRead8bitReg((RADIO_BURST_ACCESS | RADIO_WRITE_ACCESS), tempAddr,
-                           pData, len);
-  } else if (tempExt == 0x2F) {
-    rc = cc120xRead16bitReg((RADIO_BURST_ACCESS | RADIO_WRITE_ACCESS), tempExt,
-                            tempAddr, pData, len);
-  }
-  return (rc);
+	/* Decide what register space is accessed */
+	if (!tempExt) {
+		rc = cc120xRead8bitReg((RADIO_BURST_ACCESS |
+					RADIO_WRITE_ACCESS),
+				       tempAddr, pData, len);
+	} else if (tempExt == 0x2F) {
+		rc = cc120xRead16bitReg((RADIO_BURST_ACCESS |
+					 RADIO_WRITE_ACCESS),
+					tempExt, tempAddr, pData, len);
+	}
+	return (rc);
 }
 
 /*******************************************************************************
@@ -465,10 +485,11 @@ rfStatus_t CC120X_writeReg(uint16 addr, uint8* pData, uint8 len) {
  *
  * @return      rfStatus_t
  */
-rfStatus_t CC120X_writeTxFifo(uint8* pData, uint8 len) {
-  uint8 rc;
-  rc = cc120xRead8bitReg(0x00, CC120X_BURST_TXFIFO, pData, len);
-  return (rc);
+rfStatus_t CC120X_writeTxFifo(uint8 *pData, uint8 len)
+{
+	uint8 rc;
+	rc = cc120xRead8bitReg(0x00, CC120X_BURST_TXFIFO, pData, len);
+	return (rc);
 }
 
 /*******************************************************************************
@@ -485,10 +506,11 @@ rfStatus_t CC120X_writeTxFifo(uint8* pData, uint8 len) {
  *
  * @return      rfStatus_t
  */
-rfStatus_t CC120X_readRxFifo(uint8* pData, uint8 len) {
-  uint8 rc;
-  rc = cc120xRead8bitReg(0x00, CC120X_BURST_RXFIFO, pData, len);
-  return (rc);
+rfStatus_t CC120X_readRxFifo(uint8 *pData, uint8 len)
+{
+	uint8 rc;
+	rc = cc120xRead8bitReg(0x00, CC120X_BURST_RXFIFO, pData, len);
+	return (rc);
 }
 
 /******************************************************************************
@@ -514,8 +536,9 @@ rfStatus_t CC120X_readRxFifo(uint8* pData, uint8 len) {
  * @return  rfStatus_t
  *
  */
-rfStatus_t CC120X_getTxStatus(void) {
-  return (CC120X_strobeCmd(CC120X_SNOP));
+rfStatus_t CC120X_getTxStatus(void)
+{
+	return (CC120X_strobeCmd(CC120X_SNOP));
 }
 
 /******************************************************************************
@@ -544,6 +567,7 @@ rfStatus_t CC120X_getTxStatus(void) {
  * @return    rfStatus_t
  *
  */
-rfStatus_t CC120X_getRxStatus(void) {
-  return (CC120X_strobeCmd(CC120X_SNOP | RADIO_READ_ACCESS));
+rfStatus_t CC120X_getRxStatus(void)
+{
+	return (CC120X_strobeCmd(CC120X_SNOP | RADIO_READ_ACCESS));
 }
