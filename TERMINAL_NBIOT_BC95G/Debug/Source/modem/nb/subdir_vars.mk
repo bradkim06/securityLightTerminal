@@ -6,10 +6,10 @@ SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-C:/Users/User/workspace_v8/terminal/Source/modem/nb/at_cmd.c \
-C:/Users/User/workspace_v8/terminal/Source/modem/nb/message.c \
-C:/Users/User/workspace_v8/terminal/Source/modem/nb/modem.c \
-C:/Users/User/workspace_v8/terminal/Source/modem/nb/nbiot_bc95g.c 
+D:/terminal/Source/modem/nb/at_cmd.c \
+D:/terminal/Source/modem/nb/message.c \
+D:/terminal/Source/modem/nb/modem.c \
+D:/terminal/Source/modem/nb/nbiot_bc95g.c 
 
 C_DEPS += \
 ./Source/modem/nb/at_cmd.d \
@@ -36,9 +36,9 @@ C_DEPS__QUOTED += \
 "Source\modem\nb\nbiot_bc95g.d" 
 
 C_SRCS__QUOTED += \
-"C:/Users/User/workspace_v8/terminal/Source/modem/nb/at_cmd.c" \
-"C:/Users/User/workspace_v8/terminal/Source/modem/nb/message.c" \
-"C:/Users/User/workspace_v8/terminal/Source/modem/nb/modem.c" \
-"C:/Users/User/workspace_v8/terminal/Source/modem/nb/nbiot_bc95g.c" 
+"D:/terminal/Source/modem/nb/at_cmd.c" \
+"D:/terminal/Source/modem/nb/message.c" \
+"D:/terminal/Source/modem/nb/modem.c" \
+"D:/terminal/Source/modem/nb/nbiot_bc95g.c" 
 
 

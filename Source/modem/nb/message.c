@@ -409,6 +409,7 @@ static int insert_reset(NbiotReset_t *p)
 
 static int insert_tempData(uchar *p)
 {
+	//TODO insert_tempData
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
 	if (METER_isAllFF(pUnitData->meterData, 4)) { // meter down

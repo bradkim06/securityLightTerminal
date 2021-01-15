@@ -6,9 +6,9 @@ SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-C:/Users/User/workspace_v8/terminal/Source/test/modem_test.c \
-C:/Users/User/workspace_v8/terminal/Source/test/shell.c \
-C:/Users/User/workspace_v8/terminal/Source/test/test.c 
+D:/terminal/Source/test/modem_test.c \
+D:/terminal/Source/test/shell.c \
+D:/terminal/Source/test/test.c 
 
 C_DEPS += \
 ./Source/test/modem_test.d \
@@ -31,8 +31,8 @@ C_DEPS__QUOTED += \
 "Source\test\test.d" 
 
 C_SRCS__QUOTED += \
-"C:/Users/User/workspace_v8/terminal/Source/test/modem_test.c" \
-"C:/Users/User/workspace_v8/terminal/Source/test/shell.c" \
-"C:/Users/User/workspace_v8/terminal/Source/test/test.c" 
+"D:/terminal/Source/test/modem_test.c" \
+"D:/terminal/Source/test/shell.c" \
+"D:/terminal/Source/test/test.c" 
 
 

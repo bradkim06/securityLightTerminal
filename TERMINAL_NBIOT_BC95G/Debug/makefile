@@ -178,7 +178,7 @@ BIN_OUTPUTS__QUOTED += \
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "TERMINAL_NBIOT_BC95G.out"
+	@$(MAKE) --no-print-directory -Onone "TERMINAL_NBIOT_BC95G.out" secondary-outputs
 
 # Tool invocations
 TERMINAL_NBIOT_BC95G.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
@@ -202,6 +202,8 @@ clean:
 	-$(RM) "Source\app\alarm.d" "Source\app\app.d" "Source\app\flash.d" "Source\app\meter.d" "Source\app\metering.d" "Source\app\nfc_app.d" "Source\dev\battery.d" "Source\dev\flash_msp430.d" "Source\dev\lcd.d" "Source\dev\nfc.d" "Source\dev\rtc.d" "Source\dev\timer.d" "Source\dev\uart.d" "Source\main.d" "Source\misc\crc.d" "Source\misc\misc.d" "Source\misc\queue.d" "Source\modem\nb\at_cmd.d" "Source\modem\nb\message.d" "Source\modem\nb\modem.d" "Source\modem\nb\nbiot_bc95g.d" "Source\modem\nb\uuid\md5.d" "Source\modem\nb\uuid\uuid.d" "Source\osal\osal.d" "Source\osal\task_mgr.d" "Source\test\modem_test.d" "Source\test\shell.d" "Source\test\test.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
+
+secondary-outputs: $(BIN_OUTPUTS)
 
 .PHONY: all clean dependents
 .SECONDARY:

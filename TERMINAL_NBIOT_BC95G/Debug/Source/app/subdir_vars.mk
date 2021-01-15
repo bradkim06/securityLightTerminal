@@ -6,12 +6,12 @@ SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-C:/Users/User/workspace_v8/terminal/Source/app/alarm.c \
-C:/Users/User/workspace_v8/terminal/Source/app/app.c \
-C:/Users/User/workspace_v8/terminal/Source/app/flash.c \
-C:/Users/User/workspace_v8/terminal/Source/app/meter.c \
-C:/Users/User/workspace_v8/terminal/Source/app/metering.c \
-C:/Users/User/workspace_v8/terminal/Source/app/nfc_app.c 
+D:/terminal/Source/app/alarm.c \
+D:/terminal/Source/app/app.c \
+D:/terminal/Source/app/flash.c \
+D:/terminal/Source/app/meter.c \
+D:/terminal/Source/app/metering.c \
+D:/terminal/Source/app/nfc_app.c 
 
 C_DEPS += \
 ./Source/app/alarm.d \
@@ -46,11 +46,11 @@ C_DEPS__QUOTED += \
 "Source\app\nfc_app.d" 
 
 C_SRCS__QUOTED += \
-"C:/Users/User/workspace_v8/terminal/Source/app/alarm.c" \
-"C:/Users/User/workspace_v8/terminal/Source/app/app.c" \
-"C:/Users/User/workspace_v8/terminal/Source/app/flash.c" \
-"C:/Users/User/workspace_v8/terminal/Source/app/meter.c" \
-"C:/Users/User/workspace_v8/terminal/Source/app/metering.c" \
-"C:/Users/User/workspace_v8/terminal/Source/app/nfc_app.c" 
+"D:/terminal/Source/app/alarm.c" \
+"D:/terminal/Source/app/app.c" \
+"D:/terminal/Source/app/flash.c" \
+"D:/terminal/Source/app/meter.c" \
+"D:/terminal/Source/app/metering.c" \
+"D:/terminal/Source/app/nfc_app.c" 
 
 

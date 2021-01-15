@@ -1,172 +1,172 @@
 [
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/app/alarm.c.o   -c /home/bradkim06/workspace/terminal/Source/app/alarm.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/app/alarm.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/alarm.c.o   -c /mnt/d/terminal/Source/app/alarm.c",
+  "file": "/mnt/d/terminal/Source/app/alarm.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/app/app.c.o   -c /home/bradkim06/workspace/terminal/Source/app/app.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/app/app.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/app.c.o   -c /mnt/d/terminal/Source/app/app.c",
+  "file": "/mnt/d/terminal/Source/app/app.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/app/flash.c.o   -c /home/bradkim06/workspace/terminal/Source/app/flash.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/app/flash.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/flash.c.o   -c /mnt/d/terminal/Source/app/flash.c",
+  "file": "/mnt/d/terminal/Source/app/flash.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/app/meter.c.o   -c /home/bradkim06/workspace/terminal/Source/app/meter.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/app/meter.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/meter.c.o   -c /mnt/d/terminal/Source/app/meter.c",
+  "file": "/mnt/d/terminal/Source/app/meter.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/app/metering.c.o   -c /home/bradkim06/workspace/terminal/Source/app/metering.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/app/metering.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/metering.c.o   -c /mnt/d/terminal/Source/app/metering.c",
+  "file": "/mnt/d/terminal/Source/app/metering.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/app/nfc_app.c.o   -c /home/bradkim06/workspace/terminal/Source/app/nfc_app.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/app/nfc_app.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/app/nfc_app.c.o   -c /mnt/d/terminal/Source/app/nfc_app.c",
+  "file": "/mnt/d/terminal/Source/app/nfc_app.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/dev/battery.c.o   -c /home/bradkim06/workspace/terminal/Source/dev/battery.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/dev/battery.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c.o   -c /mnt/d/terminal/Source/build/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c",
+  "file": "/mnt/d/terminal/Source/build/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/dev/flash_msp430.c.o   -c /home/bradkim06/workspace/terminal/Source/dev/flash_msp430.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/dev/flash_msp430.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/dev/battery.c.o   -c /mnt/d/terminal/Source/dev/battery.c",
+  "file": "/mnt/d/terminal/Source/dev/battery.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/dev/lcd.c.o   -c /home/bradkim06/workspace/terminal/Source/dev/lcd.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/dev/lcd.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/dev/flash_msp430.c.o   -c /mnt/d/terminal/Source/dev/flash_msp430.c",
+  "file": "/mnt/d/terminal/Source/dev/flash_msp430.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/dev/nfc.c.o   -c /home/bradkim06/workspace/terminal/Source/dev/nfc.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/dev/nfc.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/dev/lcd.c.o   -c /mnt/d/terminal/Source/dev/lcd.c",
+  "file": "/mnt/d/terminal/Source/dev/lcd.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/dev/rtc.c.o   -c /home/bradkim06/workspace/terminal/Source/dev/rtc.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/dev/rtc.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/dev/nfc.c.o   -c /mnt/d/terminal/Source/dev/nfc.c",
+  "file": "/mnt/d/terminal/Source/dev/nfc.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/dev/timer.c.o   -c /home/bradkim06/workspace/terminal/Source/dev/timer.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/dev/timer.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/dev/rtc.c.o   -c /mnt/d/terminal/Source/dev/rtc.c",
+  "file": "/mnt/d/terminal/Source/dev/rtc.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/dev/uart.c.o   -c /home/bradkim06/workspace/terminal/Source/dev/uart.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/dev/uart.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/dev/timer.c.o   -c /mnt/d/terminal/Source/dev/timer.c",
+  "file": "/mnt/d/terminal/Source/dev/timer.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/main.c.o   -c /home/bradkim06/workspace/terminal/Source/main.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/main.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/dev/uart.c.o   -c /mnt/d/terminal/Source/dev/uart.c",
+  "file": "/mnt/d/terminal/Source/dev/uart.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/misc/crc.c.o   -c /home/bradkim06/workspace/terminal/Source/misc/crc.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/misc/crc.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/main.c.o   -c /mnt/d/terminal/Source/main.c",
+  "file": "/mnt/d/terminal/Source/main.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/misc/misc.c.o   -c /home/bradkim06/workspace/terminal/Source/misc/misc.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/misc/misc.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/misc/crc.c.o   -c /mnt/d/terminal/Source/misc/crc.c",
+  "file": "/mnt/d/terminal/Source/misc/crc.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/misc/queue.c.o   -c /home/bradkim06/workspace/terminal/Source/misc/queue.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/misc/queue.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/misc/misc.c.o   -c /mnt/d/terminal/Source/misc/misc.c",
+  "file": "/mnt/d/terminal/Source/misc/misc.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/modem/nb/at_cmd.c.o   -c /home/bradkim06/workspace/terminal/Source/modem/nb/at_cmd.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/modem/nb/at_cmd.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/misc/queue.c.o   -c /mnt/d/terminal/Source/misc/queue.c",
+  "file": "/mnt/d/terminal/Source/misc/queue.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/modem/nb/message.c.o   -c /home/bradkim06/workspace/terminal/Source/modem/nb/message.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/modem/nb/message.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/modem/nb/at_cmd.c.o   -c /mnt/d/terminal/Source/modem/nb/at_cmd.c",
+  "file": "/mnt/d/terminal/Source/modem/nb/at_cmd.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/modem/nb/modem.c.o   -c /home/bradkim06/workspace/terminal/Source/modem/nb/modem.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/modem/nb/modem.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/modem/nb/message.c.o   -c /mnt/d/terminal/Source/modem/nb/message.c",
+  "file": "/mnt/d/terminal/Source/modem/nb/message.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/modem/nb/nbiot_bc95g.c.o   -c /home/bradkim06/workspace/terminal/Source/modem/nb/nbiot_bc95g.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/modem/nb/nbiot_bc95g.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/modem/nb/modem.c.o   -c /mnt/d/terminal/Source/modem/nb/modem.c",
+  "file": "/mnt/d/terminal/Source/modem/nb/modem.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/modem/nb/nbiot_tpb23.c.o   -c /home/bradkim06/workspace/terminal/Source/modem/nb/nbiot_tpb23.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/modem/nb/nbiot_tpb23.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/modem/nb/nbiot_bc95g.c.o   -c /mnt/d/terminal/Source/modem/nb/nbiot_bc95g.c",
+  "file": "/mnt/d/terminal/Source/modem/nb/nbiot_bc95g.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/modem/nb/uuid/md5.c.o   -c /home/bradkim06/workspace/terminal/Source/modem/nb/uuid/md5.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/modem/nb/uuid/md5.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/modem/nb/nbiot_tpb23.c.o   -c /mnt/d/terminal/Source/modem/nb/nbiot_tpb23.c",
+  "file": "/mnt/d/terminal/Source/modem/nb/nbiot_tpb23.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/modem/nb/uuid/uuid.c.o   -c /home/bradkim06/workspace/terminal/Source/modem/nb/uuid/uuid.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/modem/nb/uuid/uuid.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/modem/nb/uuid/md5.c.o   -c /mnt/d/terminal/Source/modem/nb/uuid/md5.c",
+  "file": "/mnt/d/terminal/Source/modem/nb/uuid/md5.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/osal/osal.c.o   -c /home/bradkim06/workspace/terminal/Source/osal/osal.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/osal/osal.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/modem/nb/uuid/uuid.c.o   -c /mnt/d/terminal/Source/modem/nb/uuid/uuid.c",
+  "file": "/mnt/d/terminal/Source/modem/nb/uuid/uuid.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/osal/task_mgr.c.o   -c /home/bradkim06/workspace/terminal/Source/osal/task_mgr.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/osal/task_mgr.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/osal/osal.c.o   -c /mnt/d/terminal/Source/osal/osal.c",
+  "file": "/mnt/d/terminal/Source/osal/osal.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/slave/cc1200.c.o   -c /home/bradkim06/workspace/terminal/Source/slave/cc1200.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/slave/cc1200.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/osal/task_mgr.c.o   -c /mnt/d/terminal/Source/osal/task_mgr.c",
+  "file": "/mnt/d/terminal/Source/osal/task_mgr.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/slave/cc120x.c.o   -c /home/bradkim06/workspace/terminal/Source/slave/cc120x.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/slave/cc120x.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/slave/cc1200.c.o   -c /mnt/d/terminal/Source/slave/cc1200.c",
+  "file": "/mnt/d/terminal/Source/slave/cc1200.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/slave/slave_access.c.o   -c /home/bradkim06/workspace/terminal/Source/slave/slave_access.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/slave/slave_access.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/slave/cc120x.c.o   -c /mnt/d/terminal/Source/slave/cc120x.c",
+  "file": "/mnt/d/terminal/Source/slave/cc120x.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/test/modem_test.c.o   -c /home/bradkim06/workspace/terminal/Source/test/modem_test.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/test/modem_test.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/slave/slave_access.c.o   -c /mnt/d/terminal/Source/slave/slave_access.c",
+  "file": "/mnt/d/terminal/Source/slave/slave_access.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/test/rf_test.c.o   -c /home/bradkim06/workspace/terminal/Source/test/rf_test.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/test/rf_test.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/test/modem_test.c.o   -c /mnt/d/terminal/Source/test/modem_test.c",
+  "file": "/mnt/d/terminal/Source/test/modem_test.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/test/shell.c.o   -c /home/bradkim06/workspace/terminal/Source/test/shell.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/test/shell.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/test/rf_test.c.o   -c /mnt/d/terminal/Source/test/rf_test.c",
+  "file": "/mnt/d/terminal/Source/test/rf_test.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/Source/test/test.c.o   -c /home/bradkim06/workspace/terminal/Source/test/test.c",
-  "file": "/home/bradkim06/workspace/terminal/Source/test/test.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/test/shell.c.o   -c /mnt/d/terminal/Source/test/shell.c",
+  "file": "/mnt/d/terminal/Source/test/shell.c"
 },
 {
-  "directory": "/home/bradkim06/workspace/terminal/build",
-  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/c/Users/User/workspace_v8/terminal/Source -I/mnt/c/Users/User/workspace_v8/terminal/Source/app -I/mnt/c/Users/User/workspace_v8/terminal/Source/dev -I/mnt/c/Users/User/workspace_v8/terminal/Source/misc -I/mnt/c/Users/User/workspace_v8/terminal/Source/osal -I/mnt/c/Users/User/workspace_v8/terminal/Source/test -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb -I/mnt/c/Users/User/workspace_v8/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c.o   -c /home/bradkim06/workspace/terminal/build/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c",
-  "file": "/home/bradkim06/workspace/terminal/build/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c"
+  "directory": "/mnt/d/terminal/Source/build",
+  "command": "/usr/bin/cc -DDEBUG -DLORA_DEVICE=0 -DNBIOT_DEVICE=1 -DREPEATER_DEVICE=0 -D__MODEM_BC95G__ -D__MSP430F5419A__ -I/mnt/c/ti/ccsv8/ccs_base/msp430/include -I/mnt/c/ti/ccsv8/tools/compiler/ti-cgt-msp430_18.12.0.LTS/include -I/mnt/d/terminal/Source -I/mnt/d/terminal/Source/app -I/mnt/d/terminal/Source/dev -I/mnt/d/terminal/Source/misc -I/mnt/d/terminal/Source/osal -I/mnt/d/terminal/Source/test -I/mnt/d/terminal/Source/modem/nb -I/mnt/d/terminal/Source/modem/nb/uuid    -std=gnu99 -o CMakeFiles/App.dir/test/test.c.o   -c /mnt/d/terminal/Source/test/test.c",
+  "file": "/mnt/d/terminal/Source/test/test.c"
 }
 ]

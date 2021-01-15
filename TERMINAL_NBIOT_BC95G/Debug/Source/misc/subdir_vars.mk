@@ -6,9 +6,9 @@ SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-C:/Users/User/workspace_v8/terminal/Source/misc/crc.c \
-C:/Users/User/workspace_v8/terminal/Source/misc/misc.c \
-C:/Users/User/workspace_v8/terminal/Source/misc/queue.c 
+D:/terminal/Source/misc/crc.c \
+D:/terminal/Source/misc/misc.c \
+D:/terminal/Source/misc/queue.c 
 
 C_DEPS += \
 ./Source/misc/crc.d \
@@ -31,8 +31,8 @@ C_DEPS__QUOTED += \
 "Source\misc\queue.d" 
 
 C_SRCS__QUOTED += \
-"C:/Users/User/workspace_v8/terminal/Source/misc/crc.c" \
-"C:/Users/User/workspace_v8/terminal/Source/misc/misc.c" \
-"C:/Users/User/workspace_v8/terminal/Source/misc/queue.c" 
+"D:/terminal/Source/misc/crc.c" \
+"D:/terminal/Source/misc/misc.c" \
+"D:/terminal/Source/misc/queue.c" 
 
 

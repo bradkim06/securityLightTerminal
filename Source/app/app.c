@@ -393,10 +393,10 @@ void APP_init(uint8 taskId)
 	APP_showConfig(&conf);
 
 	if (conf.debugPrint == 0) {
-		printf("\n--console disabled--\n");
-		MISC_delayMs(2000);
-		PRINT_stop();
-		PRINT_disable();
+		/* printf("\n--console disabled--\n"); */
+		/* MISC_delayMs(2000); */
+		/* PRINT_stop(); */
+		/* PRINT_disable(); */
 	}
 
 	// Flash memory에 저장된 데이터 점검 및 프린트

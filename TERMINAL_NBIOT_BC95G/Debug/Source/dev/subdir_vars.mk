@@ -6,13 +6,13 @@ SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-C:/Users/User/workspace_v8/terminal/Source/dev/battery.c \
-C:/Users/User/workspace_v8/terminal/Source/dev/flash_msp430.c \
-C:/Users/User/workspace_v8/terminal/Source/dev/lcd.c \
-C:/Users/User/workspace_v8/terminal/Source/dev/nfc.c \
-C:/Users/User/workspace_v8/terminal/Source/dev/rtc.c \
-C:/Users/User/workspace_v8/terminal/Source/dev/timer.c \
-C:/Users/User/workspace_v8/terminal/Source/dev/uart.c 
+D:/terminal/Source/dev/battery.c \
+D:/terminal/Source/dev/flash_msp430.c \
+D:/terminal/Source/dev/lcd.c \
+D:/terminal/Source/dev/nfc.c \
+D:/terminal/Source/dev/rtc.c \
+D:/terminal/Source/dev/timer.c \
+D:/terminal/Source/dev/uart.c 
 
 C_DEPS += \
 ./Source/dev/battery.d \
@@ -51,12 +51,12 @@ C_DEPS__QUOTED += \
 "Source\dev\uart.d" 
 
 C_SRCS__QUOTED += \
-"C:/Users/User/workspace_v8/terminal/Source/dev/battery.c" \
-"C:/Users/User/workspace_v8/terminal/Source/dev/flash_msp430.c" \
-"C:/Users/User/workspace_v8/terminal/Source/dev/lcd.c" \
-"C:/Users/User/workspace_v8/terminal/Source/dev/nfc.c" \
-"C:/Users/User/workspace_v8/terminal/Source/dev/rtc.c" \
-"C:/Users/User/workspace_v8/terminal/Source/dev/timer.c" \
-"C:/Users/User/workspace_v8/terminal/Source/dev/uart.c" 
+"D:/terminal/Source/dev/battery.c" \
+"D:/terminal/Source/dev/flash_msp430.c" \
+"D:/terminal/Source/dev/lcd.c" \
+"D:/terminal/Source/dev/nfc.c" \
+"D:/terminal/Source/dev/rtc.c" \
+"D:/terminal/Source/dev/timer.c" \
+"D:/terminal/Source/dev/uart.c" 
 
 
