@@ -1,3 +1,7 @@
-/TERMINAL_NBIOT_BC95G/Debug
+/TERMINAL_NBIOT_BC95G/Debug/
+/build
+/.ccls-cache
+.svn
 .d
 .obj
+.raw
