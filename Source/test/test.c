@@ -42,18 +42,12 @@ BOOL TEST_checkTestMode()
 	// P1.0 --> if 0 with inernal pull-up, test mode
 	//          else normal mode
 
-	P1DIR |= BM(TEST_MODE_DETECT_P1_PIN);
-	P1REN |= BM(TEST_MODE_DETECT_P1_PIN);
-	P1OUT |= BM(TEST_MODE_DETECT_P1_PIN);
-
 	P1DIR &= ~BM(TEST_MODE_DETECT_P1_PIN);
+	P1REN &= ~BM(TEST_MODE_DETECT_P1_PIN);
 
-	MISC_delayUs(1); // specific case need this delay
+	MISC_delayUs(1000); // specific case need this delay
 
 	IsTestMode = (P1IN & BM(TEST_MODE_DETECT_P1_PIN)) ? FALSE : TRUE;
-
-	P1DIR |= BM(TEST_MODE_DETECT_P1_PIN);
-	P1OUT &= ~BM(TEST_MODE_DETECT_P1_PIN);
 
 	return IsTestMode;
 }
