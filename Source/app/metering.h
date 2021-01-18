@@ -274,7 +274,8 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
 BOOL METER_std_configRequest();
 BOOL METER_std_adjustReq(char *sn, uint8 caliber, uint8 maker, uint16 q3,
 			 uint16 qt, uint16 q2, uint16 q1);
-BOOL METER_std_adjustResp(StdAdjustResult_t *result);
+/* Comment METER_std_adjustResp */
+/* BOOL METER_std_adjustResp(StdAdjustResult_t *result); */
 BOOL METER_std_lcdTestReq();
 BOOL METER_std_lcdMarkReq(BOOL isMarkOn);
 

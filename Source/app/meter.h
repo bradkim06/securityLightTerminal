@@ -6,18 +6,18 @@
 //=======================================
 // Meter caliber type
 //=======================================
-#define MT_15mm 0x01
-#define MT_20mm 0x02
-#define MT_25mm 0x03
-#define MT_32mm 0x04
-#define MT_40mm 0x05
-#define MT_50mm 0x06
-#define MT_80mm 0x07
-#define MT_100mm 0x08
-#define MT_150mm 0x09
-#define MT_200mm 0x0A
-#define MT_250mm 0x0B
-#define MT_300mm 0x0C
+/* #define MT_15mm 0x01 */
+/* #define MT_20mm 0x02 */
+/* #define MT_25mm 0x03 */
+/* #define MT_32mm 0x04 */
+/* #define MT_40mm 0x05 */
+/* #define MT_50mm 0x06 */
+/* #define MT_80mm 0x07 */
+/* #define MT_100mm 0x08 */
+/* #define MT_150mm 0x09 */
+/* #define MT_200mm 0x0A */
+/* #define MT_250mm 0x0B */
+/* #define MT_300mm 0x0C */
 
 //=======================================
 // Water Meter Type

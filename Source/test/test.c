@@ -801,36 +801,37 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 		if (IsMeterTesting) {
 			MISC_delayMs(1);
 		} else {
-			StdAdjustResult_t result;
-			if (METER_std_adjustResp(&result)) {
-				printf("tmrsn %s %s %d %d ", sn,
-				       APP_getFwVer(conf.isUsingPF),
-				       conf.reportInterval, conf.meterInterval);
-				uint16 recv_q3, recv_qt, recv_q2, recv_q1;
-				recv_q3 = result.q3[0] | result.q3[1] << 8;
-				recv_qt = result.qt[0] | result.qt[1] << 8;
-				recv_q2 = result.q2[0] | result.q2[1] << 8;
-				recv_q1 = result.q1[0] | result.q1[1] << 8;
-				// 사실 40, 50mm은 소형/대형이 혼재하지만 따로 구분할 방법이 없어
-				// 50mm까진 소형으로 고려한다.
-				if (caliber > MT_50mm) {
-					printf("%d %d %d %d %d %d %d %d\n",
-					       result.caliber, recv_q3, recv_qt,
-					       recv_q2, recv_q1, result.maker,
-					       result.fwVersion,
-					       result.errorCode);
-				} else {
-					printf("%d %d.%d %d.%d %d.%d %d.%d %d %d %d\n",
-					       result.caliber, recv_q3 / 10,
-					       recv_q3 % 10, recv_qt / 10,
-					       recv_qt % 10, recv_q2 / 10,
-					       recv_q2 % 10, recv_q1 / 10,
-					       recv_q1 % 10, result.maker,
-					       result.fwVersion,
-					       result.errorCode);
-				}
-			}
-			break;
+			/* Comment metering test */
+			/* StdAdjustResult_t result; */
+			/* if (METER_std_adjustResp(&result)) { */
+			/* 	printf("tmrsn %s %s %d %d ", sn, */
+			/* 	       APP_getFwVer(conf.isUsingPF), */
+			/* 	       conf.reportInterval, conf.meterInterval); */
+			/* 	uint16 recv_q3, recv_qt, recv_q2, recv_q1; */
+			/* 	recv_q3 = result.q3[0] | result.q3[1] << 8; */
+			/* 	recv_qt = result.qt[0] | result.qt[1] << 8; */
+			/* 	recv_q2 = result.q2[0] | result.q2[1] << 8; */
+			/* 	recv_q1 = result.q1[0] | result.q1[1] << 8; */
+			/* 	// 사실 40, 50mm은 소형/대형이 혼재하지만 따로 구분할 방법이 없어 */
+			/* 	// 50mm까진 소형으로 고려한다. */
+			/* 	if (caliber > MT_50mm) { */
+			/* 		printf("%d %d %d %d %d %d %d %d\n", */
+			/* 		       result.caliber, recv_q3, recv_qt, */
+			/* 		       recv_q2, recv_q1, result.maker, */
+			/* 		       result.fwVersion, */
+			/* 		       result.errorCode); */
+			/* 	} else { */
+			/* 		printf("%d %d.%d %d.%d %d.%d %d.%d %d %d %d\n", */
+			/* 		       result.caliber, recv_q3 / 10, */
+			/* 		       recv_q3 % 10, recv_qt / 10, */
+			/* 		       recv_qt % 10, recv_q2 / 10, */
+			/* 		       recv_q2 % 10, recv_q1 / 10, */
+			/* 		       recv_q1 % 10, result.maker, */
+			/* 		       result.fwVersion, */
+			/* 		       result.errorCode); */
+			/* 	} */
+			/* } */
+			/* break; */
 		}
 	}
 	IsMeterTesting = FALSE;
@@ -853,80 +854,81 @@ void TEST_pmrsn(BOOL isJigTest)
 		if (IsMeterTesting) {
 			MISC_delayMs(1);
 		} else {
-			StdAdjustResult_t result;
-			if (METER_std_adjustResp(&result)) {
-				uint16 recv_q3, recv_qt, recv_q2, recv_q1;
-				recv_q3 = result.q3[0] | result.q3[1] << 8;
-				recv_qt = result.qt[0] | result.qt[1] << 8;
-				recv_q2 = result.q2[0] | result.q2[1] << 8;
-				recv_q1 = result.q1[0] | result.q1[1] << 8;
-				if (isJigTest) {
-					char serial[SERIAL_NUM_LEN + 1] = "";
-					memcpy(serial, conf.serialNum,
-					       SERIAL_NUM_LEN);
-					serial[SERIAL_NUM_LEN] = '\0';
+			/* Comment metering test */
+			/* StdAdjustResult_t result; */
+			/* if (METER_std_adjustResp(&result)) { */
+			/* 	uint16 recv_q3, recv_qt, recv_q2, recv_q1; */
+			/* 	recv_q3 = result.q3[0] | result.q3[1] << 8; */
+			/* 	recv_qt = result.qt[0] | result.qt[1] << 8; */
+			/* 	recv_q2 = result.q2[0] | result.q2[1] << 8; */
+			/* 	recv_q1 = result.q1[0] | result.q1[1] << 8; */
+			/* 	if (isJigTest) { */
+			/* 		char serial[SERIAL_NUM_LEN + 1] = ""; */
+			/* 		memcpy(serial, conf.serialNum, */
+			/* 		       SERIAL_NUM_LEN); */
+			/* 		serial[SERIAL_NUM_LEN] = '\0'; */
 
-					printf("tmrsn %s %s %d %d ", serial,
-					       APP_getFwVer(conf.isUsingPF),
-					       conf.reportInterval,
-					       conf.meterInterval);
-					// 사실 40, 50mm은 소형/대형이 혼재하지만 따로 구분할 방법이 없어
-					// 50mm까진 소형으로 고려한다.
-					if (result.caliber > MT_50mm) {
-						printf("%d %d %d %d %d %d %d %d\n",
-						       result.caliber, recv_q3,
-						       recv_qt, recv_q2,
-						       recv_q1, result.maker,
-						       result.fwVersion,
-						       result.errorCode);
-					} else {
-						printf("%d %d.%d %d.%d %d.%d %d.%d %d %d %d\n",
-						       result.caliber,
-						       recv_q3 / 10,
-						       recv_q3 % 10,
-						       recv_qt / 10,
-						       recv_qt % 10,
-						       recv_q2 / 10,
-						       recv_q2 % 10,
-						       recv_q1 / 10,
-						       recv_q1 % 10,
-						       result.maker,
-						       result.fwVersion,
-						       result.errorCode);
-					}
-				} else {
-					if (result.caliber > MT_50mm) {
-						printf("S/N(%02x%02x%02x%02x) F/W(%d) caliber(%02x) Q3(%d) Qt(%d) "
-						       "Q2(%d) Q1(%d)\n",
-						       result.serial[3],
-						       result.serial[2],
-						       result.serial[1],
-						       result.serial[0],
-						       result.fwVersion,
-						       result.caliber, recv_q3,
-						       recv_qt, recv_q2,
-						       recv_q1);
-					} else {
-						printf("S/N(%02x%02x%02x%02x) F/W(%d) caliber(%02x) Q3(%d.%d) "
-						       "Qt(%d.%d) Q2(%d.%d) Q1(%d.%d)\n",
-						       result.serial[3],
-						       result.serial[2],
-						       result.serial[1],
-						       result.serial[0],
-						       result.fwVersion,
-						       result.caliber,
-						       recv_q3 / 10,
-						       recv_q3 % 10,
-						       recv_qt / 10,
-						       recv_qt % 10,
-						       recv_q2 / 10,
-						       recv_q2 % 10,
-						       recv_q1 / 10,
-						       recv_q1 % 10);
-					}
-				}
-			}
-			break;
+			/* 		printf("tmrsn %s %s %d %d ", serial, */
+			/* 		       APP_getFwVer(conf.isUsingPF), */
+			/* 		       conf.reportInterval, */
+			/* 		       conf.meterInterval); */
+			/* 		// 사실 40, 50mm은 소형/대형이 혼재하지만 따로 구분할 방법이 없어 */
+			/* 		// 50mm까진 소형으로 고려한다. */
+			/* 		if (result.caliber > MT_50mm) { */
+			/* 			printf("%d %d %d %d %d %d %d %d\n", */
+			/* 			       result.caliber, recv_q3, */
+			/* 			       recv_qt, recv_q2, */
+			/* 			       recv_q1, result.maker, */
+			/* 			       result.fwVersion, */
+			/* 			       result.errorCode); */
+			/* 		} else { */
+			/* 			printf("%d %d.%d %d.%d %d.%d %d.%d %d %d %d\n", */
+			/* 			       result.caliber, */
+			/* 			       recv_q3 / 10, */
+			/* 			       recv_q3 % 10, */
+			/* 			       recv_qt / 10, */
+			/* 			       recv_qt % 10, */
+			/* 			       recv_q2 / 10, */
+			/* 			       recv_q2 % 10, */
+			/* 			       recv_q1 / 10, */
+			/* 			       recv_q1 % 10, */
+			/* 			       result.maker, */
+			/* 			       result.fwVersion, */
+			/* 			       result.errorCode); */
+			/* 		} */
+			/* 	} else { */
+			/* 		if (result.caliber > MT_50mm) { */
+			/* 			printf("S/N(%02x%02x%02x%02x) F/W(%d) caliber(%02x) Q3(%d) Qt(%d) " */
+			/* 			       "Q2(%d) Q1(%d)\n", */
+			/* 			       result.serial[3], */
+			/* 			       result.serial[2], */
+			/* 			       result.serial[1], */
+			/* 			       result.serial[0], */
+			/* 			       result.fwVersion, */
+			/* 			       result.caliber, recv_q3, */
+			/* 			       recv_qt, recv_q2, */
+			/* 			       recv_q1); */
+			/* 		} else { */
+			/* 			printf("S/N(%02x%02x%02x%02x) F/W(%d) caliber(%02x) Q3(%d.%d) " */
+			/* 			       "Qt(%d.%d) Q2(%d.%d) Q1(%d.%d)\n", */
+			/* 			       result.serial[3], */
+			/* 			       result.serial[2], */
+			/* 			       result.serial[1], */
+			/* 			       result.serial[0], */
+			/* 			       result.fwVersion, */
+			/* 			       result.caliber, */
+			/* 			       recv_q3 / 10, */
+			/* 			       recv_q3 % 10, */
+			/* 			       recv_qt / 10, */
+			/* 			       recv_qt % 10, */
+			/* 			       recv_q2 / 10, */
+			/* 			       recv_q2 % 10, */
+			/* 			       recv_q1 / 10, */
+			/* 			       recv_q1 % 10); */
+			/* 		} */
+			/* 	} */
+			/* } */
+			/* break; */
 		}
 	}
 	IsMeterTesting = FALSE;

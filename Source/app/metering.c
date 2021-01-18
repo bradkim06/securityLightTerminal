@@ -594,36 +594,37 @@ BOOL METER_std_adjustReq(char *sn, uint8 caliber, uint8 maker, uint16 q3,
 	return TRUE;
 }
 
+/* Comment METER_std_adjustResp */
 // Only STD, It is response of adjust request
-BOOL METER_std_adjustResp(StdAdjustResult_t *result)
-{
-	uint8 buf[LEN_MAX_METER_RX];
-	memset(buf, 0, LEN_MAX_METER_RX);
-	int len = UART_receive(UART_A3, buf, LEN_MAX_METER_RX);
+/* BOOL METER_std_adjustResp(StdAdjustResult_t *result) */
+/* { */
+/* 	uint8 buf[LEN_MAX_METER_RX]; */
+/* 	memset(buf, 0, LEN_MAX_METER_RX); */
+/* 	int len = UART_receive(UART_A3, buf, LEN_MAX_METER_RX); */
 
-	StdMeterAdjustResp_t *resp = (StdMeterAdjustResp_t *)buf;
+/* 	StdMeterAdjustResp_t *resp = (StdMeterAdjustResp_t *)buf; */
 
-	if (resp->stx1 != STD_RESP_START || resp->stx2 != STD_RESP_START) {
-		printf("invalid message : start bit is not matched\n");
-		return FAIL;
-	}
+/* 	if (resp->stx1 != STD_RESP_START || resp->stx2 != STD_RESP_START) { */
+/* 		printf("invalid message : start bit is not matched\n"); */
+/* 		return FAIL; */
+/* 	} */
 
-	int checksum = std_checksum((uint8 *)&resp->cfield,
-				    (int)(&resp->checksum - &resp->cfield));
-	if (resp->checksum != checksum) {
-		printf("invalid message : checksum fail\n");
-		return FAIL;
-	}
+/* 	int checksum = std_checksum((uint8 *)&resp->cfield, */
+/* 				    (int)(&resp->checksum - &resp->cfield)); */
+/* 	if (resp->checksum != checksum) { */
+/* 		printf("invalid message : checksum fail\n"); */
+/* 		return FAIL; */
+/* 	} */
 
-	if (resp->cfield == STD_METER_ADJUST_RESP) {
-		memcpy(result, (buf + (int)(&(resp->caliber) - &(resp->stx1))),
-		       sizeof(StdAdjustResult_t));
-	} else {
-		printf("invalid message, not matched 'cfield'\n");
-	}
+/* 	if (resp->cfield == STD_METER_ADJUST_RESP) { */
+/* 		memcpy(result, (buf + (int)(&(resp->caliber) - &(resp->stx1))), */
+/* 		       sizeof(StdAdjustResult_t)); */
+/* 	} else { */
+/* 		printf("invalid message, not matched 'cfield'\n"); */
+/* 	} */
 
-	return SUCCESS;
-}
+/* 	return SUCCESS; */
+/* } */
 
 /**
  * @brief Send STD request from NFC to meter(STD)
