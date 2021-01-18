@@ -417,14 +417,16 @@ void sendMeterReport()
 		p->oneMeter[0].flag = 1;
 	} else {
 		p->oneMeter[0].flag = 0;
-		memcpy(p->oneMeter[0].serial, METER_getSerialNum(), 4);
-		memcpy(p->oneMeter[0].value, tmpUnit->meterData, 4);
-		if (conf.meterType == W_STANDARD_D) {
-			p->oneMeter[0].status[0] = METER_getMeterCaliberDp();
-		} else {
-			p->oneMeter[0].status[0] = 0;
-		}
-		p->oneMeter[0].status[1] = tmpUnit->meterStatus;
+		//TODO nfc metering
+		//Comment nfc metering
+		/* memcpy(p->oneMeter[0].serial, METER_getSerialNum(), 4); */
+		/* memcpy(p->oneMeter[0].value, tmpUnit->meterData, 4); */
+		/* if (conf.meterType == W_STANDARD_D) { */
+		/* 	p->oneMeter[0].status[0] = METER_getMeterCaliberDp(); */
+		/* } else { */
+		/* 	p->oneMeter[0].status[0] = 0; */
+		/* } */
+		/* p->oneMeter[0].status[1] = tmpUnit->meterStatus; */
 	}
 
 	int msgLen = sizeof(NfcMeterReport_t) -
@@ -471,11 +473,13 @@ static void sendPeriodMeterReport(int numOfDatas, FlashMeterData_t *periodDatas)
 	uint8 blkOffset = 0;
 	p->meterInfo[blkOffset++] =
 		conf.meterType; // 계량기 타입 (0인 경우 STANDARD로 설정)
-	if (conf.meterType == W_STANDARD_D) {
-		p->meterInfo[blkOffset++] =
-			METER_getMeterCaliberDp(); // 구경(VIF, MSB 4bit), 소수점 위치(DIF, LSB
-		// 4bit)
-	}
+	//TODO nfc metering
+	/* Comment nfc metering */
+	/* if (conf.meterType == W_STANDARD_D) { */
+	/* 	p->meterInfo[blkOffset++] = */
+	/* 		METER_getMeterCaliberDp(); // 구경(VIF, MSB 4bit), 소수점 위치(DIF, LSB */
+	/* 	// 4bit) */
+	/* } */
 
 	if (!totalBlock) {
 		send(msg, sizeof(NfcPeriodMeterReport_t));
@@ -833,8 +837,7 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 		}
 #endif
 		uint8 mt = p->meterInfo[0].meterType;
-		if (mt != W_STANDARD_D && mt != W_SHINHAN_D &&
-		    mt != W_SHINHAN_D_BIG && mt != W_MNS_D) {
+		if (mt != E_METER) {
 			error = CONFIG_ERR_METER_TYPE;
 			break;
 		}
@@ -843,9 +846,6 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 			tconfig.meterType = mt;
 			changed = 1;
 		}
-
-		// TODO : Check meter port (ref. Need to implementation dynamic UART port
-		// assign) error =  CONFIG_ERR_METER_PORT;
 
 		error = 0;
 	} while (0);

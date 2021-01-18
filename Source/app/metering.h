@@ -195,89 +195,18 @@ typedef struct {
 	uint8 etx;
 } StdLcdMarkReq_t;
 
-//=======================================
-// ONETL METER MSG Á¤ÀÇ
-//=======================================
-// Meter message ID
-#define ONETL_ID_READ_METER 0xA5 // Only for Calorie Meter
-#define ONETL_ID_READ_ST_RT 0x5F // Only for Calorie Meter
-#define ONETL_ID_READ_FLOW 0x5D // Common request message
-#define ONETL_ID_READ_TOTAL 0xAA // Only for Calorie Meter
-
-// Meter address
-#define ONETL_W_METER_ADDR 0x02 // Water Meter address
-#define ONETL_H_METER_ADDR 0x03 // Hot water Meter address
-#define ONETL_G_METER_ADDR 0x04 // GAS Meter address
-#define ONETL_C_METER_ADDR 0x05 // Calorie Meter address
-
-// frame delimiter (terminal --> meter)
-#define ONETL_REQ_STX 0xE1
-#define ONETL_REQ_ETX 0xF0
-
-// frame delimiter (meter --> terminal)
-#define ONETL_RESP_STX 0xE9
-#define ONETL_RESP_ETX 0xF0
-
-// Battery status
-#define ONETL_STATUS_BATT_EMPTY 0x00
-#define ONETL_STATUS_BATT_LOW 0x01
-#define ONETL_STATUS_BATT_FULL 0x02
-
-// BCC AND operatin constant
-#define ONETL_BCC_AND_CONSTANT 0x7F
-
-typedef struct {
-	uint8 stx;
-	uint8 id;
-	uint8 len;
-	uint8 address;
-} OntelHeader_t;
-
-typedef struct {
-	uint8 stx;
-	uint8 id; // STD_METER_DATA_REQ
-	uint8 len;
-	uint8 address;
-	uint8 bcc;
-	uint8 etx;
-} OntelReq_t;
-
-typedef struct {
-	uint8 stx;
-	uint8 id;
-	uint8 len;
-	uint8 address;
-	uint8 serial[4];
-	uint8 meterValue[5];
-	uint8 status;
-	uint8 bcc;
-	uint8 etx;
-} OntelFlowResp_t;
-
-typedef struct {
-	uint8 stx;
-	uint8 id;
-	uint8 len;
-	uint8 address;
-	uint8 serial[4];
-	uint8 meterValue[5];
-	uint8 st[2];
-	uint8 rt[2];
-	uint8 flowValue[5];
-	uint8 status;
-	uint8 bcc;
-	uint8 etx;
-} OntelTotalResp_t;
-
 BOOL METER_sendRequest(uint8 meterType);
 BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
-BOOL METER_std_configRequest();
-BOOL METER_std_adjustReq(char *sn, uint8 caliber, uint8 maker, uint16 q3,
-			 uint16 qt, uint16 q2, uint16 q1);
+/* Comment METER_std_configRequest */
+/* BOOL METER_std_configRequest(); */
+/* Comment METER_std_adjustReq */
+/* BOOL METER_std_adjustReq(char *sn, uint8 caliber, uint8 maker, uint16 q3, */
+/* 			 uint16 qt, uint16 q2, uint16 q1); */
 /* Comment METER_std_adjustResp */
 /* BOOL METER_std_adjustResp(StdAdjustResult_t *result); */
 BOOL METER_std_lcdTestReq();
-BOOL METER_std_lcdMarkReq(BOOL isMarkOn);
+/* Comment METER_std_lcdMarkReq */
+/* BOOL METER_std_lcdMarkReq(BOOL isMarkOn); */
 
 void METER_enable(uint8 meterType);
 void METER_disable();

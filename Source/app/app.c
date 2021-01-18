@@ -657,21 +657,8 @@ static void meteringTimeout()
 		Metering.success = 0;
 	} else {
 		if (--Metering.nRetry > 0) {
-			MISC_delayMs(
-				100); // 약간의 시간 gap을 준 뒤 재검침 시도
-
-			if (Metering.nRetry == 1 &&
-			    (Metering.type == IMMEDIATE_METERING ||
-			     Metering.type == IMMEDIATE_METERING_FOR_REPORT)) {
-				// 마지막 검침에서 미터 타입을 바꾸어 한 번 더 시도함.
-				if (Metering.meterType == W_STANDARD_D) {
-					Metering.meterType = W_SHINHAN_D;
-				} else if (Metering.meterType == W_SHINHAN_D ||
-					   Metering.meterType ==
-						   W_SHINHAN_D_BIG) {
-					Metering.meterType = W_STANDARD_D;
-				}
-			}
+			// 약간의 시간 gap을 준 뒤 재검침 시도
+			MISC_delayMs(100);
 			METER_sendRequest(Metering.meterType);
 			OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT,
 					     (uint32)1500);

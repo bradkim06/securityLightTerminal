@@ -58,38 +58,8 @@ char *METER_getMeterName(int meterType)
 {
 	char *name = "Unknown";
 	switch (meterType) {
-	case W_STANDARD_D:
-		name = "W_STD";
-		break;
-	case W_SHINHAN_D:
-		name = "W_SH";
-		break;
-	case W_SHINHAN_D_BIG:
-		name = "W_SH_B";
-		break;
-	case W_MNS_D:
-		name = "W_MNS";
-		break;
-	case W_ONETL_D:
-		name = "W_ONETL";
-		break;
-	case G_STANDARD_D:
-		name = "G_STD";
-		break;
-	case G_ONETL_D:
-		name = "G_ONETL";
-		break;
-	case C_STANDARD_D:
-		name = "C_STD";
-		break;
-	case C_ONETL_D:
-		name = "C_ONETL";
-		break;
-	case H_STANDARD_D:
-		name = "HW_STD";
-		break;
-	case H_ONETL_D:
-		name = "HW_ONETL";
+	case E_METER:
+		name = "E_STD";
 		break;
 	}
 	return name;

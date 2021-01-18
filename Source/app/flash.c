@@ -156,7 +156,7 @@ static void readConfig(FlashConfig_t *pInfo)
 	} else {
 		printf("Config: both side are false\n");
 		memcpy((uint8 *)pInfo, (uint8 *)&info_a, sizeof(FlashConfig_t));
-		pInfo->meterType = W_STANDARD_D;
+		pInfo->meterType = E_METER;
 		pInfo->meterInterval = 1;
 		pInfo->reportInterval = 6;
 		/* Remove sleepMode */

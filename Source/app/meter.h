@@ -20,25 +20,30 @@
 /* #define MT_300mm 0x0C */
 
 //=======================================
+// Electric Meter Type
+//=======================================
+#define E_METER 0x01
+
+//=======================================
 // Water Meter Type
 //=======================================
-#define W_STANDARD_D 0x01
-#define W_HITEC_D 0x10
-#define W_SHINHAN_D 0x20
-#define W_SHINHAN_D_BIG 0x22
-#define W_MNS_D 0x30
-#define W_PRIMO 0x40
-#define W_BADGER 0x42
-#define W_ONETL_D 0x50
+/* #define W_STANDARD_D 0x01 */
+/* #define W_HITEC_D 0x10 */
+/* #define W_SHINHAN_D 0x20 */
+/* #define W_SHINHAN_D_BIG 0x22 */
+/* #define W_MNS_D 0x30 */
+/* #define W_PRIMO 0x40 */
+/* #define W_BADGER 0x42 */
+/* #define W_ONETL_D 0x50 */
 
-#define W_PULSE_1000L 0x71
-#define W_PULSE_500L 0x72
-#define W_PULSE_100L 0x73
-#define W_PULSE_50L 0x74
-#define W_PULSE_10L 0x75
-#define W_PULSE_5L 0x76
-#define W_PULSE_1L 0x77
-#define W_PULSE_05L 0x78
+/* #define W_PULSE_1000L 0x71 */
+/* #define W_PULSE_500L 0x72 */
+/* #define W_PULSE_100L 0x73 */
+/* #define W_PULSE_50L 0x74 */
+/* #define W_PULSE_10L 0x75 */
+/* #define W_PULSE_5L 0x76 */
+/* #define W_PULSE_1L 0x77 */
+/* #define W_PULSE_05L 0x78 */
 
 //=======================================
 // Gas Meter Type

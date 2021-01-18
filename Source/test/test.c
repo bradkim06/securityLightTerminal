@@ -321,31 +321,10 @@ void TEST_readMeter(int type)
 {
 	int meterType;
 	if (type == 1) {
-		meterType = W_STANDARD_D;
-	} else if (type == 2) {
-		meterType = W_SHINHAN_D;
-	} else if (type == 3) {
-		meterType = W_SHINHAN_D_BIG;
-	} else if (type == 4) {
-		meterType = W_MNS_D;
-	} else if (type == 5) {
-		meterType = C_ONETL_D;
-	} else if (type == 6) {
-		meterType = W_ONETL_D;
-	} else if (type == 7) {
-		meterType = G_ONETL_D;
-	} else if (type == 8) {
-		meterType = H_ONETL_D;
+		meterType = E_METER;
 	} else {
 		printf("Meter type error, see below\n");
-		printf(" 1 : Water STD\n");
-		printf(" 2 : Water SH\n");
-		printf(" 3 : Water SH Big\n");
-		printf(" 4 : Water MNS\n");
-		printf(" 5 : Calorie OneTL\n");
-		printf(" 6 : Water OneTL\n");
-		printf(" 7 : Gas OneTL\n");
-		printf(" 8 : HotWater OneTL\n\n");
+		printf(" 1 : Electric STD\n");
 		return;
 	}
 
@@ -373,27 +352,7 @@ void TEST_readMeter(int type)
 		} else {
 			result = METER_recvResponse(meterType, &unit);
 		}
-
-		if (meterType == C_ONETL_D) {
-			printf_ts(
-				"[%s] try:%d result:%s flow:%02x%02x%02x%02x "
-				"data:%02x%02x%02x%02x(ST:%02d.%02d/RT:%02d.%02d)\n",
-				METER_getMeterName(meterType), nLoop,
-				((result == SUCCESS) ? "pass" : "fail"),
-				unit.flowData[0], unit.flowData[1],
-				unit.flowData[2], unit.flowData[3],
-				unit.meterData[0], unit.meterData[1],
-				unit.meterData[2], unit.meterData[3],
-				unit.st[0], unit.st[1], unit.rt[0], unit.rt[1]);
-		} else {
-			printf_ts(
-				"[%s] try:%d result:%s data:%02x%02x%02x%02x(%02x)\n",
-				METER_getMeterName(meterType), nLoop,
-				((result == SUCCESS) ? "pass" : "fail"),
-				unit.meterData[0], unit.meterData[1],
-				unit.meterData[2], unit.meterData[3],
-				unit.meterStatus);
-		}
+		//TODO Print Result readMeter
 	}
 
 TEST_RMETER_FINISH:
@@ -483,7 +442,8 @@ void TEST_writeMeter(char *valueStr)
 	}
 	printf("\n");
 
-	METER_enable(W_STANDARD_D);
+	/* Comment METER_enable() */
+	/* METER_enable(W_STANDARD_D); */
 	MISC_delayMs(20);
 	UART_send(UART_A3, &txMsg, sizeof(set_meter_value_t), FALSE);
 
@@ -610,9 +570,10 @@ void TEST_lcd()
 
 void TEST_meterLCD()
 {
-	if (METER_std_lcdTestReq()) {
-		printf("ACK\n");
-	}
+	/* Comment METER_std_lcdTestReq() */
+	/* if (METER_std_lcdTestReq()) { */
+	/* 	printf("ACK\n"); */
+	/* } */
 }
 
 void TEST_sleepMode(int flag)
@@ -672,31 +633,10 @@ void TEST_setMeterType(int type)
 	FLASH_readConfigInfo(&conf);
 
 	if (type == 1) {
-		conf.meterType = W_STANDARD_D;
-	} else if (type == 2) {
-		conf.meterType = W_SHINHAN_D;
-	} else if (type == 3) {
-		conf.meterType = W_SHINHAN_D_BIG;
-	} else if (type == 4) {
-		conf.meterType = W_MNS_D;
-	} else if (type == 5) {
-		conf.meterType = C_ONETL_D;
-	} else if (type == 6) {
-		conf.meterType = W_ONETL_D;
-	} else if (type == 7) {
-		conf.meterType = G_ONETL_D;
-	} else if (type == 8) {
-		conf.meterType = H_ONETL_D;
+		conf.meterType = E_METER;
 	} else {
 		printf("Meter type error, see below\n");
 		printf(" 1 : Water STD\n");
-		printf(" 2 : Water SH\n");
-		printf(" 3 : Water SH Big\n");
-		printf(" 4 : Water MNS\n");
-		printf(" 5 : Calorie OneTL\n");
-		printf(" 6 : Water OneTL\n");
-		printf(" 7 : Gas OneTL\n");
-		printf(" 8 : HotWater OneTL\n\n");
 		return;
 	}
 
@@ -789,10 +729,11 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 	meter_sn[2] = MISC_asciiToBCD(sn[6], sn[7]);
 	meter_sn[1] = MISC_asciiToBCD(sn[8], sn[9]);
 	meter_sn[0] = MISC_asciiToBCD(sn[10], sn[11]);
-	if (METER_std_adjustReq(meter_sn, caliber, maker, q3, qt, q2, q1) !=
-	    TRUE) {
-		return;
-	}
+	/* Comment METER_std_adjustReq */
+	/* if (METER_std_adjustReq(meter_sn, caliber, maker, q3, qt, q2, q1) != */
+	/*     TRUE) { */
+	/* 	return; */
+	/* } */
 
 	IsMeterTesting = TRUE;
 	uint32 ms = TIMER_getMsec();
@@ -843,9 +784,10 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 
 void TEST_pmrsn(BOOL isJigTest)
 {
-	if (METER_std_configRequest() != TRUE) {
-		return;
-	}
+	/* Comment METER_std_configRequest */
+	/* if (METER_std_configRequest() != TRUE) { */
+	/* 	return; */
+	/* } */
 
 	IsMeterTesting = TRUE;
 	uint32 ms = TIMER_getMsec();
