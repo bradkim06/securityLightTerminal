@@ -496,7 +496,9 @@ void TEST_lpm3()
 	printf("ACK\n");
 
 	FLASH_readConfigInfo(&conf);
-	conf.sleepMode = 1;
+
+	/* Comment config sleepMode */
+	/* conf.sleepMode = 1; */
 	FLASH_saveConfigInfo(&conf);
 
 	METER_disable();
@@ -533,7 +535,9 @@ void TEST_lpm2()
 	printf("ACK\n");
 
 	FLASH_readConfigInfo(&conf);
-	conf.sleepMode = 1;
+
+	/* Comment config sleepMode */
+	/* conf.sleepMode = 1; */
 	FLASH_saveConfigInfo(&conf);
 
 	METER_disable();
@@ -597,17 +601,18 @@ void TEST_meterLCD()
 
 void TEST_sleepMode(int flag)
 {
-	if (flag != 0xff) {
-		FLASH_readConfigInfo(&conf);
-		conf.sleepMode = flag ? 1 : 0;
-		FLASH_saveConfigInfo(&conf);
-	}
+	/* Comment config sleepMode */
+	/* if (flag != 0xff) { */
+	/* 	FLASH_readConfigInfo(&conf); */
+	/* 	conf.sleepMode = flag ? 1 : 0; */
+	/* 	FLASH_saveConfigInfo(&conf); */
+	/* } */
 
-	if (conf.sleepMode) {
-		printf("sleep mode\n");
-	} else {
-		printf("active mode\n");
-	}
+	/* if (conf.sleepMode) { */
+	/* 	printf("sleep mode\n"); */
+	/* } else { */
+	/* 	printf("active mode\n"); */
+	/* } */
 }
 
 void TEST_riCtrlMode(int flag)

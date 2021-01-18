@@ -221,11 +221,12 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 
 	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
 
-	if (conf.sleepMode) {
-		p->sleepMode = SLEEP_MODE_SLEEP;
-	} else {
-		p->sleepMode = SLEEP_MODE_NORMAL;
-	}
+	/* Comment sleepMode */
+	/* if (conf.sleepMode) { */
+	/* 	p->sleepMode = SLEEP_MODE_SLEEP; */
+	/* } else { */
+	/* 	p->sleepMode = SLEEP_MODE_NORMAL; */
+	/* } */
 #if LORA_DEVICE
 	MODEM_getAppEui(p->appEui);
 #else
@@ -473,7 +474,7 @@ static void sendPeriodMeterReport(int numOfDatas, FlashMeterData_t *periodDatas)
 	if (conf.meterType == W_STANDARD_D) {
 		p->meterInfo[blkOffset++] =
 			METER_getMeterCaliberDp(); // 구경(VIF, MSB 4bit), 소수점 위치(DIF, LSB
-			// 4bit)
+		// 4bit)
 	}
 
 	if (!totalBlock) {
@@ -782,15 +783,17 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 		}
 
 		if (p->sleepMode == SLEEP_MODE_SLEEP) {
-			if (!tconfig.sleepMode) {
-				tconfig.sleepMode = 1;
-				changed = 1;
-			}
+			/* Comment config sleepMode */
+			/* if (!tconfig.sleepMode) { */
+			/* 	tconfig.sleepMode = 1; */
+			/* 	changed = 1; */
+			/* } */
 		} else if (p->sleepMode == SLEEP_MODE_NORMAL) {
-			if (tconfig.sleepMode) {
-				tconfig.sleepMode = 0;
-				changed = 1;
-			}
+			/* Comment config sleepMode */
+			/* if (tconfig.sleepMode) { */
+			/* 	tconfig.sleepMode = 0; */
+			/* 	changed = 1; */
+			/* } */
 		}
 
 		uint8 mi = p->meterInterval;
@@ -1029,15 +1032,17 @@ void recvBdControlReq(byte *data, uint8 len)
 
 	// Protocol version 관계없는 공통부분 설정 확인.
 	if (p->sleepMode == SLEEP_MODE_SLEEP) {
-		if (tconfig.sleepMode == 0) {
-			tconfig.sleepMode = 1;
-			sleepModeChanged = 1;
-		}
+		/* Comment config sleepMode */
+		/* if (tconfig.sleepMode == 0) { */
+		/* 	tconfig.sleepMode = 1; */
+		/* 	sleepModeChanged = 1; */
+		/* } */
 	} else if (p->sleepMode == SLEEP_MODE_NORMAL) {
-		if (tconfig.sleepMode) {
-			tconfig.sleepMode = 0;
-			sleepModeChanged = 1;
-		}
+		/* Comment config sleepMode */
+		/* if (tconfig.sleepMode) { */
+		/* 	tconfig.sleepMode = 0; */
+		/* 	sleepModeChanged = 1; */
+		/* } */
 	}
 
 	int mVersion = p->mversion;
@@ -1072,11 +1077,15 @@ void recvBdControlReq(byte *data, uint8 len)
 	}
 
 	if (mVersion == NFC_PROTOCOL_VER_1) {
-		sendBdControlAck(mVersion, p->reset, conf.sleepMode,
-				 REPORT_MODE_NOT_USE);
+		/* Comment config sleepMode */
+		/* sendBdControlAck(mVersion, p->reset, conf.sleepMode, */
+		/* 		 REPORT_MODE_NOT_USE); */
+		sendBdControlAck(mVersion, p->reset, 0, REPORT_MODE_NOT_USE);
 	} else {
-		sendBdControlAck(mVersion, p->reset, conf.sleepMode,
-				 conf.rtCtrlMode);
+		/* Comment config sleepMode */
+		/* sendBdControlAck(mVersion, p->reset, conf.sleepMode, */
+		/* conf.rtCtrlMode); */
+		sendBdControlAck(mVersion, p->reset, 0, conf.rtCtrlMode);
 	}
 }
 

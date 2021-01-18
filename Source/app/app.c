@@ -104,7 +104,8 @@ void APP_showConfig(Config_t *p)
 	}
 	printf(" [ RI Control ] %s \n", (p->rtCtrlMode > 0) ? "On" : "Off");
 	printf(" [ Meter Type ] %s\n", METER_getMeterName(p->meterType));
-	printf(" [ Operating  ] %s\n", p->sleepMode ? "Sleep" : "Active");
+	/* Comment sleepMode APP_showConfig */
+	/* printf(" [ Operating  ] %s\n", p->sleepMode ? "Sleep" : "Active"); */
 	uint8 batt = BATT_getLastVoltage();
 	printf(" [ Battery    ] %d.%dV\n", batt / 10, batt % 10);
 	printf(" [ Reset Count] %d times\n", p->resetCount);
@@ -343,30 +344,31 @@ void APP_ctrlReportTime()
 		  RT_CTRL_MAX_THRESHOLD);
 }
 
-void APP_prepareToSleep()
-{
-#if REPEATER_DEVICE
-	SLAVE_close();
-#endif
+/* Comment APP_prepareToSleep */
+/* void APP_prepareToSleep() */
+/* { */
+/* #if REPEATER_DEVICE */
+/* 	SLAVE_close(); */
+/* #endif */
 
-	BOOL isLcdOn = FALSE;
-	if (Metering.type == INITIAL_METERING ||
-	    Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
-		isLcdOn = TRUE;
-	}
+/* 	BOOL isLcdOn = FALSE; */
+/* 	if (Metering.type == INITIAL_METERING || */
+/* 	    Metering.type == IMMEDIATE_METERING_FOR_REPORT) { */
+/* 		isLcdOn = TRUE; */
+/* 	} */
 
-	if (conf.sleepMode) {
-		MODEM_stop(TRUE, isLcdOn);
-		LCD_displayString("SLEEP");
-	} else {
-		MODEM_stop(FALSE, isLcdOn);
-		LCD_redraw();
-		if (Metering.success == 0) {
-			LCD_displayError(LCD_ERROR_METERING);
-		}
-		ALARM_schedule();
-	}
-}
+/* 	if (conf.sleepMode) { */
+/* 		MODEM_stop(TRUE, isLcdOn); */
+/* 		LCD_displayString("SLEEP"); */
+/* 	} else { */
+/* 		MODEM_stop(FALSE, isLcdOn); */
+/* 		LCD_redraw(); */
+/* 		if (Metering.success == 0) { */
+/* 			LCD_displayError(LCD_ERROR_METERING); */
+/* 		} */
+/* 		ALARM_schedule(); */
+/* 	} */
+/* } */
 
 void APP_init(uint8 taskId)
 {
@@ -408,19 +410,20 @@ void APP_init(uint8 taskId)
 	LCD_displayFirmwareVersion();
 	MISC_delayMs(500);
 
-	if (conf.sleepMode) {
-		// NFC통신 후 Sleep여부에 따라 H마크를 표시히자만,
-		// H/W Reset이 발생할 경우 H마크가 초기화되기 때문에
-		// Sleep 모드인 경우에만 H마크 On동작을 수행한다.
-		if (SMART_WATER_METER(conf.termModel)) {
-			MISC_delayMs(
-				1500); // 검침기 MCU 부팅 및 통신 준비시간 대기
-			METER_std_lcdMarkReq(conf.sleepMode);
-			MISC_delayMs(100);
-		}
-		APP_prepareToSleep();
-		return;
-	}
+	/* Comment sleepMode APP_init */
+	/* if (conf.sleepMode) { */
+	/* 	// NFC통신 후 Sleep여부에 따라 H마크를 표시히자만, */
+	/* 	// H/W Reset이 발생할 경우 H마크가 초기화되기 때문에 */
+	/* 	// Sleep 모드인 경우에만 H마크 On동작을 수행한다. */
+	/* 	if (SMART_WATER_METER(conf.termModel)) { */
+	/* 		MISC_delayMs( */
+	/* 			1500); // 검침기 MCU 부팅 및 통신 준비시간 대기 */
+	/* 		METER_std_lcdMarkReq(conf.sleepMode); */
+	/* 		MISC_delayMs(100); */
+	/* 	} */
+	/* 	APP_prepareToSleep(); */
+	/* 	return; */
+	/* } */
 
 	METER_clearTempData();
 	METER_clearStoredData(TRUE);
@@ -452,9 +455,11 @@ static void meteringCompleted()
 			MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE);
 		} else if (Metering.type == INITIAL_METERING) {
 			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
-		} else {
-			APP_prepareToSleep();
 		}
+		/* Comment APP_prepareToSleep */
+		/* } else { */
+		/* 	APP_prepareToSleep(); */
+		/* } */
 	} else {
 		if (Metering.type == INITIAL_METERING) {
 			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
@@ -465,9 +470,11 @@ static void meteringCompleted()
 			// 보조중계기로 쓰일때에는 slave 주기 검침 직후 report.
 			MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE);
 #endif
-		} else {
-			APP_prepareToSleep();
 		}
+		/* Comment APP_prepareToSleep */
+		/* } else { */
+		/* 	APP_prepareToSleep(); */
+		/* } */
 	}
 }
 
@@ -757,11 +764,12 @@ static void meteringRecvResponse()
 event32_t APP_tasks(uint8 taskId, event32_t events)
 {
 	if (events & APP_EVENT_IMMEDIATE_REPORT) {
-		if (!conf.sleepMode) {
-			if (MODEM_getState() == DEVICE_STATUS_IDLE) {
-				APP_runMetering(IMMEDIATE_METERING_FOR_REPORT);
-			}
+		/* Comment sleepMode */
+		/* if (!conf.sleepMode) { */
+		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
+			APP_runMetering(IMMEDIATE_METERING_FOR_REPORT);
 		}
+		/* } */
 		return (events ^ APP_EVENT_IMMEDIATE_REPORT);
 	}
 
@@ -813,11 +821,12 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_CHANGE_CONFIG) {
-		if (SMART_WATER_METER(conf.termModel)) {
-			// SWM인 경우 sleep 모드에 따라 H마크 on/off
-			METER_std_lcdMarkReq(conf.sleepMode);
-			MISC_delayMs(100); // UART 전송완료 대기.
-		}
+		/* Comment sleepMode */
+		/* if (SMART_WATER_METER(conf.termModel)) { */
+		/* 	// SWM인 경우 sleep 모드에 따라 H마크 on/off */
+		/* 	METER_std_lcdMarkReq(conf.sleepMode); */
+		/* 	MISC_delayMs(100); // UART 전송완료 대기. */
+		/* } */
 		FLASH_saveConfigInfo(&conf);
 		REBOOT_SYSTEM();
 		return (events ^ APP_EVENT_CHANGE_CONFIG);

@@ -107,7 +107,8 @@ struct Config {
 	BOOL isModemInit;
 #endif
 	BOOL isUsingPF;
-	uint8 sleepMode;
+	/* Remove config sleepMode */
+	/* uint8 sleepMode; */
 	uint8 rtCtrlMode; // 0 : no ctrl, 1 : ctrl
 	uint8 rtCtrlThreshold;
 	uint8 rtCtrlInterval;

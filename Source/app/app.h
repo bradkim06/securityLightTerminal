@@ -34,7 +34,8 @@ typedef enum {
 char *APP_getFwVer(BOOL isUsingPlatform);
 uint8 APP_getTaskId();
 void APP_init(uint8 taskId);
-void APP_prepareToSleep();
+/* Comment APP_prepareToSleep */
+/* void APP_prepareToSleep(); */
 void APP_ctrlReportTime();
 
 void APP_runPeriodicReport();

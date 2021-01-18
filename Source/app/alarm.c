@@ -222,10 +222,11 @@ void ALARM_schedule()
 
 void ALARM_run()
 {
-	if (conf.sleepMode || NextAlarm == NULL) {
-		APP_prepareToSleep();
-		return;
-	}
+	/* Comment check sleepMode ALARM_run */
+	/* if (conf.sleepMode || NextAlarm == NULL) { */
+	/* 	APP_prepareToSleep(); */
+	/* 	return; */
+	/* } */
 
 	printf_ts("alarm occurred - '%s'\n", ALARM_TYPE_STR(NextAlarm->type));
 	if (conf.isShortInterval) {
@@ -242,25 +243,31 @@ void ALARM_run()
 		if (MISC_checkInterval(date.hour, conf.reportHour,
 				       conf.rtCtrlInterval)) {
 			APP_runMetering(PERIODIC_METERING);
-		} else {
-			APP_prepareToSleep();
 		}
+		/* Comment APP_prepareToSleep */
+		/* else { */
+		/* 	APP_prepareToSleep(); */
+		/* } */
 	}
 #else
 	if (alarmType == RTC_ALARM_REPORT) {
 		if (MISC_checkInterval(date.hour, conf.reportHour,
 				       conf.rtCtrlInterval)) {
 			APP_runPeriodicReport();
-		} else {
-			APP_prepareToSleep();
 		}
+		/* Comment APP_prepareToSleep */
+		/* else { */
+		/* 	APP_prepareToSleep(); */
+		/* } */
 	} else if (alarmType == RTC_ALARM_METERING) {
 		if (MISC_checkInterval(date.hour, conf.reportHour,
 				       conf.meterInterval)) {
 			APP_runMetering(PERIODIC_METERING);
-		} else {
-			APP_prepareToSleep();
 		}
+		/* Comment APP_prepareToSleep */
+		/* } else { */
+		/* 	APP_prepareToSleep(); */
+		/* } */
 	} else if (alarmType == RTC_ALARM_METER_SAVE) {
 		if (ALARM_isTimeSync()) {
 			// 기간검침 데이터 저장 Base Time을 "통신 Base Time + 1시간" 으로 설정.
@@ -270,17 +277,22 @@ void ALARM_run()
 			if ((date.hour % METER_DATA_SAVE_INTERVAL) ==
 			    (conf.reportHour + 1)) {
 				APP_runMetering(PERIODIC_METERING_FOR_SAVE);
-			} else {
-				APP_prepareToSleep();
 			}
-		} else {
-			APP_prepareToSleep();
+			/* Comment APP_prepareToSleep */
+			/* else { */
+			/* 	APP_prepareToSleep(); */
+			/* } */
 		}
+		/* Comment APP_prepareToSleep */
+		/* } else { */
+		/* 	APP_prepareToSleep(); */
+		/* } */
 	}
 #endif
 	else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);
-		APP_prepareToSleep();
+		/* Comment APP_prepareToSleep */
+		/* APP_prepareToSleep(); */
 	}
 }
 

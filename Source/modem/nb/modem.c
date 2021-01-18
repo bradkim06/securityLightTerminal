@@ -510,7 +510,8 @@ static void eventFinish()
 	}
 	APP_ctrlReportTime();
 	// Set LPM3(MCU slpee mode) and release context
-	APP_prepareToSleep();
+	/* Comment APP_prepareToSleep */
+	/* APP_prepareToSleep(); */
 }
 
 static void eventSendCmd()
