@@ -317,14 +317,15 @@ void LCD_redraw()
 
 void LCD_updateMeterValue(uint8 *unit)
 {
-	MeterUnitData_t *p = (MeterUnitData_t *)unit;
+	//TODO is it need?
+	/* MeterUnitData_t *p = (MeterUnitData_t *)unit; */
 
-	memcpy(currentLCD.value, p->meterData, 4);
-	memcpy(&currentLCD.iconNormal, &p->icon, 1);
-	currentLCD.decimalPoint = METER_getMeterCaliberDp() & 0x0f;
-	currentLCD.iconNormal.battery = BATT_getLevel();
+	/* memcpy(currentLCD.value, p->meterData, 4); */
+	/* memcpy(&currentLCD.iconNormal, &p->icon, 1); */
+	/* currentLCD.decimalPoint = METER_getMeterCaliberDp() & 0x0f; */
+	/* currentLCD.iconNormal.battery = BATT_getLevel(); */
 
-	LCD_displayValue(ICON_NORMAL);
+	/* LCD_displayValue(ICON_NORMAL); */
 }
 
 void LCD_displayString(char *str)

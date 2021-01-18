@@ -9,7 +9,7 @@
 #include "rtc.h"
 
 typedef struct {
-	uint8 caliberDp;
+	/* uint8 caliberDp; */
 	uint8 dif;
 	uint8 vif;
 	uint8 meterSerial[4];
@@ -150,11 +150,6 @@ int METER_getStoredInterval()
 uint8 *METER_getSerialNum()
 {
 	return LastMetering.meterSerial;
-}
-
-uint8 METER_getMeterCaliberDp()
-{
-	return LastMetering.caliberDp;
 }
 
 MeterUnitData_t *METER_getTempData()
@@ -446,19 +441,4 @@ int METER_getFirstValidPos()
 	}
 
 	return pos;
-}
-
-void METER_saveMeterInfo(uint8 *serial, uint8 caliberDp, uint8 dif, uint8 vif)
-{
-	if (memcmp(serial, LastMetering.meterSerial, 4) ||
-	    caliberDp != LastMetering.caliberDp) {
-		// data를 처음 읽은 것이거나 중간에 계량기가 교체된 것임
-		METER_clearStoredData(TRUE);
-		memcpy(LastMetering.meterSerial, serial, 4);
-		LastMetering.caliberDp = caliberDp;
-		if (dif & vif) {
-			LastMetering.dif = dif;
-			LastMetering.vif = vif;
-		}
-	}
 }

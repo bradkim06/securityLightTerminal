@@ -45,8 +45,6 @@ BOOL METER_needNewMetering(int secLimit);
 int METER_getNumberOfStoredData();
 int METER_getStoredInterval();
 uint8 *METER_getSerialNum();
-uint8 METER_getMeterCaliberDp();
 int METER_getFirstValidPos();
-void METER_saveMeterInfo(uint8 *serial, uint8 caliberDp, uint8 dif, uint8 vif);
 
 #endif // __METER_H__

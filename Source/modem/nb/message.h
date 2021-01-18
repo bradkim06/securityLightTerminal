@@ -109,7 +109,8 @@ typedef struct {
 typedef struct {
 	uchar meterSerial[4];
 	uchar meterType;
-	uchar meterCaliber_dp;
+	/* Comment NbiotMeterInfo_t meterCaliber_dp */
+	/* uchar meterCaliber_dp; */
 	uchar meterStatus;
 } NbiotMeterInfo_t;
 

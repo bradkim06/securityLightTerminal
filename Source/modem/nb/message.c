@@ -104,7 +104,8 @@ static int insert_meterInfo(NbiotMeterInfo_t *p)
 	}
 
 	p->meterType = conf.meterType;
-	p->meterCaliber_dp = METER_getMeterCaliberDp();
+	/* Comment meterCaliber_dp */
+	/* p->meterCaliber_dp = METER_getMeterCaliberDp(); */
 
 	MeterUnitData_t *pUnitData;
 
