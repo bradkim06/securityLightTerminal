@@ -204,7 +204,7 @@ void initSystem()
 	}
 }
 
-main()
+int main()
 {
 	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_VRST_3SEC; // Start watchdog timer(3.2768 sec)
@@ -224,4 +224,6 @@ main()
 		TASKMGR_init();
 		TASKMGR_run();
 	}
+
+	return -1;
 }

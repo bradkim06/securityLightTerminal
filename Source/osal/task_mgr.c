@@ -101,11 +101,13 @@ void TASKMGR_run(void)
 				}
 
 				if (taskIdx >= TasksTotalCounts) {
-					WDTCTL = WDTPW |
-						 WDTHOLD; // Stop watchdog timer
-					printf("--sleep--\n\n");
-					MISC_delayMs(100);
-					SLEEP_DEVICE();
+					/* Comment */
+					/* WDTCTL = WDTPW | */
+					/* 	 WDTHOLD; // Stop watchdog timer */
+					/* printf("--sleep--\n\n"); */
+					/* MISC_delayMs(100); */
+					/* Comment SLEEP_DEVICE */
+					/* SLEEP_DEVICE(); */
 				}
 			}
 		}

@@ -524,7 +524,23 @@ void TEST_lpm3()
 
 	DeviceSleepState = FALSE;
 	GLOBAL_DISABLE_INT();
-	SLEEP_DEVICE();
+	/* Comment SLEEP_DEVICE */
+	/* SLEEP_DEVICE(); */
+
+	do {
+		if (DeviceSleepState == FALSE) {
+			P2OUT &= ~0x20;
+			TIMER_stop();
+			LCD_disable();
+			METER_disable();
+			PRINT_disable();
+			MODEM_disable();
+			WDTCTL = WDTPW | WDTHOLD;
+			DeviceSleepState = TRUE;
+			__bis_SR_register(POWER_MODE + GIE);
+		}
+		__no_operation();
+	} while (0);
 
 	while (1)
 		;
