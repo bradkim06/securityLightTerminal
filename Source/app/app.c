@@ -393,6 +393,7 @@ void APP_init(uint8 taskId)
 
 	FLASH_updateResetCount(&conf);
 	APP_showConfig(&conf);
+	METER_enable(E_METER);
 
 	if (conf.debugPrint == 0) {
 		/* printf("\n--console disabled--\n"); */
@@ -771,13 +772,13 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_METER_RX) {
-		METER_disable();
+		/* METER_disable(); */
 		meteringRecvResponse();
 		return (events ^ APP_EVENT_METER_RX);
 	}
 
 	if (events & APP_EVENT_METER_TIMEOUT) {
-		METER_disable();
+		/* METER_disable(); */
 		meteringTimeout();
 		return (events ^ APP_EVENT_METER_TIMEOUT);
 	}

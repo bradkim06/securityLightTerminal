@@ -218,7 +218,7 @@ void METER_enable(uint8 meterType)
 		.charLen = UART_8BITS_CHAR,
 	};
 
-	UART_open(UART_A3, &param);
+	UART_open(UART_A0, &param);
 #endif
 }
 
@@ -233,25 +233,25 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 {
 	uint8 buf[LEN_MAX_METER_RX];
 	memset(buf, 0, LEN_MAX_METER_RX);
-	int len = UART_receive(UART_A3, buf, LEN_MAX_METER_RX);
+	int len = UART_receive(UART_A0, buf, LEN_MAX_METER_RX);
 
 	BOOL result = FALSE;
 
 	if (meterType == E_METER) {
-		//TODO
+		result = read_electric_meter(buf, pUnit);
 	}
-	/* Comment */
-	/* if (meterType == W_STANDARD_D) { */
-	/* 	result = read_std_d_meter(buf, pUnit); */
-	/* } else if (meterType == W_SHINHAN_D || meterType == W_SHINHAN_D_BIG) { */
-	/* 	result = read_shinhan_d_meter(buf, pUnit); */
-	/* } else if (meterType == W_MNS_D) { */
-	/* 	result = read_mns_d_meter(buf, pUnit); */
-	/* } else if (METER_TYPE_ONETL(meterType)) { */
-	/* 	result = read_onetl_meter(buf, len, pUnit); */
-	/* } */
 
 	return result;
+}
+
+BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
+{
+	if (rxBuf[0] != METER_STX) {
+		printf("invalid message %c\n", rxBuf[0]);
+		return FAIL;
+	}
+
+	return SUCCESS;
 }
 
 BOOL METER_bypassResp()

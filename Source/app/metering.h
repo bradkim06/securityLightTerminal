@@ -32,6 +32,7 @@
 
 BOOL METER_sendRequest(uint8 meterType);
 BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
+BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit);
 
 void METER_enable(uint8 meterType);
 void METER_disable();

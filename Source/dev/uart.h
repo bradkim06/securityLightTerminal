@@ -67,10 +67,10 @@
 //=========================================================
 // NFC ISR macro interface for external access
 //=========================================================
-#define UART_A0_RX_ISR_HANDLER()
+#define UART_A0_RX_ISR_HANDLER() APP_meterRxIsr()
 #define UART_A1_RX_ISR_HANDLER()
 #define UART_A2_RX_ISR_HANDLER() APP_modemRxIsr()
-#define UART_A3_RX_ISR_HANDLER() APP_meterRxIsr()
+#define UART_A3_RX_ISR_HANDLER()
 
 //=========================================================
 // TYPES

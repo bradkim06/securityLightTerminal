@@ -632,7 +632,7 @@ void UART_putChar(UartNum_t num, char ch)
 	*(UART_BASE + 0x1C) |= UCTXIE; // Enable TX interrupt
 }
 
-#if LCD_THROUGH_UART
+// UART_0 interrupt - Rx는 계량기 데이터 수신용.
 #pragma vector = USCI_A0_VECTOR
 __interrupt void USCI_A0_ISR(void)
 {
@@ -645,7 +645,7 @@ __interrupt void USCI_A0_ISR(void)
 		UartBuf_t *p = uartA0->txBuf;
 		if (p->rpos == p->wpos) {
 			UCA0IE &=
-				~UCTXIE; // 더 이상 보낼 데이터가 없으면 tx interrupt를 disable
+				~UCTXIE; // txbuf empty --> disable tx interrupt
 		} else {
 			UCA0TXBUF = p->buf[p->rpos++]; // send the data
 			if (p->rpos >= p->len) {
@@ -654,9 +654,8 @@ __interrupt void USCI_A0_ISR(void)
 		}
 	}
 
-	// rx interrupt를 사용하지 않음 - 혹시 발생하면 즉시 disable
-	if (UCA0IFG & UCRXIFG) {
-		UCA0IFG &= ~UCRXIFG;
+	if (UCA0IFG & UCRXIFG) { // USCI_A0 RX
+		UCA0IFG &= ~(UCRXIFG);
 		if (uartA0->rxBuf == NULL) {
 			UCA0IE &= ~UCRXIE;
 			return;
@@ -674,7 +673,6 @@ __interrupt void USCI_A0_ISR(void)
 		}
 	}
 }
-#endif
 
 // UART_1 interrupt - 콘솔
 #pragma vector = USCI_A1_VECTOR
@@ -760,47 +758,46 @@ __interrupt void USCI_A2_ISR(void)
 	}
 }
 
-// UART_3 interrupt - Rx는 계량기 데이터 수신용, Tx는 신한 이외의 계량기에 명령
-// 전송용으로 사용
 #if (REPEATER_DEVICE == 0)
 #pragma vector = USCI_A3_VECTOR
 __interrupt void USCI_A3_ISR(void)
 {
-	if (UCA3IFG & UCTXIFG) {
-		if (uartA3->txBuf == NULL) {
-			UCA3IE &= ~UCTXIE;
-			return;
-		}
+	// No Use
+	/* if (UCA3IFG & UCTXIFG) { */
+	/* 	if (uartA3->txBuf == NULL) { */
+	/* 		UCA3IE &= ~UCTXIE; */
+	/* 		return; */
+	/* 	} */
 
-		UartBuf_t *p = uartA3->txBuf;
-		if (p->rpos == p->wpos) {
-			UCA3IE &=
-				~UCTXIE; // txbuf empty --> disable tx interrupt
-		} else {
-			UCA3TXBUF = p->buf[p->rpos++]; // send the data
-			if (p->rpos >= p->len) {
-				p->rpos = 0;
-			}
-		}
-	}
+	/* 	UartBuf_t *p = uartA3->txBuf; */
+	/* 	if (p->rpos == p->wpos) { */
+	/* 		UCA3IE &= */
+	/* 			~UCTXIE; // txbuf empty --> disable tx interrupt */
+	/* 	} else { */
+	/* 		UCA3TXBUF = p->buf[p->rpos++]; // send the data */
+	/* 		if (p->rpos >= p->len) { */
+	/* 			p->rpos = 0; */
+	/* 		} */
+	/* 	} */
+	/* } */
 
-	if (UCA3IFG & UCRXIFG) { // USCI_A3 RX
-		UCA3IFG &= ~(UCRXIFG);
-		if (uartA3->rxBuf == NULL) {
-			UCA3IE &= ~UCRXIE;
-			return;
-		}
+	/* if (UCA3IFG & UCRXIFG) { // USCI_A3 RX */
+	/* 	UCA3IFG &= ~(UCRXIFG); */
+	/* 	if (uartA3->rxBuf == NULL) { */
+	/* 		UCA3IE &= ~UCRXIE; */
+	/* 		return; */
+	/* 	} */
 
-		UartBuf_t *p = uartA3->rxBuf;
-		if (((p->wpos + 1) % p->len) == p->rpos) {
-			p->wpos = p->rpos = 0;
-		} else {
-			p->buf[p->wpos] = UCA3RXBUF;
-			if (++p->wpos >= p->len) {
-				p->wpos = 0;
-			}
-			UART_A3_RX_ISR_HANDLER();
-		}
-	}
+	/* 	UartBuf_t *p = uartA3->rxBuf; */
+	/* 	if (((p->wpos + 1) % p->len) == p->rpos) { */
+	/* 		p->wpos = p->rpos = 0; */
+	/* 	} else { */
+	/* 		p->buf[p->wpos] = UCA3RXBUF; */
+	/* 		if (++p->wpos >= p->len) { */
+	/* 			p->wpos = 0; */
+	/* 		} */
+	/* 		UART_A3_RX_ISR_HANDLER(); */
+	/* 	} */
+	/* } */
 }
 #endif // #if (REPEATER_DEVICE == 0)
