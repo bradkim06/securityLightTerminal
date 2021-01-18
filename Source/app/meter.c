@@ -10,8 +10,8 @@
 
 typedef struct {
 	/* uint8 caliberDp; */
-	uint8 dif;
-	uint8 vif;
+	/* uint8 dif; */
+	/* uint8 vif; */
 	uint8 meterSerial[4];
 	MeterUnitData_t unit;
 } MeteringData_t;
