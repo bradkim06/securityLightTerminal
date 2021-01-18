@@ -365,90 +365,92 @@ TEST_RMETER_FINISH:
 
 void TEST_writeMeter(char *valueStr)
 {
-	char value[12];
-	memset(value, '0', 12);
+	//TODO TEST_writeMeter
+	/* Comment TEST_writeMeter() */
+	/* char value[12]; */
+	/* memset(value, '0', 12); */
 
-	int valid = 0;
-	do {
-		char *pStart = valueStr;
-		char *pDot = strstr(pStart, ".");
-		if (pDot == NULL) {
-			break;
-		}
+	/* int valid = 0; */
+	/* do { */
+	/* 	char *pStart = valueStr; */
+	/* 	char *pDot = strstr(pStart, "."); */
+	/* 	if (pDot == NULL) { */
+	/* 		break; */
+	/* 	} */
 
-		char *p = pDot - 1;
-		for (int i = 5; i >= 0; i--) {
-			if (p < pStart) {
-				break;
-			}
-			value[i] = *p--;
-		}
+	/* 	char *p = pDot - 1; */
+	/* 	for (int i = 5; i >= 0; i--) { */
+	/* 		if (p < pStart) { */
+	/* 			break; */
+	/* 		} */
+	/* 		value[i] = *p--; */
+	/* 	} */
 
-		p = pDot + 1;
-		for (int i = 6; i < 11; i++) {
-			if (*p == '\r' || *p == '\n' || *p == '\0') {
-				break;
-			}
-			value[i] = *p++;
-		}
+	/* 	p = pDot + 1; */
+	/* 	for (int i = 6; i < 11; i++) { */
+	/* 		if (*p == '\r' || *p == '\n' || *p == '\0') { */
+	/* 			break; */
+	/* 		} */
+	/* 		value[i] = *p++; */
+	/* 	} */
 
-		valid = 1;
+	/* 	valid = 1; */
 
-		for (int i = 0; i < 12; i++) {
-			if (isxdigit(value[i]) == 0) {
-				valid = 0;
-				break;
-			}
-		}
-	} while (0);
+	/* 	for (int i = 0; i < 12; i++) { */
+	/* 		if (isxdigit(value[i]) == 0) { */
+	/* 			valid = 0; */
+	/* 			break; */
+	/* 		} */
+	/* 	} */
+	/* } while (0); */
 
-	if (valid == 0) {
-		printf("invalid value(%s) try again with xxxxxx.yyyyy format\n",
-		       valueStr);
-		return;
-	}
+	/* if (valid == 0) { */
+	/* 	printf("invalid value(%s) try again with xxxxxx.yyyyy format\n", */
+	/* 	       valueStr); */
+	/* 	return; */
+	/* } */
 
-	typedef struct {
-		uint8 stx;
-		uint8 cfield;
-		uint8 afield;
-		uint8 value[6];
-		uint8 checksum;
-		uint8 etx;
-	} set_meter_value_t;
+	/* typedef struct { */
+	/* 	uint8 stx; */
+	/* 	uint8 cfield; */
+	/* 	uint8 afield; */
+	/* 	uint8 value[6]; */
+	/* 	uint8 checksum; */
+	/* 	uint8 etx; */
+	/* } set_meter_value_t; */
 
-	set_meter_value_t txMsg;
-	set_meter_value_t *pMsg = &txMsg;
-	memset(pMsg, 0, sizeof(set_meter_value_t));
+	/* set_meter_value_t txMsg; */
+	/* set_meter_value_t *pMsg = &txMsg; */
+	/* memset(pMsg, 0, sizeof(set_meter_value_t)); */
 
-	pMsg->stx = STD_REQ_START;
-	pMsg->cfield = 0xA1;
-	pMsg->afield = STD_REQ_ADDR;
-	for (int i = 0; i < 6; i++) {
-		pMsg->value[i] = MISC_asciiToBCD(value[10 - 2 * i + 0],
-						 value[10 - 2 * i + 1]);
-	}
-	pMsg->checksum = pMsg->cfield + pMsg->afield;
-	for (int i = 0; i < 6; i++) {
-		pMsg->checksum += pMsg->value[i];
-	}
-	pMsg->etx = STD_REQ_STOP;
+	/* pMsg->stx = STD_REQ_START; */
+	/* pMsg->cfield = 0xA1; */
+	/* pMsg->afield = STD_REQ_ADDR; */
+	/* for (int i = 0; i < 6; i++) { */
+	/* 	pMsg->value[i] = MISC_asciiToBCD(value[10 - 2 * i + 0], */
+	/* 					 value[10 - 2 * i + 1]); */
+	/* } */
+	/* pMsg->checksum = pMsg->cfield + pMsg->afield; */
+	/* for (int i = 0; i < 6; i++) { */
+	/* 	pMsg->checksum += pMsg->value[i]; */
+	/* } */
+	/* pMsg->etx = STD_REQ_STOP; */
 
-	uint8 *p = (uint8 *)pMsg;
+	/* uint8 *p = (uint8 *)pMsg; */
 
-	printf("set meter value: ");
-	for (int i = 0; i < sizeof(set_meter_value_t); i++) {
-		printf(" %02X", *(p + i));
-	}
-	printf("\n");
+	/* printf("set meter value: "); */
+	/* for (int i = 0; i < sizeof(set_meter_value_t); i++) { */
+	/* 	printf(" %02X", *(p + i)); */
+	/* } */
+	/* printf("\n"); */
 
-	/* Comment METER_enable() */
-	/* METER_enable(W_STANDARD_D); */
-	MISC_delayMs(20);
-	UART_send(UART_A3, &txMsg, sizeof(set_meter_value_t), FALSE);
+	/* /1* Comment METER_enable() *1/ */
+	/* /1* METER_enable(W_STANDARD_D); *1/ */
+	/* MISC_delayMs(20); */
+	/* UART_send(UART_A3, &txMsg, sizeof(set_meter_value_t), FALSE); */
 
-	MISC_delayMs(1500);
-	METER_disable();
+	/* MISC_delayMs(1500); */
+	/* METER_disable(); */
 }
 
 void TEST_lpm3()

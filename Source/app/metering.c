@@ -172,23 +172,25 @@ uint8 std_checksum(uint8 *from, int size)
  */
 void METER_bypassReq(uint8 *body, int bodyLen)
 {
-	LCD_wait();
+	//TODO METER_bypassReq
+	/* Comment METER_bypassReq() */
+	/* LCD_wait(); */
 
-	if (bodyLen > LEN_MAX_METER_TX - 2) {
-		bodyLen = LEN_MAX_METER_TX - 2;
-	}
+	/* if (bodyLen > LEN_MAX_METER_TX - 2) { */
+	/* 	bodyLen = LEN_MAX_METER_TX - 2; */
+	/* } */
 
-	uint8 txmsg[LEN_MAX_METER_TX];
-	memset(txmsg, 0, LEN_MAX_METER_TX);
+	/* uint8 txmsg[LEN_MAX_METER_TX]; */
+	/* memset(txmsg, 0, LEN_MAX_METER_TX); */
 
-	txmsg[0] = STD_REQ_START; // stx
-	memcpy((uint8 *)&txmsg[1], body, bodyLen);
-	txmsg[bodyLen + 1] = STD_REQ_STOP; // etx
+	/* txmsg[0] = STD_REQ_START; // stx */
+	/* memcpy((uint8 *)&txmsg[1], body, bodyLen); */
+	/* txmsg[bodyLen + 1] = STD_REQ_STOP; // etx */
 
-	METER_enable(E_METER);
-	MISC_delayMs(20); // STD spec delay for waitting slave prepare
+	/* METER_enable(E_METER); */
+	/* MISC_delayMs(20); // STD spec delay for waitting slave prepare */
 
-	UART_send(UART_A3, txmsg, bodyLen + 2, FALSE);
+	/* UART_send(UART_A3, txmsg, bodyLen + 2, FALSE); */
 
 	//    PRINT_hexBuffer(txmsg, bodyLen+2);
 }
@@ -278,18 +280,20 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 
 BOOL METER_bypassResp()
 {
-	uint8 buf[LEN_MAX_METER_RX];
-	memset(buf, 0, LEN_MAX_METER_RX);
-	int len = UART_receive(UART_A3, buf, LEN_MAX_METER_RX);
+	//TODO METER_bypassResp
+	/* Comment METER_bypassResp() */
+	/* uint8 buf[LEN_MAX_METER_RX]; */
+	/* memset(buf, 0, LEN_MAX_METER_RX); */
+	/* int len = UART_receive(UART_A3, buf, LEN_MAX_METER_RX); */
 
-	if (buf[0] != STD_RESP_START || buf[3] != STD_RESP_START) {
-		printf("invalid message\n");
-		return FAIL;
-	}
+	/* if (buf[0] != STD_RESP_START || buf[3] != STD_RESP_START) { */
+	/* 	printf("invalid message\n"); */
+	/* 	return FAIL; */
+	/* } */
 
-	// PRINT_hexBuffer(rxMsg, len);
-	// 4 - stx1,l1field, l2field, stx2
-	// 5 - stx1,l1field, l2field, stx2, etx
-	NFCAPP_meterBypassResp(buf + 4, len - 5);
-	return SUCCESS;
+	/* // PRINT_hexBuffer(rxMsg, len); */
+	/* // 4 - stx1,l1field, l2field, stx2 */
+	/* // 5 - stx1,l1field, l2field, stx2, etx */
+	/* NFCAPP_meterBypassResp(buf + 4, len - 5); */
+	/* return SUCCESS; */
 }
