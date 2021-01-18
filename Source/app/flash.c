@@ -159,7 +159,8 @@ static void readConfig(FlashConfig_t *pInfo)
 		pInfo->meterType = W_STANDARD_D;
 		pInfo->meterInterval = 1;
 		pInfo->reportInterval = 6;
-		pInfo->sleepMode = 0;
+		/* Remove sleepMode */
+		/* pInfo->sleepMode = 0; */
 		pInfo->rtCtrlMode = 0;
 		pInfo->isShortInterval = 0;
 		pInfo->debugPrint = 0;
@@ -313,7 +314,8 @@ void FLASH_saveConfigInfo(Config_t *config)
 	FlashConfig_t flashConfig;
 
 	flashConfig.meterType = config->meterType;
-	flashConfig.sleepMode = config->sleepMode;
+	/* Remove sleepMode */
+	/* flashConfig.sleepMode = config->sleepMode; */
 	flashConfig.rtCtrlMode = config->rtCtrlMode;
 	flashConfig.meterInterval = config->meterInterval;
 	flashConfig.reportInterval = config->reportInterval;
@@ -367,7 +369,8 @@ void FLASH_readConfigInfo(Config_t *config)
 	config->isModemInit = flashConfig.isModemInit;
 	config->isUsingPF = flashConfig.isUsingPF;
 #endif
-	config->sleepMode = flashConfig.sleepMode;
+	/* Remove sleepMode */
+	/* config->sleepMode = flashConfig.sleepMode; */
 	config->rtCtrlMode = flashConfig.rtCtrlMode;
 	config->isShortInterval = flashConfig.isShortInterval;
 	config->debugPrint = flashConfig.debugPrint;

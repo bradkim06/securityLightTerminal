@@ -32,7 +32,8 @@ typedef struct {
 #else // NBIOT_DEVICE
 typedef struct {
 	uint8 meterType; // 0
-	uint8 sleepMode; // 1
+	/* Comment */
+	/* uint8 sleepMode; // 1 */
 	uint8 meterInterval; // 2
 	uint8 reportInterval; // 3
 	uint8 serverIp[4]; // 4, 5, 6, 7
