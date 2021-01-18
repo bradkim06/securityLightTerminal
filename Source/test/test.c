@@ -357,7 +357,7 @@ void TEST_readMeter(int type)
 
 TEST_RMETER_FINISH:
 	IsMeterTesting = FALSE;
-	METER_disable();
+	/* METER_disable(); */
 
 	LCD_init();
 	LCD_displayString("TEST");
@@ -712,7 +712,7 @@ void TEST_pmeter(int numMeter, int type1, int port1, int type2, int port2,
 	}
 
 	IsMeterTesting = FALSE;
-	METER_disable();
+	/* METER_disable(); */
 
 	LCD_init();
 	LCD_displayString("TEST");
@@ -726,11 +726,12 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 		return;
 	}
 
-	char meter_sn[4];
-	meter_sn[3] = MISC_asciiToBCD(sn[4], sn[5]);
-	meter_sn[2] = MISC_asciiToBCD(sn[6], sn[7]);
-	meter_sn[1] = MISC_asciiToBCD(sn[8], sn[9]);
-	meter_sn[0] = MISC_asciiToBCD(sn[10], sn[11]);
+	/* Comment meter sn */
+	/* char meter_sn[4]; */
+	/* meter_sn[3] = MISC_asciiToBCD(sn[4], sn[5]); */
+	/* meter_sn[2] = MISC_asciiToBCD(sn[6], sn[7]); */
+	/* meter_sn[1] = MISC_asciiToBCD(sn[8], sn[9]); */
+	/* meter_sn[0] = MISC_asciiToBCD(sn[10], sn[11]); */
 	/* Comment METER_std_adjustReq */
 	/* if (METER_std_adjustReq(meter_sn, caliber, maker, q3, qt, q2, q1) != */
 	/*     TRUE) { */
@@ -778,7 +779,7 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 		}
 	}
 	IsMeterTesting = FALSE;
-	METER_disable();
+	/* METER_disable(); */
 
 	LCD_init();
 	LCD_displayString("TEST");
@@ -958,7 +959,7 @@ static event32_t interruptTask(uint8 taskId, event32_t events)
 	}
 
 	if (events & TEST_EVENT_METER_RX) {
-		METER_disable();
+		/* METER_disable(); */
 		IsMeterTesting = FALSE;
 		return (events ^ TEST_EVENT_METER_RX);
 	}

@@ -208,42 +208,18 @@ BOOL METER_sendRequest(uint8 meterType)
 
 void METER_enable(uint8 meterType)
 {
-	//TODO
-	/* #if (REPEATER_DEVICE == 0) */
-	/* 	UartInitParam_t param = { */
-	/* 		.isRxEnable = TRUE, */
-	/* 		.parity = UART_PARITY_NONE, */
-	/* 		.stopbit = UART_STOPBIT_ONE, */
-	/* 		.charLen = UART_8BITS_CHAR, */
-	/* 	}; */
+#if (REPEATER_DEVICE == 0)
+	UartInitParam_t param = {
+		.isRxEnable = TRUE,
+		.isTxEnable = TRUE,
+		.baudrate = UART_BAUDRATE_115200,
+		.parity = UART_PARITY_NONE,
+		.stopbit = UART_STOPBIT_ONE,
+		.charLen = UART_8BITS_CHAR,
+	};
 
-	/* 	if (meterType == W_SHINHAN_D || meterType == W_SHINHAN_D_BIG) { */
-	/* 		param.isTxEnable = FALSE; */
-	/* 		param.baudrate = UART_BAUDRATE_600; */
-	/* 	} else if (METER_TYPE_STANDARD(meterType)) { */
-	/* 		param.isTxEnable = TRUE; */
-	/* 		param.baudrate = UART_BAUDRATE_1200; */
-	/* 	} else if (meterType == W_MNS_D) { */
-	/* 		param.isTxEnable = FALSE; */
-	/* 		param.baudrate = UART_BAUDRATE_1200; */
-	/* 		param.parity = UART_PARITY_EVEN; */
-	/* 		param.stopbit = UART_STOPBIT_ONE; */
-	/* 		param.charLen = UART_7BITS_CHAR; */
-	/* 	} else if (METER_TYPE_ONETL(meterType)) { */
-	/* 		param.isTxEnable = TRUE; */
-	/* 		param.baudrate = UART_BAUDRATE_2400; */
-	/* 	} else { */
-	/* 		return; */
-	/* 	} */
-
-	/* 	UART_open(UART_A3, &param); */
-	/* 	if (meterType == W_MNS_D || meterType == W_SHINHAN_D || */
-	/* 	    meterType == W_SHINHAN_D_BIG) { */
-	/* 		METER_INTERRUPT_LOW(); */
-	/* 		METER_RXD_PULL_DOWN(); */
-	/* 		METER_RXD_PULL_UP(); */
-	/* 	} */
-	/* #endif */
+	UART_open(UART_A3, &param);
+#endif
 }
 
 void METER_disable()

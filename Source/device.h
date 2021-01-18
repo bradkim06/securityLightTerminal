@@ -53,7 +53,6 @@
 	} while (0)
 
 extern void LCD_disable();
-extern void METER_disable();
 extern void PRINT_disable();
 extern void MODEM_disable();
 
