@@ -67,44 +67,46 @@ char *METER_getMeterName(int meterType)
 
 void METER_displayStoredData()
 {
-	char termSerial[0x10] = "";
-	strncpy(termSerial, (char *)conf.serialNum, SERIAL_NUM_LEN);
-	termSerial[SERIAL_NUM_LEN] = '\0';
+	//TODO METER_displayStoredData
+	/* char termSerial[0x10] = ""; */
+	/* strncpy(termSerial, (char *)conf.serialNum, SERIAL_NUM_LEN); */
+	/* termSerial[SERIAL_NUM_LEN] = '\0'; */
 
-	MeteringData_t *q = &LastMetering;
-	MeterStoredData_t *p = &StoredMeterData;
+	/* MeteringData_t *q = &LastMetering; */
+	/* MeterStoredData_t *p = &StoredMeterData; */
 
-	printf("# %d data, serial no: %02x%02x%02x%02x(%02x) T: %s\n", p->nData,
-	       q->meterSerial[0], q->meterSerial[1], q->meterSerial[2],
-	       q->meterSerial[3], q->caliberDp, termSerial);
+	/* printf("# %d data, serial no: %02x%02x%02x%02x(%02x) T: %s\n", p->nData, */
+	/*        q->meterSerial[0], q->meterSerial[1], q->meterSerial[2], */
+	/*        q->meterSerial[3], q->caliberDp, termSerial); */
 
-	for (int i = 0; i < p->nData; i++) {
-		MeterUnitData_t *pUnit = &p->unit[i];
-		printf("   %2d)  %2d-%02d-%02d %02d:%02d:%02d   %02x%02x%02x%02x(%02x)\n",
-		       i + 1, pUnit->year, pUnit->mon, pUnit->day, pUnit->hour,
-		       pUnit->min, pUnit->sec, pUnit->meterData[0],
-		       pUnit->meterData[1], pUnit->meterData[2],
-		       pUnit->meterData[3], pUnit->meterStatus);
-	}
+	/* for (int i = 0; i < p->nData; i++) { */
+	/* 	MeterUnitData_t *pUnit = &p->unit[i]; */
+	/* 	printf("   %2d)  %2d-%02d-%02d %02d:%02d:%02d   %02x%02x%02x%02x(%02x)\n", */
+	/* 	       i + 1, pUnit->year, pUnit->mon, pUnit->day, pUnit->hour, */
+	/* 	       pUnit->min, pUnit->sec, pUnit->meterData[0], */
+	/* 	       pUnit->meterData[1], pUnit->meterData[2], */
+	/* 	       pUnit->meterData[3], pUnit->meterStatus); */
+	/* } */
 }
 
 void METER_displayTempData()
 {
-	char termSerial[0x10] = "";
-	strncpy(termSerial, (char *)conf.serialNum, SERIAL_NUM_LEN);
-	termSerial[SERIAL_NUM_LEN] = '\0';
+	//TODO METER_displayTempData
+	/* char termSerial[0x10] = ""; */
+	/* strncpy(termSerial, (char *)conf.serialNum, SERIAL_NUM_LEN); */
+	/* termSerial[SERIAL_NUM_LEN] = '\0'; */
 
-	MeteringData_t *p = &LastMetering;
+	/* MeteringData_t *p = &LastMetering; */
 
-	printf("# serial no: %02x%02x%02x%02x(%02x) T: %s\n", p->meterSerial[0],
-	       p->meterSerial[1], p->meterSerial[2], p->meterSerial[3],
-	       p->caliberDp, termSerial);
+	/* printf("# serial no: %02x%02x%02x%02x(%02x) T: %s\n", p->meterSerial[0], */
+	/*        p->meterSerial[1], p->meterSerial[2], p->meterSerial[3], */
+	/*        p->caliberDp, termSerial); */
 
-	MeterUnitData_t *pUnit = &LastMetering.unit;
-	printf("         %2d-%02d-%02d %02d:%02d:%02d   %02x%02x%02x%02x(%02x)\n",
-	       pUnit->year, pUnit->mon, pUnit->day, pUnit->hour, pUnit->min,
-	       pUnit->sec, pUnit->meterData[0], pUnit->meterData[1],
-	       pUnit->meterData[2], pUnit->meterData[3], pUnit->meterStatus);
+	/* MeterUnitData_t *pUnit = &LastMetering.unit; */
+	/* printf("         %2d-%02d-%02d %02d:%02d:%02d   %02x%02x%02x%02x(%02x)\n", */
+	/*        pUnit->year, pUnit->mon, pUnit->day, pUnit->hour, pUnit->min, */
+	/*        pUnit->sec, pUnit->meterData[0], pUnit->meterData[1], */
+	/*        pUnit->meterData[2], pUnit->meterData[3], pUnit->meterStatus); */
 }
 
 BOOL METER_isAllFF(uchar *p, int len)
@@ -423,26 +425,6 @@ void METER_collectStoredData()
 	if (count > 0) {
 		printf_ts("METER : %d datas are collected\n", count);
 	}
-
-#if 0 // TODO : will be implemented bacflow meter data collection
-    // BACKFLOW meter data collection (oldest 값은 보정하지 않음)
-    for (int index = end - 1; index >= 0; index--) {
-        current = &p->unit[index];
-        prev = &p->unit[index+1];
-
-        if ((METER_isAllFF(current->meterData, 4) == FALSE) &&
-            (METER_isAllFF(prev->meterData, 4)    == FALSE) ) {
-            MISC_bcdToInt(prev->meterData, &prevMeter, 4);
-            MISC_bcdToInt(current->meterData, &currentMeter, 4);
-            if(prevMeter > currentMeter) { // 검침 값이 역류인 경우
-                currentMeter = prevMeter;
-
-                // Meter data 만 복사.
-                MISC_intToBCD(&currentMeter, current->meterData, 4);
-            }
-        }
-    }
-#endif
 }
 
 void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit)
