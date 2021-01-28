@@ -30,9 +30,15 @@
 #define RESP_RTC_TIME 0xB3
 #define RESP_CALIB_FACTOR 0xB4
 
+typedef struct {
+	uint8 stx;
+	uint8 msgType;
+	uint8 checkSum;
+	uint8 etx;
+} evMeterReq_t;
+
 BOOL METER_sendRequest(uint8 meterType);
 BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
-BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit);
 
 void METER_enable(uint8 meterType);
 void METER_disable();

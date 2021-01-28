@@ -877,10 +877,10 @@ void TEST_pmrsn(BOOL isJigTest)
 		}
 	}
 	IsMeterTesting = FALSE;
-	METER_disable();
+	/* METER_disable(); */
 
-	LCD_init();
-	LCD_displayString("TEST");
+	/* LCD_init(); */
+	/* LCD_displayString("TEST"); */
 }
 
 void TEST_resetNFC()

@@ -379,6 +379,7 @@ void APP_init(uint8 taskId)
 	Metering.meterType = 0;
 	Metering.success = 0;
 	Metering.type = NOT_ACIVE_METERING;
+	/* Metering.type = E_METER; */
 
 	PRINT_enable();
 
@@ -395,11 +396,13 @@ void APP_init(uint8 taskId)
 	APP_showConfig(&conf);
 	METER_enable(E_METER);
 
+	// TEST
+	conf.debugPrint = 1;
 	if (conf.debugPrint == 0) {
-		/* printf("\n--console disabled--\n"); */
-		/* MISC_delayMs(2000); */
-		/* PRINT_stop(); */
-		/* PRINT_disable(); */
+		printf("\n--console disabled--\n");
+		MISC_delayMs(2000);
+		PRINT_stop();
+		PRINT_disable();
 	}
 
 	// Flash memory에 저장된 데이터 점검 및 프린트
@@ -407,8 +410,8 @@ void APP_init(uint8 taskId)
 	FLASH_printData();
 
 	// 초기화 직후 LCD에 펌웨어 버전을 표시
-	LCD_clear();
-	LCD_displayFirmwareVersion();
+	/* LCD_clear(); */
+	/* LCD_displayFirmwareVersion(); */
 	MISC_delayMs(500);
 
 	/* Comment sleepMode APP_init */
@@ -428,7 +431,7 @@ void APP_init(uint8 taskId)
 
 	METER_clearTempData();
 	METER_clearStoredData(TRUE);
-	LCD_redraw();
+	/* LCD_redraw(); */
 
 	OSAL_setEvent(AppTaskId, APP_EVENT_INITIAL);
 }

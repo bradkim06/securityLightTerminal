@@ -34,7 +34,7 @@
 		P10OUT |= 0x20;                                                \
 	} while (0);
 
-uint8 std_checksum(uint8 *from, int size)
+static uint8 std_checksum(uint8 *from, int size)
 {
 	uint8 checksum = 0;
 	for (int i = 0; i < size; i++) {
@@ -42,6 +42,34 @@ uint8 std_checksum(uint8 *from, int size)
 	}
 
 	return checksum;
+}
+
+static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
+{
+	if (rxBuf[0] != METER_STX) {
+		printf("EV Meter Invalid STX\n");
+		return FAIL;
+	}
+	printf("elecMeterResp_t OK!\n\n");
+
+	return SUCCESS;
+}
+
+static BOOL send_meteringEV(void)
+{
+	LCD_wait();
+
+	evMeterReq_t msg;
+	evMeterReq_t *pMsg = &msg;
+
+	pMsg->stx = TERMINAL_STX;
+	pMsg->msgType = REQ_READ_METER;
+	pMsg->checkSum =
+		std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t) - 1);
+	pMsg->etx = TERMINAL_ETX;
+
+	UART_send(UART_A3, &msg, sizeof(evMeterReq_t), FALSE);
+	return TRUE;
 }
 
 /* Remove read_shinhan_d_meter */
@@ -201,6 +229,7 @@ BOOL METER_sendRequest(uint8 meterType)
 
 	if (meterType == E_METER) {
 		//TODO
+		send_meteringEV();
 	}
 
 	return result;
@@ -242,16 +271,6 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 	}
 
 	return result;
-}
-
-BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
-{
-	if (rxBuf[0] != METER_STX) {
-		printf("invalid message %c\n", rxBuf[0]);
-		return FAIL;
-	}
-
-	return SUCCESS;
 }
 
 BOOL METER_bypassResp()
