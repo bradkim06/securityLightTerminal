@@ -644,8 +644,8 @@ __interrupt void USCI_A0_ISR(void)
 
 		UartBuf_t *p = uartA0->txBuf;
 		if (p->rpos == p->wpos) {
-			UCA0IE &=
-				~UCTXIE; // txbuf empty --> disable tx interrupt
+			// txbuf empty --> disable tx interrupt
+			UCA0IE &= ~UCTXIE;
 		} else {
 			UCA0TXBUF = p->buf[p->rpos++]; // send the data
 			if (p->rpos >= p->len) {

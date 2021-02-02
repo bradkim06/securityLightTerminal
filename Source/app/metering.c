@@ -47,150 +47,26 @@ static uint8 std_checksum(uint8 *from, int size)
 static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 {
 	if (rxBuf[0] != METER_STX) {
-		printf("EV Meter Invalid STX\n");
 		return FAIL;
 	}
-	printf("elecMeterResp_t OK!\n\n");
 
 	return SUCCESS;
 }
 
 static BOOL send_meteringEV(void)
 {
-	LCD_wait();
-
 	evMeterReq_t msg;
 	evMeterReq_t *pMsg = &msg;
 
 	pMsg->stx = TERMINAL_STX;
 	pMsg->msgType = REQ_READ_METER;
 	pMsg->checkSum =
-		std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t) - 1);
+		std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t) - 2);
 	pMsg->etx = TERMINAL_ETX;
 
-	UART_send(UART_A3, &msg, sizeof(evMeterReq_t), FALSE);
+	UART_send(UART_A0, &msg, sizeof(evMeterReq_t), FALSE);
 	return TRUE;
 }
-
-/* Remove read_shinhan_d_meter */
-
-/* Remove read_mns_d_meter */
-
-/* Remove read_onetl_meter */
-
-/* Comment METER_std_lcdMarkReq */
-/* BOOL METER_std_lcdMarkReq(BOOL isMarkOn) */
-/* { */
-/* 	LCD_wait(); */
-
-/* 	StdLcdMarkReq_t msg; */
-
-/* 	msg.stx = STD_REQ_START; */
-/* 	msg.cfield = STD_LCD_MARK_REQ; */
-/* 	msg.afield = STD_REQ_ADDR; */
-/* 	msg.data = */
-/* 		(isMarkOn == TRUE) ? 1 : 0; // 1 is on H Mark, 0 is off H Mark */
-/* 	msg.checksum = std_checksum((uint8 *)&msg.cfield, */
-/* 				    (int)(&msg.checksum - &msg.cfield)); */
-/* 	msg.etx = STD_REQ_STOP; */
-
-/* 	METER_enable(W_STANDARD_D); */
-/* 	MISC_delayMs(20); // STD spec delay for waitting slave prepare */
-
-/* 	UART_send(UART_A3, &msg, sizeof(StdLcdTestReq_t), FALSE); */
-/* 	return TRUE; */
-/* } */
-
-/* Comment METER_std_configRequest */
-/* BOOL METER_std_configRequest() */
-/* { */
-/* 	LCD_wait(); */
-
-/* 	StdMeterReq_t msg; */
-/* 	StdMeterReq_t *pMsg = &msg; */
-
-/* 	pMsg->stx = STD_REQ_START; */
-/* 	pMsg->cfield = STD_METER_CONFIG_REQ; */
-/* 	pMsg->afield = STD_REQ_ADDR; */
-/* 	pMsg->checksum = std_checksum((uint8 *)&pMsg->cfield, */
-/* 				      (int)(&pMsg->checksum - &pMsg->cfield)); */
-/* 	pMsg->etx = STD_REQ_STOP; */
-
-/* 	METER_enable(W_STANDARD_D); */
-/* 	MISC_delayMs(20); // STD spec delay for waitting slave prepare */
-
-/* 	UART_send(UART_A3, &msg, sizeof(StdMeterReq_t), FALSE); */
-/* 	return TRUE; */
-/* } */
-
-/* Comment METER_std_adjustReq */
-// Only STD, It is request to adjust Q3 ~ Q1 and Qt
-/* BOOL METER_std_adjustReq(char *sn, uint8 caliber, uint8 maker, uint16 q3, */
-/* 			 uint16 qt, uint16 q2, uint16 q1) */
-/* { */
-/* 	LCD_wait(); */
-
-/* 	// printf("Maker/Caliber : %d/%d \n", maker, caliber); */
-/* 	// printf("Q3/Qt/Q2/Q1   : %d/%d/%d/%d \n", q3, qt, q2, q1); */
-
-/* 	StdMeterAdjustReq_t msg; */
-
-/* 	memcpy(msg.serial, sn, 4); */
-/* 	msg.stx = STD_REQ_START; */
-/* 	msg.cfield = STD_METER_ADJUST_REQ; */
-/* 	msg.afield = STD_REQ_ADDR; */
-/* 	msg.caliber = caliber; */
-/* 	msg.maker = maker; */
-/* 	msg.q3[0] = q3 & 0x00FF; */
-/* 	msg.q3[1] = q3 & 0xFF00 >> 8; */
-/* 	msg.qt[0] = qt & 0x00FF; */
-/* 	msg.qt[1] = qt & 0xFF00 >> 8; */
-/* 	msg.q2[0] = q2 & 0x00FF; */
-/* 	msg.q2[1] = q2 & 0xFF00 >> 8; */
-/* 	msg.q1[0] = q1 & 0x00FF; */
-/* 	msg.q1[1] = q1 & 0xFF00 >> 8; */
-/* 	msg.checksum = std_checksum((uint8 *)&msg.cfield, */
-/* 				    (int)(&msg.checksum - &msg.cfield)); */
-/* 	msg.etx = STD_REQ_STOP; */
-
-/* 	METER_enable(W_STANDARD_D); */
-/* 	MISC_delayMs(20); // STD spec delay for waitting slave prepare */
-
-/* 	UART_send(UART_A3, &msg, sizeof(StdMeterAdjustReq_t), FALSE); */
-/* 	return TRUE; */
-/* } */
-
-/* Comment METER_std_adjustResp */
-// Only STD, It is response of adjust request
-/* BOOL METER_std_adjustResp(StdAdjustResult_t *result) */
-/* { */
-/* 	uint8 buf[LEN_MAX_METER_RX]; */
-/* 	memset(buf, 0, LEN_MAX_METER_RX); */
-/* 	int len = UART_receive(UART_A3, buf, LEN_MAX_METER_RX); */
-
-/* 	StdMeterAdjustResp_t *resp = (StdMeterAdjustResp_t *)buf; */
-
-/* 	if (resp->stx1 != STD_RESP_START || resp->stx2 != STD_RESP_START) { */
-/* 		printf("invalid message : start bit is not matched\n"); */
-/* 		return FAIL; */
-/* 	} */
-
-/* 	int checksum = std_checksum((uint8 *)&resp->cfield, */
-/* 				    (int)(&resp->checksum - &resp->cfield)); */
-/* 	if (resp->checksum != checksum) { */
-/* 		printf("invalid message : checksum fail\n"); */
-/* 		return FAIL; */
-/* 	} */
-
-/* 	if (resp->cfield == STD_METER_ADJUST_RESP) { */
-/* 		memcpy(result, (buf + (int)(&(resp->caliber) - &(resp->stx1))), */
-/* 		       sizeof(StdAdjustResult_t)); */
-/* 	} else { */
-/* 		printf("invalid message, not matched 'cfield'\n"); */
-/* 	} */
-
-/* 	return SUCCESS; */
-/* } */
 
 /**
  * @brief Send STD request from NFC to meter(STD)
@@ -201,26 +77,6 @@ static BOOL send_meteringEV(void)
 void METER_bypassReq(uint8 *body, int bodyLen)
 {
 	//TODO METER_bypassReq
-	/* Comment METER_bypassReq() */
-	/* LCD_wait(); */
-
-	/* if (bodyLen > LEN_MAX_METER_TX - 2) { */
-	/* 	bodyLen = LEN_MAX_METER_TX - 2; */
-	/* } */
-
-	/* uint8 txmsg[LEN_MAX_METER_TX]; */
-	/* memset(txmsg, 0, LEN_MAX_METER_TX); */
-
-	/* txmsg[0] = STD_REQ_START; // stx */
-	/* memcpy((uint8 *)&txmsg[1], body, bodyLen); */
-	/* txmsg[bodyLen + 1] = STD_REQ_STOP; // etx */
-
-	/* METER_enable(E_METER); */
-	/* MISC_delayMs(20); // STD spec delay for waitting slave prepare */
-
-	/* UART_send(UART_A3, txmsg, bodyLen + 2, FALSE); */
-
-	//    PRINT_hexBuffer(txmsg, bodyLen+2);
 }
 
 BOOL METER_sendRequest(uint8 meterType)
@@ -228,7 +84,6 @@ BOOL METER_sendRequest(uint8 meterType)
 	BOOL result = FALSE;
 
 	if (meterType == E_METER) {
-		//TODO
 		send_meteringEV();
 	}
 
