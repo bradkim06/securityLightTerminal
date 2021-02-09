@@ -19,12 +19,12 @@ typedef struct {
 	uint8 min;
 	uint8 sec;
 	uint8 isTimeSync;
-	/* uint8 meterData[4]; */
-	/* uint8 meterStatus; */
-	/* uint8 st[2]; */
-	/* uint8 rt[2]; */
-	/* uint8 flowData[4]; */
-	/* LcdIcon_t icon; */
+	uint8 meterStatus;
+	uint16 volt;
+	uint16 curr;
+	uint16 shortCurr;
+	uint16 power;
+	uint16 cumPower;
 } MeterUnitData_t;
 
 char *METER_getMeterName(int meterType);
