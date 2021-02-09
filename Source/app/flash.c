@@ -289,22 +289,8 @@ void FLASH_saveConfigInfo(Config_t *config)
 	// save serial number
 	FlashId_t flashID;
 
-#if REPEATER_DEVICE
-	memcpy(&flashID.pan_id, &config->pan_id, 2);
-	memcpy(&flashID.nwk_addr, &config->nwk_addr, 4);
-
-	int zeroPos = getFirstZeroPosition(config->nwk_addr);
-	uint8 addr[4];
-	memcpy(addr, &config->slaveNwk, 4);
-	flashID.slaveId = addr[zeroPos];
-#endif
-
 	memcpy(flashID.serialNum, config->serialNum, SERIAL_NUM_LEN);
-#if LORA_DEVICE
-	memcpy(flashID.devEui, config->devEui, 8);
-#else // NBIOT_DEVICE
 	memcpy(flashID.imei, config->imei, 8);
-#endif
 
 	flashID.checksum = calChecksum((uint8 *)&flashID, LEN_FLASH_ID);
 
@@ -314,12 +300,9 @@ void FLASH_saveConfigInfo(Config_t *config)
 	FlashConfig_t flashConfig;
 
 	flashConfig.meterType = config->meterType;
-	/* Remove sleepMode */
-	/* flashConfig.sleepMode = config->sleepMode; */
 	flashConfig.rtCtrlMode = config->rtCtrlMode;
 	flashConfig.meterInterval = config->meterInterval;
 	flashConfig.reportInterval = config->reportInterval;
-#if NBIOT_DEVICE
 	MISC_ipToHexArray(config->serverIp, flashConfig.serverIp);
 	memcpy(flashConfig.serverPort, &config->serverPort, 2);
 	MISC_ipToHexArray(config->fotaIp, flashConfig.fotaIp);
@@ -328,7 +311,6 @@ void FLASH_saveConfigInfo(Config_t *config)
 	memcpy(flashConfig.serviceCode, &config->serviceCode, 4);
 	flashConfig.isModemInit = config->isModemInit;
 	flashConfig.isUsingPF = config->isUsingPF;
-#endif
 	flashConfig.isShortInterval = config->isShortInterval;
 	flashConfig.debugPrint = config->debugPrint;
 
@@ -354,7 +336,6 @@ void FLASH_readConfigInfo(Config_t *config)
 	config->meterInterval = flashConfig.meterInterval;
 	config->reportInterval = flashConfig.reportInterval;
 
-#if NBIOT_DEVICE
 	sprintf(config->serverIp, "%d.%d.%d.%d", flashConfig.serverIp[0],
 		flashConfig.serverIp[1], flashConfig.serverIp[2],
 		flashConfig.serverIp[3]);
@@ -368,9 +349,6 @@ void FLASH_readConfigInfo(Config_t *config)
 	config->serviceCode[4] = 0;
 	config->isModemInit = flashConfig.isModemInit;
 	config->isUsingPF = flashConfig.isUsingPF;
-#endif
-	/* Remove sleepMode */
-	/* config->sleepMode = flashConfig.sleepMode; */
 	config->rtCtrlMode = flashConfig.rtCtrlMode;
 	config->isShortInterval = flashConfig.isShortInterval;
 	config->debugPrint = flashConfig.debugPrint;
@@ -381,22 +359,7 @@ void FLASH_readConfigInfo(Config_t *config)
 	FlashId_t flashID;
 	readID(&flashID);
 
-#if REPEATER_DEVICE
-	memcpy(&config->pan_id, &flashID.pan_id, 2);
-	memcpy(&config->nwk_addr, &flashID.nwk_addr, 4);
-
-	int zeroPos = getFirstZeroPosition(flashID.nwk_addr);
-	uint8 addr[4];
-	memcpy(addr, &flashID.nwk_addr, 4);
-	addr[zeroPos] = flashID.slaveId;
-	memcpy(&config->slaveNwk, addr, 4);
-#endif
-
-#if LORA_DEVICE
-	memcpy(config->devEui, flashID.devEui, 8);
-#else // NBIOT_DEVICE
 	memcpy(config->imei, flashID.imei, 8);
-#endif
 
 	memcpy(config->serialNum, flashID.serialNum, SERIAL_NUM_LEN);
 

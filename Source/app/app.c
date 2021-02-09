@@ -357,7 +357,6 @@ void APP_init(uint8 taskId)
 	Metering.meterType = 0;
 	Metering.success = 0;
 	Metering.type = NOT_ACIVE_METERING;
-	/* Metering.type = E_METER; */
 
 	PRINT_enable();
 
@@ -419,25 +418,12 @@ static void meteringCompleted()
 		} else if (Metering.type == INITIAL_METERING) {
 			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
 		}
-		/* Comment APP_prepareToSleep */
-		/* } else { */
-		/* 	APP_prepareToSleep(); */
-		/* } */
 	} else {
 		if (Metering.type == INITIAL_METERING) {
 			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
 		} else if (Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
 			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
-#if REPEATER_DEVICE
-		} else if (Metering.type == PERIODIC_METERING) {
-			// 보조중계기로 쓰일때에는 slave 주기 검침 직후 report.
-			MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE);
-#endif
 		}
-		/* Comment APP_prepareToSleep */
-		/* } else { */
-		/* 	APP_prepareToSleep(); */
-		/* } */
 	}
 }
 
