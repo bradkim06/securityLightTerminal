@@ -51,10 +51,6 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 {
 	elecMeterResp_t *rx = (elecMeterResp_t *)rxBuf;
 
-	for (int i = 0; i < sizeof(elecMeterResp_t); i++) {
-		printf("rxBuf[%d] = 0x%02X\n", i, rxBuf[i]);
-	}
-
 	if (rx->stx != METER_STX) {
 		printf("Invalid Meter STX\n");
 		return FAIL;
@@ -69,8 +65,6 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 		printf("Invalid Checksum\n");
 		return FAIL;
 	}
-
-	printf("E_meter\n");
 
 	return SUCCESS;
 }
