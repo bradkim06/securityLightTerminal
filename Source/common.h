@@ -86,15 +86,6 @@
 struct Config {
 	uint8 serialNum[SERIAL_NUM_LEN + 1];
 	uint8 meterType;
-#if REPEATER_DEVICE
-	uint16 pan_id;
-	uint32 nwk_addr;
-	uint32 slaveNwk;
-	uint8 freqOffset;
-#endif
-#if LORA_DEVICE
-	uint8 devEui[8];
-#else
 	char serviceCode[5]; // using only LG platfom. others all '0'
 	char serverIp[SERVER_IP_STR_LEN];
 	uint16 serverPort;
@@ -105,10 +96,7 @@ struct Config {
 	uint8 imei[8];
 	uint8 imsi[8];
 	BOOL isModemInit;
-#endif
 	BOOL isUsingPF;
-	/* Remove config sleepMode */
-	/* uint8 sleepMode; */
 	uint8 rtCtrlMode; // 0 : no ctrl, 1 : ctrl
 	uint8 rtCtrlThreshold;
 	uint8 rtCtrlInterval;
