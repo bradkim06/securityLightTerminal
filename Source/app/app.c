@@ -599,7 +599,7 @@ void APP_runMetering(MeteringType_t meteringType)
 	Metering.nRetry = 3;
 
 	METER_sendRequest(Metering.meterType);
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)10000);
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1500);
 }
 
 void APP_runPeriodicReport()
@@ -624,7 +624,7 @@ static void meteringTimeout()
 			MISC_delayMs(200);
 			METER_sendRequest(Metering.meterType);
 			OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT,
-					     (uint32)10000);
+					     (uint32)1500);
 		} else {
 			Metering.inProcess = 0;
 			Metering.success = 0;
@@ -714,12 +714,9 @@ static void meteringRecvResponse()
 event32_t APP_tasks(uint8 taskId, event32_t events)
 {
 	if (events & APP_EVENT_IMMEDIATE_REPORT) {
-		/* Comment sleepMode */
-		/* if (!conf.sleepMode) { */
 		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
 			APP_runMetering(IMMEDIATE_METERING_FOR_REPORT);
 		}
-		/* } */
 		return (events ^ APP_EVENT_IMMEDIATE_REPORT);
 	}
 
