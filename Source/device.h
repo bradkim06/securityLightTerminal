@@ -57,22 +57,6 @@ extern void PRINT_disable();
 extern void MODEM_disable();
 
 extern BOOL DeviceSleepState;
-/* Comment SLEEP_DEVICE */
-/* #define SLEEP_DEVICE()                                                         \ */
-/* 	do {                                                                   \ */
-/* 		if (DeviceSleepState == FALSE) {                               \ */
-/* 			P2OUT &= ~0x20;                                        \ */
-/* 			TIMER_stop();                                          \ */
-/* 			LCD_disable();                                         \ */
-/* 			METER_disable();                                       \ */
-/* 			PRINT_disable();                                       \ */
-/* 			MODEM_disable();                                       \ */
-/* 			WDTCTL = WDTPW | WDTHOLD;                              \ */
-/* 			DeviceSleepState = TRUE;                               \ */
-/* 			__bis_SR_register(POWER_MODE + GIE);                   \ */
-/* 		}                                                              \ */
-/* 		__no_operation();                                              \ */
-/* 	} while (0) */
 
 #define WAKEUP_DEVICE()                                                        \
 	do {                                                                   \

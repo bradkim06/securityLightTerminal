@@ -378,10 +378,11 @@ void APP_init(uint8 taskId)
 	Metering.inProcess = 0;
 	Metering.meterType = 0;
 	Metering.success = 0;
-	Metering.type = NOT_ACIVE_METERING;
-	/* Metering.type = E_METER; */
+	/* Metering.type = NOT_ACIVE_METERING; */
+	Metering.type = E_METER;
 
 	PRINT_enable();
+	METER_enable(E_METER);
 
 	FLASH_readConfigInfo(&conf);
 	conf.rtCtrlInterval = conf.reportInterval;
@@ -394,7 +395,6 @@ void APP_init(uint8 taskId)
 
 	FLASH_updateResetCount(&conf);
 	APP_showConfig(&conf);
-	METER_enable(E_METER);
 
 	// TEST
 	conf.debugPrint = 1;
@@ -734,13 +734,11 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_METER_RX) {
-		/* METER_disable(); */
 		meteringRecvResponse();
 		return (events ^ APP_EVENT_METER_RX);
 	}
 
 	if (events & APP_EVENT_METER_TIMEOUT) {
-		/* METER_disable(); */
 		meteringTimeout();
 		return (events ^ APP_EVENT_METER_TIMEOUT);
 	}

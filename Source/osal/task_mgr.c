@@ -99,16 +99,6 @@ void TASKMGR_run(void)
 						break;
 					}
 				}
-
-				if (taskIdx >= TasksTotalCounts) {
-					/* Comment */
-					/* WDTCTL = WDTPW | */
-					/* 	 WDTHOLD; // Stop watchdog timer */
-					/* printf("--sleep--\n\n"); */
-					/* MISC_delayMs(100); */
-					/* Comment SLEEP_DEVICE */
-					/* SLEEP_DEVICE(); */
-				}
 			}
 		}
 	}

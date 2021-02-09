@@ -125,13 +125,6 @@ void METER_enable(uint8 meterType)
 #endif
 }
 
-void METER_disable()
-{
-	UART_close(UART_A3, GPIO_LOW);
-	METER_INTERRUPT_LOW();
-	METER_RXD_PULL_DOWN();
-}
-
 BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 {
 	uint8 buf[LEN_MAX_METER_RX];

@@ -357,7 +357,6 @@ void TEST_readMeter(int type)
 
 TEST_RMETER_FINISH:
 	IsMeterTesting = FALSE;
-	/* METER_disable(); */
 
 	LCD_init();
 	LCD_displayString("TEST");
@@ -444,13 +443,10 @@ void TEST_writeMeter(char *valueStr)
 	/* } */
 	/* printf("\n"); */
 
-	/* /1* Comment METER_enable() *1/ */
 	/* /1* METER_enable(W_STANDARD_D); *1/ */
-	/* MISC_delayMs(20); */
 	/* UART_send(UART_A3, &txMsg, sizeof(set_meter_value_t), FALSE); */
 
 	/* MISC_delayMs(1500); */
-	/* METER_disable(); */
 }
 
 void TEST_lpm3()
@@ -463,7 +459,6 @@ void TEST_lpm3()
 	/* conf.sleepMode = 1; */
 	FLASH_saveConfigInfo(&conf);
 
-	METER_disable();
 	MODEM_disable();
 
 	P1DIR = 0xFF;
@@ -494,7 +489,6 @@ void TEST_lpm3()
 			P2OUT &= ~0x20;
 			TIMER_stop();
 			LCD_disable();
-			METER_disable();
 			PRINT_disable();
 			MODEM_disable();
 			WDTCTL = WDTPW | WDTHOLD;
@@ -518,7 +512,6 @@ void TEST_lpm2()
 	/* conf.sleepMode = 1; */
 	FLASH_saveConfigInfo(&conf);
 
-	METER_disable();
 	MODEM_disable();
 
 	P1DIR = 0xFF;
@@ -712,10 +705,6 @@ void TEST_pmeter(int numMeter, int type1, int port1, int type2, int port2,
 	}
 
 	IsMeterTesting = FALSE;
-	/* METER_disable(); */
-
-	LCD_init();
-	LCD_displayString("TEST");
 }
 
 void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
@@ -779,7 +768,6 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 		}
 	}
 	IsMeterTesting = FALSE;
-	/* METER_disable(); */
 
 	LCD_init();
 	LCD_displayString("TEST");
@@ -877,7 +865,6 @@ void TEST_pmrsn(BOOL isJigTest)
 		}
 	}
 	IsMeterTesting = FALSE;
-	/* METER_disable(); */
 
 	/* LCD_init(); */
 	/* LCD_displayString("TEST"); */
@@ -959,7 +946,6 @@ static event32_t interruptTask(uint8 taskId, event32_t events)
 	}
 
 	if (events & TEST_EVENT_METER_RX) {
-		/* METER_disable(); */
 		IsMeterTesting = FALSE;
 		return (events ^ TEST_EVENT_METER_RX);
 	}

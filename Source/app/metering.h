@@ -109,7 +109,6 @@ BOOL METER_sendRequest(uint8 meterType);
 BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
 
 void METER_enable(uint8 meterType);
-void METER_disable();
 
 void METER_bypassReq(uint8 *body, int bodyLen);
 BOOL METER_bypassResp();
