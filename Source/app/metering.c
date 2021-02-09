@@ -46,9 +46,28 @@ static uint8 std_checksum(uint8 *from, int size)
 
 static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 {
-	if (rxBuf[0] != METER_STX) {
+	elecMeterResp_t *rx = (elecMeterResp_t *)rxBuf;
+
+	for (int i = 0; i < sizeof(elecMeterResp_t); i++) {
+		printf("rxBuf[%d] = 0x%02X\n", i, rxBuf[i]);
+	}
+
+	if (rx->stx != METER_STX) {
+		printf("Invalid Meter STX\n");
 		return FAIL;
 	}
+
+	if (rx->etx != METER_ETX) {
+		printf("Invalid Meter ETX\n");
+		return FAIL;
+	}
+
+	if (rx->checkSum != std_checksum(rxBuf, sizeof(elecMeterResp_t) - 2)) {
+		printf("Invalid Checksum\n");
+		return FAIL;
+	}
+
+	printf("E_meter\n");
 
 	return SUCCESS;
 }
@@ -96,7 +115,7 @@ void METER_enable(uint8 meterType)
 	UartInitParam_t param = {
 		.isRxEnable = TRUE,
 		.isTxEnable = TRUE,
-		.baudrate = UART_BAUDRATE_115200,
+		.baudrate = UART_BAUDRATE_9600,
 		.parity = UART_PARITY_NONE,
 		.stopbit = UART_STOPBIT_ONE,
 		.charLen = UART_8BITS_CHAR,

@@ -409,29 +409,10 @@ void APP_init(uint8 taskId)
 	FLASH_initData();
 	FLASH_printData();
 
-	// 초기화 직후 LCD에 펌웨어 버전을 표시
-	/* LCD_clear(); */
-	/* LCD_displayFirmwareVersion(); */
 	MISC_delayMs(500);
-
-	/* Comment sleepMode APP_init */
-	/* if (conf.sleepMode) { */
-	/* 	// NFC통신 후 Sleep여부에 따라 H마크를 표시히자만, */
-	/* 	// H/W Reset이 발생할 경우 H마크가 초기화되기 때문에 */
-	/* 	// Sleep 모드인 경우에만 H마크 On동작을 수행한다. */
-	/* 	if (SMART_WATER_METER(conf.termModel)) { */
-	/* 		MISC_delayMs( */
-	/* 			1500); // 검침기 MCU 부팅 및 통신 준비시간 대기 */
-	/* 		METER_std_lcdMarkReq(conf.sleepMode); */
-	/* 		MISC_delayMs(100); */
-	/* 	} */
-	/* 	APP_prepareToSleep(); */
-	/* 	return; */
-	/* } */
 
 	METER_clearTempData();
 	METER_clearStoredData(TRUE);
-	/* LCD_redraw(); */
 
 	OSAL_setEvent(AppTaskId, APP_EVENT_INITIAL);
 }
@@ -590,12 +571,7 @@ void APP_bypassMetering(uint8 *body, int bodyLen)
 
 void APP_runMetering(MeteringType_t meteringType)
 {
-#if REPEATER_DEVICE
-	if (SLAVE_getAccessState() !=
-	    SLAVE_ACCESS_IDLE) // 현재 Slave 동작 중일 경우 검침하지 않음.
-#else
 	if (Metering.inProcess) // 현재 검침중이면 재 검침하지 않음
-#endif
 	{
 		return;
 	}
@@ -604,13 +580,8 @@ void APP_runMetering(MeteringType_t meteringType)
 	// 필요
 	if (meteringType == IMMEDIATE_METERING ||
 	    meteringType == IMMEDIATE_METERING_FOR_REPORT) {
-#if REPEATER_DEVICE
-		if (SLAVE_needToUpdateMeterInfo() ==
-		    FALSE) // Meter Info update에 대한 Interval 확인.
-#else
 		if (METER_needNewMetering(10) ==
 		    0) // 즉시 검침의 경우에는 10초 이하이면 재 검침하지 않음.
-#endif
 		{
 			// 즉시 검침의 경우에는 10초 이하이면 재 검침하지 않음
 			Metering.type = meteringType;
@@ -626,19 +597,9 @@ void APP_runMetering(MeteringType_t meteringType)
 	Metering.success = 0;
 
 	Metering.nRetry = 3;
-	if (meteringType == IMMEDIATE_METERING ||
-	    meteringType == IMMEDIATE_METERING_FOR_REPORT) {
-		// 자석을 댄 경우 마지막에 미터 타입을 바꾸어 한 번 더 시도해 보기 위해
-		// 4회로 늘림.
-		Metering.nRetry = 4;
-	}
 
-#if REPEATER_DEVICE
-	SLAVE_metering(Metering.type);
-#else
 	METER_sendRequest(Metering.meterType);
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1500);
-#endif
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)10000);
 }
 
 void APP_runPeriodicReport()
@@ -654,18 +615,16 @@ void APP_runPeriodicReport()
 
 static void meteringTimeout()
 {
-	LCD_redraw(); // LCD의 프로펠러 회전을 중지하기 위함.
-
 	if (Metering.type == BYPASS_METERING) {
 		Metering.inProcess = 0;
 		Metering.success = 0;
 	} else {
 		if (--Metering.nRetry > 0) {
 			// 약간의 시간 gap을 준 뒤 재검침 시도
-			MISC_delayMs(100);
+			MISC_delayMs(200);
 			METER_sendRequest(Metering.meterType);
 			OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT,
-					     (uint32)1500);
+					     (uint32)10000);
 		} else {
 			Metering.inProcess = 0;
 			Metering.success = 0;

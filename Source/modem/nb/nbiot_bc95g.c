@@ -443,16 +443,18 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len,
 
 	BOOL isSetCfg = FALSE;
 	char addr[22];
+
+	if (conf.isUsingPF) {
+		snprintf(addr, sizeof(addr), "%s,%d", conf.serverIp,
+			 conf.serverPort);
+	} else {
+		snprintf(addr, sizeof(addr), "%s,%d", conf.fotaIp,
+			 conf.fotaPort);
+	}
+
 	char *p = NULL;
 	if ((p = strstr(pHead, ATCMD_RESP_QLWSERVERIP))) {
 		p += strlen(ATCMD_RESP_QLWSERVERIP);
-		if (conf.isUsingPF) {
-			snprintf(addr, sizeof(addr), "%s,%d", conf.serverIp,
-				 conf.serverPort);
-		} else {
-			snprintf(addr, sizeof(addr), "%s,%d", conf.fotaIp,
-				 conf.fotaPort);
-		}
 		if (strncmp((const char *)p, (const char *)addr,
 			    strlen(addr)) == 0) {
 			return TRUE;
