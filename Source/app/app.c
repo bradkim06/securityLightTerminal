@@ -53,21 +53,12 @@ void APP_showConfig(Config_t *p)
 	serial[SERIAL_NUM_LEN] = '\0';
 
 	printf("===========================================\n");
-#if LORA_DEVICE
-	printf("         LoRa Terminal(Solu-M)\n");
-#else // NBIOT_DEVICE
 	printf("         NB-IoT Terminal\n");
-#endif
 	printf("===========================================\n");
 	printf(" [ Model      ] %s \n", TERM_MODEL_STRING(p->termModel));
 	printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__,
 	       APP_getFwVer(p->isUsingPF));
 	printf(" [ S/N        ] %s\n", serial);
-#if LORA_DEVICE
-	printf(" [ Device EUI ] %02x%02x%02x-%02x%02x-%02x%02x%02x\n",
-	       p->devEui[0], p->devEui[1], p->devEui[2], p->devEui[3],
-	       p->devEui[4], p->devEui[5], p->devEui[6], p->devEui[7]);
-#else // NBIOT_DEVICE
 	printf(" [ IMEI       ] %02x-%02x%02x%02x-%02x%02x%02x-%x\n",
 	       p->imei[0], p->imei[1], p->imei[2], p->imei[3], p->imei[4],
 	       p->imei[5], p->imei[6], p->imei[7] / 0x10);
@@ -80,7 +71,6 @@ void APP_showConfig(Config_t *p)
 		printf(" [ FOTA       ] %s : %d, %dday\n", p->fotaIp,
 		       p->fotaPort, p->fotaInterval);
 	}
-#endif
 	if (p->isShortInterval) {
 		printf(" [ MI & RI    ] %d (minutes)\n", p->reportInterval);
 		printf(" [ Base Min   ] %d min\n", p->reportMin);
@@ -104,22 +94,10 @@ void APP_showConfig(Config_t *p)
 	}
 	printf(" [ RI Control ] %s \n", (p->rtCtrlMode > 0) ? "On" : "Off");
 	printf(" [ Meter Type ] %s\n", METER_getMeterName(p->meterType));
-	/* Comment sleepMode APP_showConfig */
-	/* printf(" [ Operating  ] %s\n", p->sleepMode ? "Sleep" : "Active"); */
 	uint8 batt = BATT_getLastVoltage();
 	printf(" [ Battery    ] %d.%dV\n", batt / 10, batt % 10);
 	printf(" [ Reset Count] %d times\n", p->resetCount);
 	printf(" [ Debug Out  ] %s\n", p->debugPrint ? "On" : "Off");
-#if REPEATER_DEVICE
-	printf(" [ PAN ID     ] %04X\n", p->pan_id);
-
-	uint8 *master = (uint8 *)&p->nwk_addr;
-	uint8 *slave = (uint8 *)&p->slaveNwk;
-	printf(" [ NWK        ] %d.%d.%d.%d\n", *(master + 3), *(master + 2),
-	       *(master + 1), *(master + 0));
-	printf(" [ Slave NWK  ] %d.%d.%d.%d\n", *(slave + 3), *(slave + 2),
-	       *(slave + 1), *(slave + 0));
-#endif
 	printf(" [ RST CAUSE  ] %Xh \n", SYSRSTIV);
 	printf("===========================================\n");
 	printf("\n");
