@@ -36,9 +36,11 @@
 
 static uint8 std_checksum(uint8 *from, int size)
 {
-	uint8 checksum = 0;
 	// size - 2 -> Not Calculate ETX, Checksum
-	for (int i = 0; i < size - 2; i++) {
+	size = size - 2;
+	uint8 checksum = 0;
+
+	for (int i = 0; i < size; i++) {
 		checksum += *(from + i);
 	}
 
