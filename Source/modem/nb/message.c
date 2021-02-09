@@ -282,7 +282,7 @@ static int insert_oneData(NbiotMeterData_t *p)
 	p->power = pUnitData->power;
 	p->cumPower = pUnitData->cumPower;
 
-	return 9; // 9 = interval(1), nData(1), validPos(1), refValue(4), diff(2)
+	return 21; // 9 = interval(1), nData(1), validPos(1), refValue(4), diff(2)
 }
 
 static int getCurrentDataMessage(uchar *buf)
@@ -298,85 +298,11 @@ static int getCurrentDataMessage(uchar *buf)
 	len += insert_id(&p->id);
 	len += insert_radioQuality(&p->radio);
 	len += insert_termInfo(&p->term);
-	/* len += insert_meterInfo(&p->meter); */
 	len += insert_meteringParam(&p->mp);
 	// Join message는 아니지만 즉시검침/보고를 위한 message이므로
 	// Join message와 동일한 방식의 metering time을 얻는다.
 	len += insert_meteringTime(&p->meterTime, TRUE);
 	len += insert_oneData(&p->data);
-
-	p->len = len;
-	buf[len + 2] = cal_checksum(&p->mtype, len); // 2 - protocol, len
-
-	return len + 3; // 3 = protocol + len + checksum
-}
-
-static int insert_reset(NbiotReset_t *p)
-{
-	p->resetCause = 0;
-	memcpy(p->resetCount, &conf.resetCount, 2);
-
-	return sizeof(NbiotReset_t);
-}
-
-static int insert_tempData(uchar *p)
-{
-	//TODO insert_tempData
-	MeterUnitData_t *pUnitData = METER_getTempData();
-
-	/* if (METER_isAllFF(pUnitData->meterData, 4)) { // meter down */
-	/* 	memcpy(p, pUnitData->meterData, 4); */
-	/* } else { */
-	/* 	uint32 value = 0; */
-	/* 	MISC_bcdToInt(pUnitData->meterData, &value, 4); */
-	/* 	memcpy(p, &value, 4); */
-	/* } */
-
-	return 4;
-}
-
-static int getJoinMessage(uchar *buf)
-{
-	NbiotJoin_t *p = (NbiotJoin_t *)buf;
-
-	p->protocol = PROTOCOL_VERSION;
-
-	int len = 0;
-	p->mtype = NBIOT_JOIN;
-	len++;
-
-	len += insert_id(&p->id);
-	len += insert_radioQuality(&p->radio);
-	len += insert_termInfo(&p->term);
-	/* len += insert_meterInfo(&p->meter); */
-	len += insert_meteringParam(&p->mp);
-	len += insert_meteringTime(&p->meterTime, TRUE);
-	len += insert_tempData(p->data);
-	len += insert_reset(&p->reset);
-
-	p->len = len;
-	p->checksum = cal_checksum(&p->mtype, len);
-
-	return sizeof(NbiotJoin_t);
-}
-
-static int getPeriodicDataMessage(uchar *buf)
-{
-	NbiotDataReport_t *p = (NbiotDataReport_t *)buf;
-
-	p->protocol = PROTOCOL_VERSION;
-
-	int len = 0;
-	p->mtype = NBIOT_DATA_REPORT;
-	len++;
-
-	len += insert_id(&p->id);
-	len += insert_radioQuality(&p->radio);
-	len += insert_termInfo(&p->term);
-	/* len += insert_meterInfo(&p->meter); */
-	len += insert_meteringParam(&p->mp);
-	len += insert_meteringTime(&p->meterTime, FALSE);
-	/* len += insert_multiData(&p->data); */
 
 	p->len = len;
 	buf[len + 2] = cal_checksum(&p->mtype, len); // 2 - protocol, len
@@ -720,15 +646,7 @@ char *NBMSG_getMeterReport(BOOL isJoin, int *messageLen)
 {
 	uchar *raw = (uchar *)malloc(LEN_MAX_NBIOT_DATA);
 	int len;
-	if (isJoin) {
-		if (conf.isUsingPF) {
-			len = getCurrentDataMessage(raw);
-		} else {
-			len = getJoinMessage(raw);
-		}
-	} else {
-		len = getPeriodicDataMessage(raw);
-	}
+	len = getCurrentDataMessage(raw);
 
 	// Hex data를 ASCII로 변환하여 저장할 버퍼의 길이이므로
 	// 본래 데이터 길이의 x2에 '\0'를 위한 +1로 정의.
