@@ -114,7 +114,7 @@ static int insert_meterInfo(NbiotMeterInfo_t *p)
 	} else {
 		pUnitData = METER_getStoredData(0);
 	}
-	p->meterStatus = pUnitData->meterStatus;
+	/* p->meterStatus = pUnitData->meterStatus; */
 
 	return sizeof(NbiotMeterInfo_t);
 }
@@ -193,36 +193,37 @@ static int insert_multiData(NbiotMeterData_t *p)
 	p->refValuePos = validPos;
 
 	if (validPos != 0xFF) {
+		// TODO?
 		// 유효한 최신 데이터 채우기
-		MeterUnitData_t *unit = NULL;
+		/* MeterUnitData_t *unit = NULL; */
 
-		uint32 prevValue = 0;
-		unit = METER_getStoredData(validPos);
-		MISC_bcdToInt(unit->meterData, &prevValue, 4);
+		/* uint32 prevValue = 0; */
+		/* unit = METER_getStoredData(validPos); */
+		/* MISC_bcdToInt(unit->meterData, &prevValue, 4); */
 
-		memcpy(p->refValue, &prevValue, 4);
-		memset(p->valueDiff[validPos], 0, 2);
+		/* memcpy(p->refValue, &prevValue, 4); */
+		/* memset(p->valueDiff[validPos], 0, 2); */
 
-		for (int i = validPos + 1; i < nData; i++) {
-			unit = METER_getStoredData(validPos);
-			if (METER_isAllFF(unit->meterData, 4)) {
-				// meter down
-				memset(p->valueDiff[i], 0xFF, 2);
-			} else {
-				uint32 currValue = 0;
-				MISC_bcdToInt(unit->meterData, &currValue, 4);
+		/* for (int i = validPos + 1; i < nData; i++) { */
+		/* 	unit = METER_getStoredData(validPos); */
+		/* 	if (METER_isAllFF(unit->meterData, 4)) { */
+		/* 		// meter down */
+		/* 		memset(p->valueDiff[i], 0xFF, 2); */
+		/* 	} else { */
+		/* 		uint32 currValue = 0; */
+		/* 		MISC_bcdToInt(unit->meterData, &currValue, 4); */
 
-				if (prevValue <
-				    currValue) { // 검침값이 줄어든 경우
-					memset(p->valueDiff[i], 0, 2);
-				} else {
-					uint16 diff =
-						(uint16)(prevValue - currValue);
-					memcpy(p->valueDiff[i], &diff, 2);
-					prevValue = currValue;
-				}
-			}
-		}
+		/* 		if (prevValue < */
+		/* 		    currValue) { // 검침값이 줄어든 경우 */
+		/* 			memset(p->valueDiff[i], 0, 2); */
+		/* 		} else { */
+		/* 			uint16 diff = */
+		/* 				(uint16)(prevValue - currValue); */
+		/* 			memcpy(p->valueDiff[i], &diff, 2); */
+		/* 			prevValue = currValue; */
+		/* 		} */
+		/* 	} */
+		/* } */
 	}
 
 	return 7 + (nData *
@@ -360,16 +361,17 @@ static int insert_oneData(NbiotMeterData_t *p)
 	memset(p->valueDiff[0], 0xFF, 2);
 
 	MeterUnitData_t *pUnitData = METER_getTempData();
-	if (METER_isAllFF(pUnitData->meterData, 4)) { // meter down
-		p->refValuePos = 0xFF;
-		memset(p->refValue, 0xFF, 4);
-	} else {
-		p->refValuePos = 0;
+	//TODO
+	/* if (METER_isAllFF(pUnitData->meterData, 4)) { // meter down */
+	/* 	p->refValuePos = 0xFF; */
+	/* 	memset(p->refValue, 0xFF, 4); */
+	/* } else { */
+	/* 	p->refValuePos = 0; */
 
-		uint32 value = 0;
-		MISC_bcdToInt(pUnitData->meterData, &value, 4);
-		memcpy(p->refValue, &value, 4);
-	}
+	/* 	uint32 value = 0; */
+	/* 	MISC_bcdToInt(pUnitData->meterData, &value, 4); */
+	/* 	memcpy(p->refValue, &value, 4); */
+	/* } */
 
 	return 9; // 9 = interval(1), nData(1), validPos(1), refValue(4), diff(2)
 }
@@ -413,13 +415,13 @@ static int insert_tempData(uchar *p)
 	//TODO insert_tempData
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
-	if (METER_isAllFF(pUnitData->meterData, 4)) { // meter down
-		memcpy(p, pUnitData->meterData, 4);
-	} else {
-		uint32 value = 0;
-		MISC_bcdToInt(pUnitData->meterData, &value, 4);
-		memcpy(p, &value, 4);
-	}
+	/* if (METER_isAllFF(pUnitData->meterData, 4)) { // meter down */
+	/* 	memcpy(p, pUnitData->meterData, 4); */
+	/* } else { */
+	/* 	uint32 value = 0; */
+	/* 	MISC_bcdToInt(pUnitData->meterData, &value, 4); */
+	/* 	memcpy(p, &value, 4); */
+	/* } */
 
 	return 4;
 }

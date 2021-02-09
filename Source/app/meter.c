@@ -209,7 +209,7 @@ void METER_saveInFlash(Date_t *pDate, MeterUnitData_t *pUnit)
 {
 	// If RTC is not synchronized, do not save meter data in flash
 	if (ALARM_isTimeSync()) {
-		FLASH_saveData(pDate, BATT_getVoltage(), pUnit->meterData);
+		/* FLASH_saveData(pDate, BATT_getVoltage(), pUnit->meterData); */
 		printf("Meter Data Store in Flash : %04d-%02d-%02d %02dH\n",
 		       pDate->year, pDate->mon, pDate->day, pDate->hour);
 	} else {
@@ -368,50 +368,50 @@ void METER_collectStoredData()
 		next = (index == 0) ? NULL : &p->unit[index - 1];
 		prev = (index == end) ? &reportedUnit : &p->unit[index + 1];
 
-		if (METER_isAllFF(current->meterData, 4)) {
-			if (next == NULL) {
-				// Last 값이 MT DOWN 인 경우 이전 검침 값을 copy
-				if (METER_isAllFF(prev->meterData, 4) ==
-				    FALSE) {
-					MISC_bcdToInt(prev->meterData,
-						      &prevMeter, 4);
-					currentMeter = prevMeter;
+		/* if (METER_isAllFF(current->meterData, 4)) { */
+		/* 	if (next == NULL) { */
+		/* 		// Last 값이 MT DOWN 인 경우 이전 검침 값을 copy */
+		/* 		if (METER_isAllFF(prev->meterData, 4) == */
+		/* 		    FALSE) { */
+		/* 			MISC_bcdToInt(prev->meterData, */
+		/* 				      &prevMeter, 4); */
+		/* 			currentMeter = prevMeter; */
 
-					// Meter data, Meter status 복사
-					MISC_intToBCD(&currentMeter,
-						      current->meterData, 4);
-					current->meterStatus =
-						prev->meterStatus;
-					count++;
-				}
-			} else {
-				// 현재 값이 MT DOWN 이지만, 이전 값과 다음 값이 유효할 경우.
-				if ((METER_isAllFF(next->meterData, 4) ==
-				     FALSE) &&
-				    (METER_isAllFF(prev->meterData, 4) ==
-				     FALSE)) {
-					MISC_bcdToInt(prev->meterData,
-						      &prevMeter, 4);
-					MISC_bcdToInt(next->meterData,
-						      &nextMeter, 4);
-					if (prevMeter > nextMeter) {
-						// PREV-NEXT 값이 BACKFLOW인 경우 NEXT 값을 할당.
-						currentMeter = nextMeter;
-					} else {
-						currentMeter = (prevMeter +
-								nextMeter) /
-							       2;
-					}
+		/* 			// Meter data, Meter status 복사 */
+		/* 			MISC_intToBCD(&currentMeter, */
+		/* 				      current->meterData, 4); */
+		/* 			current->meterStatus = */
+		/* 				prev->meterStatus; */
+		/* 			count++; */
+		/* 		} */
+		/* 	} else { */
+		/* 		// 현재 값이 MT DOWN 이지만, 이전 값과 다음 값이 유효할 경우. */
+		/* 		if ((METER_isAllFF(next->meterData, 4) == */
+		/* 		     FALSE) && */
+		/* 		    (METER_isAllFF(prev->meterData, 4) == */
+		/* 		     FALSE)) { */
+		/* 			MISC_bcdToInt(prev->meterData, */
+		/* 				      &prevMeter, 4); */
+		/* 			MISC_bcdToInt(next->meterData, */
+		/* 				      &nextMeter, 4); */
+		/* 			if (prevMeter > nextMeter) { */
+		/* 				// PREV-NEXT 값이 BACKFLOW인 경우 NEXT 값을 할당. */
+		/* 				currentMeter = nextMeter; */
+		/* 			} else { */
+		/* 				currentMeter = (prevMeter + */
+		/* 						nextMeter) / */
+		/* 					       2; */
+		/* 			} */
 
-					// Meter data, Meter status 복사
-					MISC_intToBCD(&currentMeter,
-						      current->meterData, 4);
-					current->meterStatus =
-						prev->meterStatus;
-					count++;
-				}
-			}
-		}
+		/* 			// Meter data, Meter status 복사 */
+		/* 			MISC_intToBCD(&currentMeter, */
+		/* 				      current->meterData, 4); */
+		/* 			current->meterStatus = */
+		/* 				prev->meterStatus; */
+		/* 			count++; */
+		/* 		} */
+		/* 	} */
+		/* } */
 	}
 
 	if (count > 0) {
@@ -429,13 +429,13 @@ int METER_getFirstValidPos()
 {
 	int pos = 0xFF;
 
-	for (int i = 0; i < StoredMeterData.nData; i++) {
-		if (METER_isAllFF(StoredMeterData.unit[i].meterData, 4) ==
-		    FALSE) {
-			pos = i;
-			break;
-		}
-	}
+	/* for (int i = 0; i < StoredMeterData.nData; i++) { */
+	/* 	if (METER_isAllFF(StoredMeterData.unit[i].meterData, 4) == */
+	/* 	    FALSE) { */
+	/* 		pos = i; */
+	/* 		break; */
+	/* 	} */
+	/* } */
 
 	return pos;
 }

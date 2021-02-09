@@ -412,22 +412,22 @@ void sendMeterReport()
 	p->oneMeter[0].type = conf.meterType;
 	p->oneMeter[0].port = 1;
 
-	if (tmpUnit->meterData[0] == 0xff && tmpUnit->meterData[1] == 0xff) {
-		// previous metering failed
-		p->oneMeter[0].flag = 1;
-	} else {
-		p->oneMeter[0].flag = 0;
-		//TODO nfc metering
-		//Comment nfc metering
-		/* memcpy(p->oneMeter[0].serial, METER_getSerialNum(), 4); */
-		/* memcpy(p->oneMeter[0].value, tmpUnit->meterData, 4); */
-		/* if (conf.meterType == W_STANDARD_D) { */
-		/* 	p->oneMeter[0].status[0] = METER_getMeterCaliberDp(); */
-		/* } else { */
-		/* 	p->oneMeter[0].status[0] = 0; */
-		/* } */
-		/* p->oneMeter[0].status[1] = tmpUnit->meterStatus; */
-	}
+	/* if (tmpUnit->meterData[0] == 0xff && tmpUnit->meterData[1] == 0xff) { */
+	/* 	// previous metering failed */
+	/* 	p->oneMeter[0].flag = 1; */
+	/* } else { */
+	/* 	p->oneMeter[0].flag = 0; */
+	/* 	//TODO nfc metering */
+	/* 	//Comment nfc metering */
+	/* 	memcpy(p->oneMeter[0].serial, METER_getSerialNum(), 4); */
+	/* 	memcpy(p->oneMeter[0].value, tmpUnit->meterData, 4); */
+	/* 	if (conf.meterType == W_STANDARD_D) { */
+	/* 		p->oneMeter[0].status[0] = METER_getMeterCaliberDp(); */
+	/* 	} else { */
+	/* 		p->oneMeter[0].status[0] = 0; */
+	/* 	} */
+	/* 	p->oneMeter[0].status[1] = tmpUnit->meterStatus; */
+	/* } */
 
 	int msgLen = sizeof(NfcMeterReport_t) -
 		     (3 - p->nMeter) * sizeof(NfcOneMeterReport_t);

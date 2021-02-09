@@ -609,8 +609,8 @@ static void meteringTimeout()
 
 			MeterUnitData_t unit;
 			memset(&unit, 0, sizeof(unit));
-			memset(unit.meterData, 0xff, 4);
-			unit.meterStatus = 0xff;
+			/* memset(unit.meterData, 0xff, 4); */
+			/* unit.meterStatus = 0xff; */
 
 			Date_t date;
 			RTC_read(&date);
@@ -652,21 +652,17 @@ static void meteringRecvResponse()
 			RTC_read(&date);
 			switch (Metering.type) {
 			case PERIODIC_METERING:
-				unit.sec =
-					0; // 주기검침의 경우 초단위는 0으로 설정한다.
+				// 주기검침의 경우 초단위는 0으로 설정한다.
+				unit.sec = 0;
 				METER_addStoredData(&date, &unit);
-				METER_displayStoredData();
 				break;
 			case PERIODIC_METERING_FOR_SAVE:
 				METER_saveInFlash(&date, &unit);
 				break;
 			default:
 				METER_addTempData(&date, &unit);
-				METER_displayTempData();
 				break;
 			}
-
-			LCD_updateMeterValue((uint8 *)&unit);
 
 			if (Metering.type == IMMEDIATE_METERING ||
 			    Metering.type == IMMEDIATE_METERING_FOR_REPORT) {

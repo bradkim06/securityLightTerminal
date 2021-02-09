@@ -698,8 +698,8 @@ void TEST_pmeter(int numMeter, int type1, int port1, int type2, int port2,
 	}
 
 	if (result == SUCCESS) {
-		printf("tmeter 1 %02x%02x%02x%02x\n", unit.meterData[0],
-		       unit.meterData[1], unit.meterData[2], unit.meterData[3]);
+		/* printf("tmeter 1 %02x%02x%02x%02x\n", unit.meterData[0], */
+		/*        unit.meterData[1], unit.meterData[2], unit.meterData[3]); */
 	} else {
 		printf("tmeter 1 ERR\n");
 	}
