@@ -37,7 +37,8 @@
 static uint8 std_checksum(uint8 *from, int size)
 {
 	uint8 checksum = 0;
-	for (int i = 0; i < size; i++) {
+	// size - 2 -> Not Calculate ETX, Checksum
+	for (int i = 0; i < size - 2; i++) {
 		checksum += *(from + i);
 	}
 
@@ -62,7 +63,7 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 		return FAIL;
 	}
 
-	if (rx->checkSum != std_checksum(rxBuf, sizeof(elecMeterResp_t) - 2)) {
+	if (rx->checkSum != std_checksum(rxBuf, sizeof(elecMeterResp_t))) {
 		printf("Invalid Checksum\n");
 		return FAIL;
 	}
@@ -80,7 +81,7 @@ static BOOL send_meteringEV(void)
 	pMsg->stx = TERMINAL_STX;
 	pMsg->msgType = REQ_READ_METER;
 	pMsg->checkSum =
-		std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t) - 2);
+		std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t));
 	pMsg->etx = TERMINAL_ETX;
 
 	UART_send(UART_A0, &msg, sizeof(evMeterReq_t), FALSE);
