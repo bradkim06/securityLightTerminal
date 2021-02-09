@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#define PROTOCOL_VERSION 0xA1
+#define PROTOCOL_VERSION 0xC1
 
 #define NBIOT_JOIN 0x30
 #define NBIOT_ACK 0x50
@@ -115,7 +115,7 @@ typedef struct {
 } NbiotMeterInfo_t;
 
 typedef struct {
-	uchar mi;
+	/* uchar mi; */
 	uchar ri;
 } NbiotMeteringParam_t;
 
@@ -129,11 +129,12 @@ typedef struct {
 } NbiotTimeStamp_t;
 
 typedef struct {
-	uchar interval;
-	uchar numData;
-	uchar refValuePos;
-	uchar refValue[4];
-	uchar valueDiff[MAX_NUM_STORED_DATA][2];
+	uint8 status;
+	uint16 volt;
+	uint16 curr;
+	uint16 shortCurr;
+	uint16 power;
+	uint16 cumPower;
 } NbiotMeterData_t;
 
 typedef struct {

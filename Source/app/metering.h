@@ -100,6 +100,7 @@ typedef struct _EM_Phase_Results_ {
 typedef struct {
 	uint8_t stx;
 	uint8_t msgType;
+	uint8_t status;
 	uint32_t volt;
 	uint32_t curr;
 	uint32_t shortCurr;

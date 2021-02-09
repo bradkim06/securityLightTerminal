@@ -1,11 +1,11 @@
+#include "queue.h"
 #include "at_cmd.h"
 #include "modem.h"
-#include "queue.h"
 
 #include "common.h"
 //#include "assert.h"
-#include "test.h"
 #include "uart.h"
+#include "test.h"
 
 #if defined(DEBUG)
 #define ATCMD_DBG(...)                                                         \
@@ -48,6 +48,10 @@ void ATCMD_init(ATCMD_NOTIFY_PARSER parser)
 
 void ATCMD_release()
 {
+	if (CommandQueue == NULL) {
+		return;
+	}
+
 	do {
 		if (QUEUE_isEmpty(CommandQueue)) {
 			break;
@@ -58,7 +62,10 @@ void ATCMD_release()
 
 BOOL ATCMD_write(uint32 *timeout)
 {
-	// ASSERT_PRINT((CommandQueue != NULL), "AT command queue is not malloc \n");
+	if (CommandQueue == NULL) {
+		ATCMD_DBG("queue is not malloc in send\n");
+		return FALSE;
+	}
 
 	if (QUEUE_isEmpty(CommandQueue)) {
 		ATCMD_DBG("queue is empty in send\n");
@@ -69,15 +76,11 @@ BOOL ATCMD_write(uint32 *timeout)
 	if (current->parser == NULL || current->cmd == NULL) {
 		ATCMD_DBG("write fail (not register parser or command)\n");
 		return FALSE;
-	}
-
-	if (timeout != NULL) {
-		*timeout = current->timeout;
-	}
-
-	if (current->cmd != NULL) {
+	} else {
+		if (timeout != NULL) {
+			*timeout = current->timeout;
+		}
 		ATCMD_WRITER(current->cmd);
-	} else { /* This case is waitting MODEM event notify */
 	}
 
 	return TRUE;
@@ -85,7 +88,10 @@ BOOL ATCMD_write(uint32 *timeout)
 
 BOOL ATCMD_retry(uint32 *timeout)
 {
-	// ASSERT_PRINT((CommandQueue != NULL), "AT command queue is not malloc \n");
+	if (CommandQueue == NULL) {
+		ATCMD_DBG("queue is not malloc in retry\n");
+		return FALSE;
+	}
 
 	if (QUEUE_isEmpty(CommandQueue)) {
 		ATCMD_DBG("queue is empty in retry\n");
@@ -116,14 +122,17 @@ BOOL ATCMD_retry(uint32 *timeout)
 
 BOOL ATCMD_read(uint32 *nextDelay)
 {
-	// ASSERT_PRINT((CommandQueue != NULL), "AT command queue is not malloc \n");
-
 	char buf[LEN_MAX_MODEM_RX];
 	int len = ATCMD_READER(buf);
 	buf[len - 1] = '\0';
 
 	if (NOTIFY_PARSER != NULL) {
 		NOTIFY_PARSER(buf, &len);
+	}
+
+	if (CommandQueue == NULL) {
+		ATCMD_DBG("queue is not malloc in parse\n");
+		return FALSE;
 	}
 
 	if (QUEUE_isEmpty(CommandQueue)) {
@@ -150,7 +159,10 @@ BOOL ATCMD_read(uint32 *nextDelay)
 BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd,
 		...)
 {
-	// ASSERT_PRINT((CommandQueue != NULL), "AT command queue is not malloc \n");
+	if (CommandQueue == NULL) {
+		ATCMD_DBG("queue is not malloc in push\n");
+		return FALSE;
+	}
 
 	AtCmd_t *atCmd = (AtCmd_t *)malloc(sizeof(AtCmd_t));
 	if (atCmd == NULL) {
@@ -199,10 +211,13 @@ BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd,
 
 AtCmd_t *ATCMD_pull()
 {
-	// ASSERT_PRINT((CommandQueue != NULL), "AT command queue is not malloc \n");
+	if (CommandQueue == NULL) {
+		ATCMD_DBG("queue is not malloc in pull\n");
+		return FALSE;
+	}
 
 	if (QUEUE_isEmpty(CommandQueue)) {
-		ATCMD_DBG("queue is empty\n");
+		ATCMD_DBG("queue is empty in pull\n");
 		return NULL;
 	}
 

@@ -90,33 +90,9 @@ static int insert_radioQuality(NbiotRadioQuality_t *p)
 
 static int insert_meteringParam(NbiotMeteringParam_t *p)
 {
-	p->mi = conf.meterInterval;
 	p->ri = conf.reportInterval;
 
 	return sizeof(NbiotMeteringParam_t);
-}
-
-static int insert_meterInfo(NbiotMeterInfo_t *p)
-{
-	uint8 *pSerial = METER_getSerialNum();
-	if (pSerial) {
-		memcpy(p->meterSerial, pSerial, 4);
-	}
-
-	p->meterType = conf.meterType;
-	/* Comment meterCaliber_dp */
-	/* p->meterCaliber_dp = METER_getMeterCaliberDp(); */
-
-	MeterUnitData_t *pUnitData;
-
-	if (MODEM_getCurrentProc() == MODEM_PROC_EVENT_REPORT) {
-		pUnitData = METER_getTempData();
-	} else {
-		pUnitData = METER_getStoredData(0);
-	}
-	/* p->meterStatus = pUnitData->meterStatus; */
-
-	return sizeof(NbiotMeterInfo_t);
 }
 
 static int insert_meteringTime(NbiotTimeStamp_t *p, BOOL isJoinMsg)
@@ -171,63 +147,6 @@ static int insert_meteringTime(NbiotTimeStamp_t *p, BOOL isJoinMsg)
 	}
 
 	return sizeof(NbiotTimeStamp_t);
-}
-
-static int insert_multiData(NbiotMeterData_t *p)
-{
-	METER_collectStoredData();
-	int nData = METER_getNumberOfStoredData();
-	if (nData > MAX_NUM_STORED_DATA) {
-		nData = MAX_NUM_STORED_DATA;
-	}
-
-	p->interval = METER_getStoredInterval();
-	p->numData = nData;
-
-	memset(p->refValue, 0xFF, 4);
-	for (int i = 0; i < nData; i++) {
-		memset(p->valueDiff[i], 0xFF, 2);
-	}
-
-	int validPos = METER_getFirstValidPos();
-	p->refValuePos = validPos;
-
-	if (validPos != 0xFF) {
-		// TODO?
-		// 유효한 최신 데이터 채우기
-		/* MeterUnitData_t *unit = NULL; */
-
-		/* uint32 prevValue = 0; */
-		/* unit = METER_getStoredData(validPos); */
-		/* MISC_bcdToInt(unit->meterData, &prevValue, 4); */
-
-		/* memcpy(p->refValue, &prevValue, 4); */
-		/* memset(p->valueDiff[validPos], 0, 2); */
-
-		/* for (int i = validPos + 1; i < nData; i++) { */
-		/* 	unit = METER_getStoredData(validPos); */
-		/* 	if (METER_isAllFF(unit->meterData, 4)) { */
-		/* 		// meter down */
-		/* 		memset(p->valueDiff[i], 0xFF, 2); */
-		/* 	} else { */
-		/* 		uint32 currValue = 0; */
-		/* 		MISC_bcdToInt(unit->meterData, &currValue, 4); */
-
-		/* 		if (prevValue < */
-		/* 		    currValue) { // 검침값이 줄어든 경우 */
-		/* 			memset(p->valueDiff[i], 0, 2); */
-		/* 		} else { */
-		/* 			uint16 diff = */
-		/* 				(uint16)(prevValue - currValue); */
-		/* 			memcpy(p->valueDiff[i], &diff, 2); */
-		/* 			prevValue = currValue; */
-		/* 		} */
-		/* 	} */
-		/* } */
-	}
-
-	return 7 + (nData *
-		    2); // 7 = interval(1), nData(1), validPos(1), refValue(4)
 }
 
 static int getErrorDataMessage(uchar *buf, int pfUlCnt, int pfDlCnt,
@@ -354,24 +273,14 @@ static int getQaDataMessage(uchar *buf)
 
 static int insert_oneData(NbiotMeterData_t *p)
 {
-	p->interval = METER_getStoredInterval();
-	p->numData = 1;
-
-	// insert only one meter data. so, diff value is not neccessary
-	memset(p->valueDiff[0], 0xFF, 2);
-
 	MeterUnitData_t *pUnitData = METER_getTempData();
-	//TODO
-	/* if (METER_isAllFF(pUnitData->meterData, 4)) { // meter down */
-	/* 	p->refValuePos = 0xFF; */
-	/* 	memset(p->refValue, 0xFF, 4); */
-	/* } else { */
-	/* 	p->refValuePos = 0; */
 
-	/* 	uint32 value = 0; */
-	/* 	MISC_bcdToInt(pUnitData->meterData, &value, 4); */
-	/* 	memcpy(p->refValue, &value, 4); */
-	/* } */
+	p->status = pUnitData->meterStatus;
+	p->volt = pUnitData->volt;
+	p->curr = pUnitData->curr;
+	p->shortCurr = pUnitData->shortCurr;
+	p->power = pUnitData->power;
+	p->cumPower = pUnitData->cumPower;
 
 	return 9; // 9 = interval(1), nData(1), validPos(1), refValue(4), diff(2)
 }
@@ -389,7 +298,7 @@ static int getCurrentDataMessage(uchar *buf)
 	len += insert_id(&p->id);
 	len += insert_radioQuality(&p->radio);
 	len += insert_termInfo(&p->term);
-	len += insert_meterInfo(&p->meter);
+	/* len += insert_meterInfo(&p->meter); */
 	len += insert_meteringParam(&p->mp);
 	// Join message는 아니지만 즉시검침/보고를 위한 message이므로
 	// Join message와 동일한 방식의 metering time을 얻는다.
@@ -439,7 +348,7 @@ static int getJoinMessage(uchar *buf)
 	len += insert_id(&p->id);
 	len += insert_radioQuality(&p->radio);
 	len += insert_termInfo(&p->term);
-	len += insert_meterInfo(&p->meter);
+	/* len += insert_meterInfo(&p->meter); */
 	len += insert_meteringParam(&p->mp);
 	len += insert_meteringTime(&p->meterTime, TRUE);
 	len += insert_tempData(p->data);
@@ -464,10 +373,10 @@ static int getPeriodicDataMessage(uchar *buf)
 	len += insert_id(&p->id);
 	len += insert_radioQuality(&p->radio);
 	len += insert_termInfo(&p->term);
-	len += insert_meterInfo(&p->meter);
+	/* len += insert_meterInfo(&p->meter); */
 	len += insert_meteringParam(&p->mp);
 	len += insert_meteringTime(&p->meterTime, FALSE);
-	len += insert_multiData(&p->data);
+	/* len += insert_multiData(&p->data); */
 
 	p->len = len;
 	buf[len + 2] = cal_checksum(&p->mtype, len); // 2 - protocol, len

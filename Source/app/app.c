@@ -363,6 +363,7 @@ void APP_init(uint8 taskId)
 	FLASH_readConfigInfo(&conf);
 	conf.rtCtrlInterval = conf.reportInterval;
 	conf.rtCtrlThreshold = 0;
+	conf.isUsingPF = TRUE;
 
 	BATT_init();
 	LCD_init();
