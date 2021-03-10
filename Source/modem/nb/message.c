@@ -275,14 +275,24 @@ static int insert_oneData(NbiotMeterData_t *p)
 {
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
-	p->status = pUnitData->meterStatus;
-	p->volt = pUnitData->volt;
-	p->curr = pUnitData->curr;
-	p->shortCurr = pUnitData->shortCurr;
-	p->power = pUnitData->power;
-	p->cumPower = pUnitData->cumPower;
+	/* p->status = pUnitData->meterStatus; */
+	/* p->volt = pUnitData->volt; */
+	/* p->curr = pUnitData->curr; */
+	/* p->shortCurr = pUnitData->shortCurr; */
+	/* p->power = pUnitData->power; */
+	/* p->cumPower = pUnitData->cumPower; */
+	pUnitData->volt = 0x12345678;
+	pUnitData->cumPower = 0x87654321;
 
-	return 21; // 9 = interval(1), nData(1), validPos(1), refValue(4), diff(2)
+	p->status = 0xff;
+	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
+	memcpy(&p->curr, 0, sizeof(pUnitData->volt));
+	memcpy(&p->shortCurr, 0, sizeof(pUnitData->volt));
+	memcpy(&p->power, 0, sizeof(pUnitData->volt));
+	memcpy(&p->cumPower, &pUnitData->cumPower, sizeof(pUnitData->cumPower));
+
+	return sizeof(NbiotMeterData_t);
+	// 21 = status(1), volt(4), curr(4), shortCurr(4), power(4), cumPower(4)
 }
 
 static int getCurrentDataMessage(uchar *buf)
@@ -305,7 +315,7 @@ static int getCurrentDataMessage(uchar *buf)
 	len += insert_oneData(&p->data);
 
 	p->len = len;
-	buf[len + 2] = cal_checksum(&p->mtype, len); // 2 - protocol, len
+	p->checksum = cal_checksum(&p->mtype, len); // 2 - protocol, len
 
 	return len + 3; // 3 = protocol + len + checksum
 }

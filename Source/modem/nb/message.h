@@ -109,8 +109,6 @@ typedef struct {
 typedef struct {
 	uchar meterSerial[4];
 	uchar meterType;
-	/* Comment NbiotMeterInfo_t meterCaliber_dp */
-	/* uchar meterCaliber_dp; */
 	uchar meterStatus;
 } NbiotMeterInfo_t;
 
@@ -129,12 +127,12 @@ typedef struct {
 } NbiotTimeStamp_t;
 
 typedef struct {
-	uint8 status;
-	uint16 volt;
-	uint16 curr;
-	uint16 shortCurr;
-	uint16 power;
-	uint16 cumPower;
+	uchar status;
+	uchar volt[4];
+	uchar curr[4];
+	uchar shortCurr[4];
+	uchar power[4];
+	uchar cumPower[4];
 } NbiotMeterData_t;
 
 typedef struct {
@@ -204,11 +202,10 @@ typedef struct {
 	MobileId_t id; // 16 - 19
 	NbiotRadioQuality_t radio; // 10 - 29
 	NbiotDeviceInfo_t term; // 8  - 37
-	NbiotMeterInfo_t meter; // 7  - 44
-	NbiotMeteringParam_t mp; // 2  - 46
-	NbiotTimeStamp_t meterTime; // 6  - 52
-	NbiotMeterData_t data; // 7 + 2*nData --> 61 ~ 155
-	uchar checksum; // 1  - 156
+	NbiotMeteringParam_t mp; // 1  - 38
+	NbiotTimeStamp_t meterTime; // 6  - 44
+	NbiotMeterData_t data; // 21 --> 65
+	uchar checksum; // 1  - 66
 } NbiotDataReport_t;
 
 int NBMSG_recvAck(char *p, int len);
