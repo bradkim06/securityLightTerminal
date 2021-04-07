@@ -83,42 +83,42 @@ void MODEM_turnOn()
 
 void MODEM_turnOff()
 {
-	if (modemCtx.isPowerOn) {
-		MODEM_DBG("power off\n");
-		NBIOT_release();
+	/* if (modemCtx.isPowerOn) { */
+	/* 	MODEM_DBG("power off\n"); */
+	/* 	NBIOT_release(); */
 
-#if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO)
-		// MOSFET work off power (P1.1)
-		P1SEL &= ~BM(MODEM_VCC2_P1_PIN);
-		P1DIR |= BM(MODEM_VCC2_P1_PIN);
-		P1OUT |= BM(MODEM_VCC2_P1_PIN); // make high
+	/* #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO) */
+	/* 	// MOSFET work off power (P1.1) */
+	/* 	P1SEL &= ~BM(MODEM_VCC2_P1_PIN); */
+	/* 	P1DIR |= BM(MODEM_VCC2_P1_PIN); */
+	/* 	P1OUT |= BM(MODEM_VCC2_P1_PIN); // make high */
 
-		MISC_delayMs(10);
+	/* 	MISC_delayMs(10); */
 
-		// LDO work turn off power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
+	/* 	// LDO work turn off power (P2.0) */
+	/* 	P2SEL &= ~BM(MODEM_VCC1_P2_PIN); */
+	/* 	P2DIR |= BM(MODEM_VCC1_P2_PIN); */
+	/* 	P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low */
 
-		MISC_delayMs(100);
-#elif (DEVICE_REVISION == DEV_REV_PWRCTRL_LDO_ONLY)
-		// LDO work turn off power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
+	/* 	MISC_delayMs(100); */
+	/* #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_LDO_ONLY) */
+	/* 	// LDO work turn off power (P2.0) */
+	/* 	P2SEL &= ~BM(MODEM_VCC1_P2_PIN); */
+	/* 	P2DIR |= BM(MODEM_VCC1_P2_PIN); */
+	/* 	P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low */
 
-		MISC_delayMs(100);
-#elif (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY)
-		// turn off power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
+	/* 	MISC_delayMs(100); */
+	/* #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY) */
+	/* 	// turn off power (P2.0) */
+	/* 	P2SEL &= ~BM(MODEM_VCC1_P2_PIN); */
+	/* 	P2DIR |= BM(MODEM_VCC1_P2_PIN); */
+	/* 	P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high */
 
-		MISC_delayMs(10);
-#endif
+	/* 	MISC_delayMs(10); */
+	/* #endif */
 
-		modemCtx.isPowerOn = FALSE;
-	}
+	/* 	modemCtx.isPowerOn = FALSE; */
+	/* } */
 }
 
 void MODEM_sleep()
@@ -246,42 +246,42 @@ void MODEM_run(ModemProc_t proc, BOOL isLcdOn)
 
 void MODEM_stop(BOOL isVccOff, BOOL isLcdOn)
 {
-	modemCtx.isStop = TRUE;
-	modemCtx.retry = 0;
+	/* modemCtx.isStop = TRUE; */
+	/* modemCtx.retry = 0; */
 
-	NBIOT_close();
-	if (nbCtx.currentStep != NBIOT_STEP_FINISH || isVccOff) {
-		// 모뎀상태와 관계없이 강제 Off
-		MODEM_turnOff();
-	} else {
-		if (nbCtx.status.psmOn) {
-			MODEM_sleep();
-		} else {
-			MODEM_turnOff();
-		}
-	}
-	// 모뎀 off 여부에 따라 동작이 다르므로 위치 주의
-	MODEM_disable();
+	/* NBIOT_close(); */
+	/* if (nbCtx.currentStep != NBIOT_STEP_FINISH || isVccOff) { */
+	/* 	// 모뎀상태와 관계없이 강제 Off */
+	/* 	MODEM_turnOff(); */
+	/* } else { */
+	/* 	if (nbCtx.status.psmOn) { */
+	/* 		MODEM_sleep(); */
+	/* 	} else { */
+	/* 		MODEM_turnOff(); */
+	/* 	} */
+	/* } */
+	/* // 모뎀 off 여부에 따라 동작이 다르므로 위치 주의 */
+	/* MODEM_disable(); */
 
-	// MODEM disable 및 power off(sleep) 후 event 취소.
-	OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
-	OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_RECV_ATCMD);
-	OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
-	OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_FIN_PROC);
-	OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD);
+	/* // MODEM disable 및 power off(sleep) 후 event 취소. */
+	/* OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD); */
+	/* OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_RECV_ATCMD); */
+	/* OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_RUN_PROC); */
+	/* OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_FIN_PROC); */
+	/* OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD); */
 
-	if (isLcdOn) {
-		char buf[0x10] = "";
-		if (MODEM_getResult() == ERROR_CODE_NONE) {
-			snprintf(buf, 0x10, "SUCCESS");
-		} else {
-			snprintf(buf, 0x10, "FAIL %d", MODEM_getResult());
-		}
-		LCD_displayString(buf);
+	/* if (isLcdOn) { */
+	/* 	char buf[0x10] = ""; */
+	/* 	if (MODEM_getResult() == ERROR_CODE_NONE) { */
+	/* 		snprintf(buf, 0x10, "SUCCESS"); */
+	/* 	} else { */
+	/* 		snprintf(buf, 0x10, "FAIL %d", MODEM_getResult()); */
+	/* 	} */
+	/* 	LCD_displayString(buf); */
 
-		MISC_delayMs(1000);
-		LCD_redraw();
-	}
+	/* 	MISC_delayMs(1000); */
+	/* 	LCD_redraw(); */
+	/* } */
 }
 
 static void str2BcdForImeiAndImsi(uchar *pBCD, char *pString)

@@ -218,7 +218,7 @@ static BOOL parseQaReportFinish(const char *pHead, const int *len,
 static BOOL parseDoHwReset(const char *pHead, const int *len, uint32 *nextDelay)
 {
 	*nextDelay = DELAY_NBIOT_BOOTUP;
-	MODEM_turnOff();
+	/* MODEM_turnOff(); */
 	MODEM_turnOn();
 	return TRUE;
 }
