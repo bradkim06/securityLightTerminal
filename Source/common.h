@@ -120,46 +120,17 @@ extern struct Config conf;
 /**
  * @brief Define firmware main version. It depends on the product family.
  */
-#if LORA_DEVICE
-
-#if REPEATER_DEVICE
-#define FW_VER_MAJOR "6"
-#else
-#define FW_VER_MAJOR "1"
-#endif
-
-#define FW_VER_MINOR "30"
-
-#define FIRMWARE_VER_LORA_THINGPLUG ("L" FW_VER_MAJOR FW_VER_MINOR)
-#define FIRMWARE_VER_LORA_PRIVATE ("A" FW_VER_MAJOR FW_VER_MINOR)
-
-#elif NBIOT_DEVICE
-
-#if REPEATER_DEVICE
-#if defined(__MODEM_TPB23__)
-#define FW_VER_MAJOR "6"
-#elif defined(__MODEM_BC95G__)
-#define FW_VER_MAJOR "7"
-#else
-#define FW_VER_MAJOR "F"
-#endif
-#else
-#if defined(__MODEM_TPB23__)
-#define FW_VER_MAJOR "2"
-#elif defined(__MODEM_BC95G__)
+#if NBIOT_DEVICE
+#if defined(__MODEM_BC95G__)
 #define FW_VER_MAJOR "3"
-#else
-#define FW_VER_MAJOR "F"
-#endif
 #endif
 
-#define FW_VER_MINOR "30"
+#define FW_VER_MINOR "31"
 
-#define FIRMWARE_VER_NBIOT_UDP ("N" FW_VER_MAJOR FW_VER_MINOR)
 #define FIRMWARE_VER_NBIOT_ONEM2M ("U" FW_VER_MAJOR FW_VER_MINOR)
 
 #else
-#error "Have to define LORA_DEVICE or NBIOT_DEVICE"
+#error "Have to define NBIOT_DEVICE"
 #endif
 
 #define FIRMWARE_VER_LEN 4

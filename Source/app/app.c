@@ -111,17 +111,7 @@ uint8 APP_getTaskId()
 char *APP_getFwVer(BOOL isUsingPlatform)
 {
 #if NBIOT_DEVICE
-	if (isUsingPlatform) {
-		return FIRMWARE_VER_NBIOT_ONEM2M;
-	} else {
-		return FIRMWARE_VER_NBIOT_UDP;
-	}
-#elif LORA_DEVICE
-	if (isUsingPlatform) {
-		return FIRMWARE_VER_LORA_THINGPLUG;
-	} else {
-		return FIRMWARE_VER_LORA_PRIVATE;
-	}
+	return FIRMWARE_VER_NBIOT_ONEM2M;
 #else
 	return NULL;
 #endif
