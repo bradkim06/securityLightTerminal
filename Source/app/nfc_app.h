@@ -108,22 +108,17 @@ typedef struct {
 	uint8 mtype;
 	uint8 mversion;
 	uint8 serialNum[SERIAL_NUM_LEN];
-	uint8 sleepMode;
-	uint8 year[2];
-	uint8 mon;
-	uint8 day;
-	uint8 hour;
-	uint8 min;
-	uint8 sec;
-	uint8 meterInterval;
+	uint8 datTime[4];
 	uint8 reportInterval;
-	uint8 messageFrame;
-#if NBIOT_DEVICE
+	uint8 serviceCode[4];
 	uint8 serverIp[4];
 	uint8 serverPort[2];
-#endif
-	uint8 meterNum;
-	NfcMeterInfo_t meterInfo[3];
+	uint8 areaCode;
+	uint8 activeMode;
+	uint8 controlMode;
+	uint8 saveMode;
+	uint8 delayOffset;
+	uint8 dimmingMode;
 } NfcConfSetV1_t;
 
 // For Repeator message format (protocol version 2)
@@ -262,27 +257,20 @@ typedef struct {
 	uint8 result;
 	uint8 errorCode;
 	uint8 serialNum[SERIAL_NUM_LEN];
-	uint8 sleepMode;
-	uint8 reserved;
-#if LORA_DEVICE
-	uint8 appEui[8];
-#else // NBIOT_DEVICE
 	uint8 imsi[8];
 	uint8 serverIp[4];
 	uint8 serverPort[2];
-#endif
 	uint8 batt;
 	uint8 fwVer[4];
-	uint8 meterInterval;
+	uint8 serviceCode[4];
+	uint8 areaCode;
+	uint8 activeMode;
+	uint8 controlMode;
+	uint8 saveMode;
+	uint8 delayOffset;
+	uint8 dimmingMode;
 	uint8 reportInterval;
-	uint8 year[2];
-	uint8 mon;
-	uint8 day;
-	uint8 hour;
-	uint8 min;
-	uint8 sec;
-	uint8 nMeter;
-	NfcMeterInfo_t meterInfo[3];
+	uint8 dateTime[4];
 } NfcConfReportV1_t;
 
 // For Repeator message format (protocol version 2)

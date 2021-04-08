@@ -203,71 +203,45 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 
 	NfcConfReportV1_t *p = (NfcConfReportV1_t *)msg;
 
-#if LORA_DEVICE
-	p->mtype = LORA_CONF_REPORT;
-#else
-	p->mtype = NB_CONF_REPORT;
-#endif
-	p->mversion = NFC_PROTOCOL_VER_1;
-	p->reportType = reportType;
-	if (p->reportType == REPORT_TYPE_SET) {
-		if (error) {
-			p->result = 1;
-		} else {
-			p->result = 0;
-		}
-		p->errorCode = error;
-	}
-
-	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
-
-	/* Comment sleepMode */
-	/* if (conf.sleepMode) { */
-	/* 	p->sleepMode = SLEEP_MODE_SLEEP; */
-	/* } else { */
-	/* 	p->sleepMode = SLEEP_MODE_NORMAL; */
+	/* p->mtype = NB_CONF_REPORT; */
+	/* p->mversion = NFC_PROTOCOL_VER_1; */
+	/* p->reportType = reportType; */
+	/* if (p->reportType == REPORT_TYPE_SET) { */
+	/* 	if (error) { */
+	/* 		p->result = 1; */
+	/* 	} else { */
+	/* 		p->result = 0; */
+	/* 	} */
+	/* 	p->errorCode = error; */
 	/* } */
-#if LORA_DEVICE
-	MODEM_getAppEui(p->appEui);
-#else
-	MODEM_getImsi(p->imsi);
-	MISC_ipToHexArray(conf.serverIp, p->serverIp);
 
-	uchar temp = 0;
-	temp = p->serverIp[0];
-	p->serverIp[0] = p->serverIp[3];
-	p->serverIp[3] = temp;
+	/* memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN); */
 
-	temp = p->serverIp[2];
-	p->serverIp[2] = p->serverIp[1];
-	p->serverIp[1] = temp;
+	/* MODEM_getImsi(p->imsi); */
+	/* MISC_ipToHexArray(conf.serverIp, p->serverIp); */
 
-	memcpy(p->serverPort, &conf.serverPort, 2);
-#endif
-	p->batt = BATT_getLastVoltage() & 0xff;
-	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
-	/* p->meterInterval = conf.meterInterval; */
-	p->reportInterval = conf.reportInterval;
+	/* uchar temp = 0; */
+	/* temp = p->serverIp[0]; */
+	/* p->serverIp[0] = p->serverIp[3]; */
+	/* p->serverIp[3] = temp; */
 
-	readRtcV1(p->year);
+	/* temp = p->serverIp[2]; */
+	/* p->serverIp[2] = p->serverIp[1]; */
+	/* p->serverIp[1] = temp; */
 
-#if 1
-	p->nMeter = 1;
-	p->meterInfo[0].meterPort = 1;
-	p->meterInfo[0].meterType = conf.meterType;
-#else
-	p->nMeter = conf.meterNum;
-	for (int i = 0; i < conf.meterNum; i++) {
-		p->meterInfo[i].meterPort = conf.meterInfo[i].meterPort;
-		p->meterInfo[i].meterType = conf.meterInfo[i].meterType;
-	}
-#endif
+	/* memcpy(p->serverPort, &conf.serverPort, 2); */
+	/* p->batt = BATT_getLastVoltage() & 0xff; */
+	/* memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN); */
+	/* /1* p->meterInterval = conf.meterInterval; *1/ */
+	/* p->reportInterval = conf.reportInterval; */
 
-	// meter가 3개일 때를 기준으로 message format이 정의되어 있으므로 그 수가
-	// 모자라면 그만큼 줄임
-	int msgLen = sizeof(NfcConfReportV1_t) - (3 - p->nMeter) * 2;
+	/* readRtcV1(p->year); */
 
-	send(msg, msgLen);
+	/* // meter가 3개일 때를 기준으로 message format이 정의되어 있으므로 그 수가 */
+	/* // 모자라면 그만큼 줄임 */
+	/* int msgLen = sizeof(NfcConfReportV1_t) - (3 - p->nMeter) * 2; */
+
+	/* send(msg, msgLen); */
 }
 
 void sendNodeConfReport(uint8 reportType, int error)
@@ -699,91 +673,76 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 {
 	NfcConfSetV1_t *p = (NfcConfSetV1_t *)data;
 
-	setRtcV1(p->year);
+	/* setRtcV1(p->year); */
 
-	Config_t tconfig;
-	memcpy(&tconfig, &conf, sizeof(Config_t));
+	/* Config_t tconfig; */
+	/* memcpy(&tconfig, &conf, sizeof(Config_t)); */
 
-	int error = 0;
-	int changed = 0;
-	do {
-		// p->serialNum --> check하여 에러 처리할 필요가 있는가?
-		if (memcmp(p->serialNum, tconfig.serialNum, SERIAL_NUM_LEN) !=
-		    0) {
-			error = CONFIG_ERR_SERIAL_NUM;
-			break;
-		}
+	/* int error = 0; */
+	/* int changed = 0; */
+	/* do { */
+	/* 	// p->serialNum --> check하여 에러 처리할 필요가 있는가? */
+	/* 	if (memcmp(p->serialNum, tconfig.serialNum, SERIAL_NUM_LEN) != */
+	/* 	    0) { */
+	/* 		error = CONFIG_ERR_SERIAL_NUM; */
+	/* 		break; */
+	/* 	} */
 
-		if (p->sleepMode == SLEEP_MODE_SLEEP) {
-			/* Comment config sleepMode */
-			/* if (!tconfig.sleepMode) { */
-			/* 	tconfig.sleepMode = 1; */
-			/* 	changed = 1; */
-			/* } */
-		} else if (p->sleepMode == SLEEP_MODE_NORMAL) {
-			/* Comment config sleepMode */
-			/* if (tconfig.sleepMode) { */
-			/* 	tconfig.sleepMode = 0; */
-			/* 	changed = 1; */
-			/* } */
-		}
+	/* 	uint8 ri = p->reportInterval; */
 
-		uint8 mi = p->meterInterval;
-		uint8 ri = p->reportInterval;
+	/* 	if ((24 % mi) != 0 || (24 % ri) != 0 || mi > ri) { */
+	/* 		error = CONFIG_ERR_METERING_PARAM; */
+	/* 		break; */
+	/* 	} */
 
-		if ((24 % mi) != 0 || (24 % ri) != 0 || mi > ri) {
-			error = CONFIG_ERR_METERING_PARAM;
-			break;
-		}
+	/* 	if (tconfig.meterInterval != mi) { */
+	/* 		tconfig.meterInterval = mi; */
+	/* 		changed = 1; */
+	/* 	} */
 
-		if (tconfig.meterInterval != mi) {
-			tconfig.meterInterval = mi;
-			changed = 1;
-		}
+	/* 	if (tconfig.reportInterval != ri) { */
+	/* 		tconfig.reportInterval = ri; */
+	/* 		changed = 1; */
+	/* 	} */
 
-		if (tconfig.reportInterval != ri) {
-			tconfig.reportInterval = ri;
-			changed = 1;
-		}
+	/* #if NBIOT_DEVICE */
+	/* 	char newIP[SERVER_IP_STR_LEN]; */
+	/* 	sprintf(newIP, "%d.%d.%d.%d", p->serverIp[3], p->serverIp[2], */
+	/* 		p->serverIp[1], p->serverIp[0]); */
 
-#if NBIOT_DEVICE
-		char newIP[SERVER_IP_STR_LEN];
-		sprintf(newIP, "%d.%d.%d.%d", p->serverIp[3], p->serverIp[2],
-			p->serverIp[1], p->serverIp[0]);
+	/* 	if (strncmp(newIP, tconfig.serverIp, SERVER_IP_STR_LEN) != 0) { */
+	/* 		strcpy(tconfig.serverIp, newIP); */
+	/* 		changed = 1; */
+	/* 	} */
 
-		if (strncmp(newIP, tconfig.serverIp, SERVER_IP_STR_LEN) != 0) {
-			strcpy(tconfig.serverIp, newIP);
-			changed = 1;
-		}
+	/* 	uint16 newPort; */
+	/* 	memcpy(&newPort, p->serverPort, 2); */
 
-		uint16 newPort;
-		memcpy(&newPort, p->serverPort, 2);
+	/* 	if (newPort != tconfig.serverPort) { */
+	/* 		tconfig.serverPort = newPort; */
+	/* 		changed = 1; */
+	/* 	} */
+	/* #endif */
+	/* 	uint8 mt = p->meterInfo[0].meterType; */
+	/* 	if (mt != E_METER) { */
+	/* 		error = CONFIG_ERR_METER_TYPE; */
+	/* 		break; */
+	/* 	} */
 
-		if (newPort != tconfig.serverPort) {
-			tconfig.serverPort = newPort;
-			changed = 1;
-		}
-#endif
-		uint8 mt = p->meterInfo[0].meterType;
-		if (mt != E_METER) {
-			error = CONFIG_ERR_METER_TYPE;
-			break;
-		}
+	/* 	if (tconfig.meterType != mt) { */
+	/* 		tconfig.meterType = mt; */
+	/* 		changed = 1; */
+	/* 	} */
 
-		if (tconfig.meterType != mt) {
-			tconfig.meterType = mt;
-			changed = 1;
-		}
+	/* 	error = 0; */
+	/* } while (0); */
 
-		error = 0;
-	} while (0);
+	/* if (error == 0 && changed) { */
+	/* 	memcpy(&conf, &tconfig, sizeof(Config_t)); */
+	/* 	OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG); */
+	/* } */
 
-	if (error == 0 && changed) {
-		memcpy(&conf, &tconfig, sizeof(Config_t));
-		OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG);
-	}
-
-	sendNodeConfReport(REPORT_TYPE_SET, error);
+	/* sendNodeConfReport(REPORT_TYPE_SET, error); */
 }
 
 #if REPEATER_DEVICE
@@ -894,11 +853,7 @@ void recvNodeConfSetV2(byte *data, uint8 len)
 
 void recvNodeConfSet(byte *data, uint8 len)
 {
-#if REPEATER_DEVICE
-	recvNodeConfSetV2(data, len);
-#else
 	recvNodeConfSetV1(data, len);
-#endif
 }
 
 void recvMeterReq(byte *data, uint8 len)
