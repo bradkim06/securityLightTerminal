@@ -246,7 +246,7 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 #endif
 	p->batt = BATT_getLastVoltage() & 0xff;
 	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
-	p->meterInterval = conf.meterInterval;
+	/* p->meterInterval = conf.meterInterval; */
 	p->reportInterval = conf.reportInterval;
 
 	readRtcV1(p->year);
@@ -270,81 +270,9 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 	send(msg, msgLen);
 }
 
-#if REPEATER_DEVICE
-
-void sendNodeConfReportV2(uint8 reportType, int error)
-{
-	byte msg[64];
-	memset(msg, 0, sizeof(msg));
-
-	NfcConfReportV2_t *p = (NfcConfReportV2_t *)msg;
-
-#if LORA_DEVICE
-	p->mtype = LORA_CONF_REPORT;
-#else
-	p->mtype = NB_CONF_REPORT;
-#endif
-	p->mversion = NFC_PROTOCOL_VER_2;
-	p->reportType = reportType;
-	if (p->reportType == REPORT_TYPE_SET) {
-		if (error) {
-			p->result = 1;
-		} else {
-			p->result = 0;
-		}
-		p->errorCode = error;
-	}
-
-	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
-
-	if (conf.sleepMode) {
-		p->sleepMode = SLEEP_MODE_SLEEP;
-	} else {
-		p->sleepMode = SLEEP_MODE_NORMAL;
-	}
-#if LORA_DEVICE
-	MODEM_getAppEui(p->appEui);
-#else
-	MODEM_getImsi(p->imsi);
-	MISC_ipToHexArray(conf.serverIp, p->serverIp);
-
-	uchar temp = 0;
-	temp = p->serverIp[0];
-	p->serverIp[0] = p->serverIp[3];
-	p->serverIp[3] = temp;
-
-	temp = p->serverIp[2];
-	p->serverIp[2] = p->serverIp[1];
-	p->serverIp[1] = temp;
-
-	memcpy(p->serverPort, &conf.serverPort, 2);
-#endif
-	p->batt = BATT_getLastVoltage() & 0xff;
-	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
-	p->meterInterval = conf.meterInterval;
-	p->reportInterval = conf.reportInterval;
-
-	readRtcV2(p->dateTime);
-
-	memcpy(p->amiInfo.panId, &conf.pan_id, sizeof(uint16));
-	memcpy(p->amiInfo.nwkAddr, &conf.nwk_addr, sizeof(uint32));
-
-	int slaveIdPos = getFirstZeroPosition(conf.nwk_addr);
-	uint8 *slaveNwk = (uint8 *)&conf.slaveNwk;
-	p->amiInfo.slaveId = *(slaveNwk + slaveIdPos);
-
-	send(msg, sizeof(NfcConfReportV2_t));
-}
-
-#endif // #if REPEATER_DEVICE
-
 void sendNodeConfReport(uint8 reportType, int error)
 {
-#if REPEATER_DEVICE
-	sendNodeConfReportV2(reportType, error);
-#else
 	sendNodeConfReportV1(reportType, error);
-#endif
 }
 
 void sendMeterReport()
