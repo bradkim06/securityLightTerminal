@@ -552,8 +552,6 @@ int NBMSG_recvReqChgInterval(uchar *buf, int len)
 			NBMSG_DBG("Report interval is same (%d)\n", ri);
 			return TRUE;
 		} else if (ri == 0) {
-			NBMSG_DBG("Report interval is '0' not changed (%d)\n",
-				  ri);
 			return TRUE;
 		} else if (24 % ri) {
 			// 검침주기나 보고주기가 24의 약수가 아니면 무시
