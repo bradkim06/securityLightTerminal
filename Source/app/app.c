@@ -323,30 +323,30 @@ void APP_ctrlReportTime()
 }
 
 /* Comment APP_prepareToSleep */
-/* void APP_prepareToSleep() */
-/* { */
-/* #if REPEATER_DEVICE */
-/* 	SLAVE_close(); */
-/* #endif */
+void APP_prepareToSleep()
+{
+	/* #if REPEATER_DEVICE */
+	/* 	SLAVE_close(); */
+	/* #endif */
 
-/* 	BOOL isLcdOn = FALSE; */
-/* 	if (Metering.type == INITIAL_METERING || */
-/* 	    Metering.type == IMMEDIATE_METERING_FOR_REPORT) { */
-/* 		isLcdOn = TRUE; */
-/* 	} */
+	/* 	BOOL isLcdOn = FALSE; */
+	/* 	if (Metering.type == INITIAL_METERING || */
+	/* 	    Metering.type == IMMEDIATE_METERING_FOR_REPORT) { */
+	/* 		isLcdOn = TRUE; */
+	/* 	} */
 
-/* 	if (conf.sleepMode) { */
-/* 		MODEM_stop(TRUE, isLcdOn); */
-/* 		LCD_displayString("SLEEP"); */
-/* 	} else { */
-/* 		MODEM_stop(FALSE, isLcdOn); */
-/* 		LCD_redraw(); */
-/* 		if (Metering.success == 0) { */
-/* 			LCD_displayError(LCD_ERROR_METERING); */
-/* 		} */
-/* 		ALARM_schedule(); */
-/* 	} */
-/* } */
+	/* 	if (conf.sleepMode) { */
+	/* 		MODEM_stop(TRUE, isLcdOn); */
+	/* 		LCD_displayString("SLEEP"); */
+	/* 	} else { */
+	/* 		MODEM_stop(FALSE, isLcdOn); */
+	/* 		LCD_redraw(); */
+	/* 		if (Metering.success == 0) { */
+	/* 			LCD_displayError(LCD_ERROR_METERING); */
+	/* 		} */
+	/* 		ALARM_schedule(); */
+	/* 	} */
+}
 
 void APP_init(uint8 taskId)
 {
@@ -572,6 +572,7 @@ void APP_runPeriodicReport()
 	int state = MODEM_getState();
 	if (state == DEVICE_STATUS_IDLE) {
 		MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE);
+		printf_ts("modem run\n");
 	} else {
 		printf_ts("Modem is running(%d) when reporting period\n",
 			  state);

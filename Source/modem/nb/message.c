@@ -520,8 +520,7 @@ int NBMSG_recvReqChgInterval(uchar *buf, int len)
 
 	uchar *data = NULL;
 	if (*buf != PROTOCOL_VERSION) {
-		int rawDataLen =
-			(len / 2); // len이 홀수 인 경우 마지막 1 byte는 버림.
+		int rawDataLen = len;
 		data = (uchar *)malloc(rawDataLen);
 		for (int i = 0; i < rawDataLen; i++) {
 			*(data + i) = MISC_asciiToBCD(*(buf + i * 2),
@@ -531,9 +530,10 @@ int NBMSG_recvReqChgInterval(uchar *buf, int len)
 		data = buf;
 	}
 
-	NbiotIntervalReq_t *pIntervalReq = (NbiotIntervalReq_t *)data;
-	if (pIntervalReq->mtype == NBIOT_INTERVAL_REQ) {
-		uchar rChecksum = *(data + pIntervalReq->len + 2);
+	NbiotAckResp_t *pIntervalReq = (NbiotAckResp_t *)data;
+	if (pIntervalReq->mtype == NBIOT_ACK_RESP) {
+		/* uchar rChecksum = *(data + pIntervalReq->len + 2); */
+		uchar rChecksum = pIntervalReq->checksum;
 		uchar cChecksum =
 			cal_checksum(&pIntervalReq->mtype, pIntervalReq->len);
 
@@ -543,40 +543,35 @@ int NBMSG_recvReqChgInterval(uchar *buf, int len)
 			return 0;
 		}
 
-		uchar mi = pIntervalReq->mi;
 		uchar ri = pIntervalReq->ri;
 
+		// 둘 중 하나가 0이거나, 보고주기보다 검침주기보가 크면 무시
+
 		// 기존 것과 같으면 무시
-		if (mi == conf.meterInterval && ri == conf.reportInterval) {
-			NBMSG_DBG("interval is same (mi : %d, ri : %d)\n", mi,
+		if (ri == conf.reportInterval) {
+			NBMSG_DBG("Report interval is same (%d)\n", ri);
+			return TRUE;
+		} else if (ri == 0) {
+			NBMSG_DBG("Report interval is '0' not changed (%d)\n",
+				  ri);
+			return TRUE;
+		} else if (24 % ri) {
+			// 검침주기나 보고주기가 24의 약수가 아니면 무시
+			NBMSG_DBG("Report interval can not over 24h (%d)\n",
 				  ri);
 			return 0;
 		}
 
-		// 둘 중 하나가 0이거나, 보고주기보다 검침주기보가 크면 무시
-		if (ri == 0 || mi == 0 || ri < mi) {
-			NBMSG_DBG(
-				"interval is '0' or 'ri < mi' (mi : %d, ri : %d)\n",
-				mi, ri);
-			return 0;
-		}
-
-		// 검침주기나 보고주기가 24의 약수가 아니면 무시
-		if ((24 % mi) || (24 % ri)) {
-			NBMSG_DBG(
-				"interval can not over 24h (mi : %d, ri : %d)\n",
-				mi, ri);
-			return 0;
-		}
-
-		conf.meterInterval = mi;
 		conf.reportInterval = ri;
 
 		FLASH_saveConfigInfo(&conf);
 		FLASH_readConfigInfo(&conf);
 
-		NBMSG_DBG("meter interval(%d) report interval(%d) -- changed\n",
-			  mi, ri);
+		NBMSG_DBG("report interval(%d) -- changed\n", ri);
+
+		if (pIntervalReq->isReset) {
+			OSAL_setEvent(APP_getTaskId(), APP_EVENT_REBOOT);
+		}
 
 		return 1;
 	}

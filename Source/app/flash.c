@@ -158,9 +158,7 @@ static void readConfig(FlashConfig_t *pInfo)
 		memcpy((uint8 *)pInfo, (uint8 *)&info_a, sizeof(FlashConfig_t));
 		pInfo->meterType = E_METER;
 		pInfo->meterInterval = 1;
-		pInfo->reportInterval = 6;
-		/* Remove sleepMode */
-		/* pInfo->sleepMode = 0; */
+		pInfo->reportInterval = 1;
 		pInfo->rtCtrlMode = 0;
 		pInfo->isShortInterval = 0;
 		pInfo->debugPrint = 0;

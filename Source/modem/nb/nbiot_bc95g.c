@@ -48,6 +48,7 @@
 #define ATCMD_NSOST "AT+NSOST" // Socket send uplink
 #define ATCMD_NSOCL "AT+NSOCL" // Socket close
 #define ATCMD_NSORF "AT+NSORF" // Socket receive downlink
+#define ATCMD_CEDRXS "AT+CEDRXS" // eDRX Setting
 
 #define ATCMD_QGMR "AT+QGMR" // GET F/W version (BC95G)
 #define ATCMD_QBOOTSTRAPHOLDOFF                                                \
@@ -757,7 +758,7 @@ static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 
 		p += strlen(LWM2M_DOWNLINK);
 		int len = atoi(p);
-		p += 2;
+		p += 3;
 		if (NBMSG_recvSimpleAck((uchar *)p, len)) {
 			return TRUE;
 		} else if (NBMSG_recvReqReset((uchar *)p, len)) {
@@ -765,12 +766,8 @@ static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 		} else if (NBMSG_recvReqChgInterval((uchar *)p, len)) {
 			return TRUE;
 		}
-	} else {
-		// ACK가 없더라도 PSM 이벤트 발생 시 완료 처리.
-		if (nbCtx.status.psmOn) {
-			return TRUE;
-		}
 	}
+
 	return FALSE;
 }
 
@@ -975,18 +972,16 @@ static void init()
 		   ATCMD_QLWEPNS "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWSERVERIP,
 		   ATCMD_QLWSERVERIP "?");
-	if (!conf.isModemInit) {
-		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_CFUN "=0");
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_CPSMS "=1");
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_NBAND "=5");
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_NCONFIG "=CELL_RESELECTION,TRUE");
-		nbCtx.status.setCfg = 1;
-	}
+	ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+		   ATCMD_CFUN "=0");
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+		   ATCMD_CPSMS "=0");
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+		   ATCMD_NBAND "=5");
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+		   ATCMD_NCONFIG "=CELL_RESELECTION,TRUE");
+	nbCtx.status.setCfg = 1;
 }
 
 static void attach()
@@ -1095,12 +1090,6 @@ static void transfer()
 
 static void fota()
 {
-	if (conf.isUsingPF == FALSE) {
-		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV,
-			   parseLwm2mBootstrap, ATCMD);
-		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV,
-			   parseLwm2mRegStart, ATCMD_QLWSREGIND "=0");
-	}
 	ATCMD_push(TIMEOUT_FOTA_DOWN_REQ, RETRY_LWM2M_FOTA, parseLwm2mFotaWait,
 		   ATCMD);
 }
@@ -1199,15 +1188,16 @@ BOOL NBIOT_sendDataProcess()
 		transfer();
 		nbCtx.nextStep = (nbCtx.proc.runFota) ? NBIOT_STEP_FOTA :
 							NBIOT_STEP_DETACH_NW;
+		/* nbCtx.nextStep = NBIOT_STEP_FINISH; */
 	} else if (nbCtx.currentStep == NBIOT_STEP_FOTA) {
 		fota();
-		nbCtx.nextStep = NBIOT_STEP_DETACH_NW;
+		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_DETACH_NW) {
 		// "PSM미진입", "FOTA완료", "Register업데이트 필요" 인 경우 detach 진행.
-		if (!nbCtx.status.psmOn || nbCtx.lwm2m.fotaFinish ||
-		    nbCtx.proc.updateReg) {
-			detach();
-		}
+		/* if (!nbCtx.status.psmOn || nbCtx.lwm2m.fotaFinish || */
+		/*     nbCtx.proc.updateReg) { */
+		/* 	detach(); */
+		/* } */
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_FINISH) {
 		if (nbCtx.cellreg != NBIOT_CELLREG_ATTACHED) {

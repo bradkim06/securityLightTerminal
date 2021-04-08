@@ -11,18 +11,9 @@
 #include "uart.h"
 
 // 정의된 RTC 타이머 이벤트 개수.
-#if REPEATER_DEVICE
 #define RTC_ALARM_COUNT 1
-#else
-#define RTC_ALARM_COUNT 3
-#endif
 
-#define ALARM_TYPE_STR(x)                                                      \
-	(((x) == RTC_ALARM_METERING) ?                                         \
-		 "metering" :                                                  \
-		 ((x) == RTC_ALARM_REPORT) ?                                   \
-		 "report" :                                                    \
-		 ((x) == RTC_ALARM_METER_SAVE) ? "meter save" : "unknown")
+#define ALARM_TYPE_STR(x) (((x) == RTC_ALARM_REPORT) ? "report" : "unknown")
 
 static int TimeSyncFlag = 0;
 static Date_t TimeSyncDate;
@@ -46,48 +37,17 @@ void ALARM_init()
 	RTC_read(&date);
 
 	do {
-		if (MISC_isValidDate(
-			    &date)) { // CPU 내의 RTC register가 유효한 값.
+		// CPU 내의 RTC register가 유효한 값.
+		if (MISC_isValidDate(&date)) {
 			break;
 		}
-
-		setDefaultRTC(&date); // default 시간 설정
+		// default 시간 설정
+		setDefaultRTC(&date);
 	} while (0);
 
 	RTC_set(&date);
-
-	// 보조중계기 및 분단위 검침 시 alaram은 1개만 metering type 및 report min으로
-	// 등록. report min에 맞춰 검침 및 보고를 수행. (분단위 동작은
-	// shortScheduler() 참조)
-	if (conf.isShortInterval) {
-		AlarmList[0].type = RTC_ALARM_METERING;
-		AlarmList[0].minute = conf.reportMin;
-#if (REPEATER_DEVICE == 0)
-		AlarmList[1].type = RTC_ALARM_UNKNOWN;
-		AlarmList[1].minute = 0;
-		AlarmList[2].type = RTC_ALARM_UNKNOWN;
-		AlarmList[2].minute = 0;
-#endif
-	} else {
-#if REPEATER_DEVICE
-		AlarmList[0].type = RTC_ALARM_METERING;
-		AlarmList[0].minute = conf.reportMin;
-#else
-		AlarmList[0].type = RTC_ALARM_METERING;
-		AlarmList[0].minute = 0;
-		if (conf.reportMin > 30) {
-			AlarmList[1].type = RTC_ALARM_METER_SAVE;
-			AlarmList[1].minute = 15;
-			AlarmList[2].type = RTC_ALARM_REPORT;
-			AlarmList[2].minute = conf.reportMin;
-		} else {
-			AlarmList[1].type = RTC_ALARM_REPORT;
-			AlarmList[1].minute = conf.reportMin;
-			AlarmList[2].type = RTC_ALARM_METER_SAVE;
-			AlarmList[2].minute = 45;
-		}
-#endif
-	}
+	AlarmList[0].type = RTC_ALARM_REPORT;
+	AlarmList[0].minute = conf.reportMin;
 
 	TimeSyncFlag = 0;
 	memset(&TimeSyncDate, 0, sizeof(Date_t));
@@ -211,6 +171,14 @@ void normalScheduler()
 		  ALARM_TYPE_STR(NextAlarm->type));
 }
 
+int ALARM_status()
+{
+	if (NextAlarm == NULL) {
+		return 0;
+	}
+	return 1;
+}
+
 void ALARM_schedule()
 {
 	if (conf.isShortInterval) {
@@ -222,12 +190,6 @@ void ALARM_schedule()
 
 void ALARM_run()
 {
-	/* Comment check sleepMode ALARM_run */
-	/* if (conf.sleepMode || NextAlarm == NULL) { */
-	/* 	APP_prepareToSleep(); */
-	/* 	return; */
-	/* } */
-
 	printf_ts("alarm occurred - '%s'\n", ALARM_TYPE_STR(NextAlarm->type));
 	if (conf.isShortInterval) {
 		APP_runMetering(PERIODIC_METERING);
@@ -238,62 +200,17 @@ void ALARM_run()
 	RTC_read(&date);
 
 	RtcAlarmType_t alarmType = NextAlarm->type;
-#if REPEATER_DEVICE
-	if (alarmType == RTC_ALARM_METERING) {
-		if (MISC_checkInterval(date.hour, conf.reportHour,
-				       conf.rtCtrlInterval)) {
-			APP_runMetering(PERIODIC_METERING);
-		}
-		/* Comment APP_prepareToSleep */
-		/* else { */
-		/* 	APP_prepareToSleep(); */
-		/* } */
-	}
-#else
 	if (alarmType == RTC_ALARM_REPORT) {
 		if (MISC_checkInterval(date.hour, conf.reportHour,
 				       conf.rtCtrlInterval)) {
+			APP_runMetering(PERIODIC_METERING);
 			APP_runPeriodicReport();
 		}
-		/* Comment APP_prepareToSleep */
-		/* else { */
-		/* 	APP_prepareToSleep(); */
-		/* } */
-	} else if (alarmType == RTC_ALARM_METERING) {
-		if (MISC_checkInterval(date.hour, conf.reportHour,
-				       conf.meterInterval)) {
-			APP_runMetering(PERIODIC_METERING);
-		}
-		/* Comment APP_prepareToSleep */
-		/* } else { */
-		/* 	APP_prepareToSleep(); */
-		/* } */
-	} else if (alarmType == RTC_ALARM_METER_SAVE) {
-		if (ALARM_isTimeSync()) {
-			// 기간검침 데이터 저장 Base Time을 "통신 Base Time + 1시간" 으로 설정.
-			// 해당 이유는 LoRa 통신 문제 발생 시 Join시도를 1시간동안 하므로
-			// 경우에 따라 0시에 기간검침 데이터를 저장하지 않는 문제가 발생하므로
-			// 수정.
-			if ((date.hour % METER_DATA_SAVE_INTERVAL) ==
-			    (conf.reportHour + 1)) {
-				APP_runMetering(PERIODIC_METERING_FOR_SAVE);
-			}
-			/* Comment APP_prepareToSleep */
-			/* else { */
-			/* 	APP_prepareToSleep(); */
-			/* } */
-		}
-		/* Comment APP_prepareToSleep */
-		/* } else { */
-		/* 	APP_prepareToSleep(); */
-		/* } */
-	}
-#endif
-	else {
+	} else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);
-		/* Comment APP_prepareToSleep */
-		/* APP_prepareToSleep(); */
 	}
+
+	NextAlarm = NULL;
 }
 
 void ALARM_isr()

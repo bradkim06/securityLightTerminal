@@ -7,7 +7,7 @@
 
 #define NBIOT_JOIN 0x30
 #define NBIOT_ACK 0x50
-#define NBIOT_INTERVAL_REQ 0x50
+#define NBIOT_ACK_RESP 0x50
 #define NBIOT_CMD_CHG_SERVER 0x5A
 #define NBIOT_DATA_REPORT 0x70
 
@@ -187,13 +187,16 @@ typedef struct {
 } NbiotSimpleAck_t;
 
 typedef struct {
-	uchar protocol; // 1 -  1
-	uchar len; // 1 -  2
-	uchar mtype; // 1 -  3
-	uchar mi; // 1  - 27
-	uchar ri; // 1  - 28
-	uchar checksum; // 1  - 29
-} NbiotIntervalReq_t;
+	uchar protocol; // 1 - 1
+	uchar len; // 1 - 2
+	uchar mtype; // 1 - 3
+	uchar imei[8]; // 8 - 11
+	uchar imsi[8]; // 8 - 19
+	NbiotTimeStamp_t time; // 6 - 25
+	uchar isReset; // 1 - 26
+	uchar ri; // 1- 27 Report Interval
+	uchar checksum; // 1  - 28
+} NbiotAckResp_t;
 
 typedef struct {
 	uchar protocol; // 1 -  1

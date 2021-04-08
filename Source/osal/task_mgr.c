@@ -99,6 +99,12 @@ void TASKMGR_run(void)
 						break;
 					}
 				}
+
+				if (taskIdx >= TasksTotalCounts) {
+					if (ALARM_status() == 0) {
+						ALARM_schedule();
+					}
+				}
 			}
 		}
 	}

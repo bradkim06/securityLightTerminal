@@ -1,4 +1,4 @@
-# Install script for directory: /home/bradkim06/D/terminal/Source
+# Install script for directory: /mnt/d/terminal/Source
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/bradkim06/D/terminal/Source/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/d/terminal/Source/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
