@@ -262,12 +262,8 @@ static BOOL parseLwm2mFotaWait(const char *pHead, const int *len,
 		ATCMD_push(TIMEOUT_FOTA_UPDATE, RETRY_LWM2M_FOTA,
 			   parseLwm2mFotaUpdate, ATCMD_QLWFOTAIND "=4");
 		return TRUE;
-	} else {
-		if (nbCtx.status.psmOn) {
-			return TRUE;
-		}
 	}
-	return FALSE;
+	return TRUE;
 }
 
 static BOOL parseLwm2mFotaDown(const char *pHead, const int *len,
@@ -1302,7 +1298,9 @@ static NbIotError_t getErrorCode(AtCmd_t *atCmd)
 					     .obsObj10250) { // 인증 후 Data 전송 가능 Event 미발생
 					return NBIOT_ERROR_PF_CERITY_FAIL;
 				} else if (!nbCtx.lwm2m.fotaFinish) {
-					return NBIOT_ERROR_PF_FOTA_FAIL;
+					if (nbCtx.lwm2m.fotaDownReq) {
+						return NBIOT_ERROR_PF_FOTA_FAIL;
+					}
 				}
 			}
 
