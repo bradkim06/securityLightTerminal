@@ -263,7 +263,8 @@ static BOOL parseLwm2mFotaWait(const char *pHead, const int *len,
 			   parseLwm2mFotaUpdate, ATCMD_QLWFOTAIND "=4");
 		return TRUE;
 	}
-	return TRUE;
+
+	return FALSE;
 }
 
 static BOOL parseLwm2mFotaDown(const char *pHead, const int *len,
@@ -1173,7 +1174,7 @@ BOOL NBIOT_sendDataProcess()
 			nbCtx.error = NBIOT_ERROR_ATTACH_FAIL;
 			return TRUE;
 		}
-		if (!nbCtx.status.psmOn) {
+		if (!conf.isModemInit) {
 			init();
 		}
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
@@ -1182,18 +1183,12 @@ BOOL NBIOT_sendDataProcess()
 		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 		transfer();
-		nbCtx.nextStep = (nbCtx.proc.runFota) ? NBIOT_STEP_FOTA :
-							NBIOT_STEP_DETACH_NW;
-		/* nbCtx.nextStep = NBIOT_STEP_FINISH; */
+		nbCtx.nextStep = (nbCtx.lwm2m.fotaDownReq) ? NBIOT_STEP_FOTA :
+							     NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_FOTA) {
 		fota();
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_DETACH_NW) {
-		// "PSM미진입", "FOTA완료", "Register업데이트 필요" 인 경우 detach 진행.
-		/* if (!nbCtx.status.psmOn || nbCtx.lwm2m.fotaFinish || */
-		/*     nbCtx.proc.updateReg) { */
-		/* 	detach(); */
-		/* } */
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_FINISH) {
 		if (nbCtx.cellreg != NBIOT_CELLREG_ATTACHED) {
