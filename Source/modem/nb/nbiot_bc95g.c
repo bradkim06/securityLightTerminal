@@ -1174,9 +1174,7 @@ BOOL NBIOT_sendDataProcess()
 			nbCtx.error = NBIOT_ERROR_ATTACH_FAIL;
 			return TRUE;
 		}
-		if (!conf.isModemInit) {
-			init();
-		}
+		init();
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
 		attach();
