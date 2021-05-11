@@ -125,7 +125,6 @@ typedef struct {
 	uint8 serialNum[SERIAL_NUM_LEN];
 	uint8 sleepMode;
 	uint8 dateTime[4];
-	uint8 meterInterval;
 	uint8 reportInterval;
 	uint8 messageFrame;
 #if NBIOT_DEVICE
@@ -285,7 +284,6 @@ typedef struct {
 	uint8 serverPort[2];
 	uint8 batt;
 	uint8 fwVer[4];
-	uint8 meterInterval;
 	uint8 reportInterval;
 	NfcAmiInfo_t amiInfo;
 	uint8 dateTime[4];

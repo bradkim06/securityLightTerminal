@@ -17,22 +17,21 @@ extern const uint8 *FlashAddr[];
 // NBIOT_DEVICE
 typedef struct {
 	uint8 meterType; // 0
-	uint8 meterInterval; // 2
-	uint8 reportInterval; // 3
-	uint8 serverIp[4]; // 4, 5, 6, 7
-	uint8 serverPort[2]; // 8, 9
-	uint8 resetCount[2]; // 10, 11
-	uint8 isShortInterval; // 12
-	uint8 debugPrint; // 13
+	uint8 reportInterval; // 2
+	uint8 serverIp[4]; // 3~6
+	uint8 serverPort[2]; // 7~8
+	uint8 resetCount[2]; // 9~10
+	uint8 isShortInterval; // 11
+	uint8 debugPrint; // 12
 	// service code는 현재 LG플랫폼 연동시에만 유효
-	uint8 serviceCode[4]; // 14, 15, 16, 17
-	uint8 isModemInit; // 18
-	uint8 fotaIp[4]; // 19, 20, 21, 22
-	uint8 fotaPort[2]; // 23, 24
-	uint8 fotaInterval; // 25
-	uint8 rtCtrlMode; // 26
-	uint8 isUsingPF; // 27
-	uint8 reserved[3]; // 28 ~ 30
+	uint8 serviceCode[4]; // 13~16
+	uint8 isModemInit; // 17
+	uint8 fotaIp[4]; // 18~21
+	uint8 fotaPort[2]; // 22~23
+	uint8 fotaInterval; // 24
+	uint8 rtCtrlMode; // 25
+	uint8 isUsingPF; // 26
+	uint8 reserved[5]; // 26 ~ 30
 	uint8 checksum; // 31
 } FlashConfig_t;
 

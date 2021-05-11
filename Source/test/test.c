@@ -105,7 +105,6 @@ static BOOL saveTerminalConfig(const char *sn, const int ri, const int mi)
 
 		memcpy(conf.serialNum, sn, SERIAL_NUM_LEN);
 		conf.reportInterval = ri;
-		conf.meterInterval = mi;
 		conf.isShortInterval = 0;
 #if NBIOT_DEVICE
 		conf.isModemInit = FALSE;
@@ -142,27 +141,19 @@ void TEST_debugPrint(int flag)
 
 void TEST_meteringParamer(int ri, int mi)
 {
-	if (mi == 0 || 24 % mi || ri == 0 || 24 % ri) {
-		printf("reportInterval and meteringInterval should be one of 1, 2, 3, 4, 6, "
-		       "12, 24\n");
-		return;
-	}
-
-	if (ri < mi) {
-		printf("reportInterval(%d) is less than meteringInterval(%d)\n",
-		       ri, mi);
+	if (ri == 0 || 24 % ri) {
+		printf("reportInterval should be one of 1, 2, 3, 4, 6, 12, 24\n");
 		return;
 	}
 
 	FLASH_readConfigInfo(&conf);
 
-	conf.meterInterval = mi;
 	conf.reportInterval = ri;
 
 	FLASH_saveConfigInfo(&conf);
 
-	printf("meteringInterval:%d, reportInterval:%d, reportHour:%d\n",
-	       conf.meterInterval, conf.reportInterval, conf.reportHour);
+	printf("reportInterval:%d, reportHour:%d\n", conf.reportInterval,
+	       conf.reportHour);
 }
 
 void TEST_readRTC(int fromJig)
@@ -641,8 +632,8 @@ void TEST_prsn()
 	memcpy(serial, conf.serialNum, SERIAL_NUM_LEN);
 	serial[SERIAL_NUM_LEN] = '\0';
 
-	printf("trsn %s %s %d %d\n", serial, APP_getFwVer(conf.isUsingPF),
-	       conf.reportInterval, conf.meterInterval);
+	printf("trsn %s %s %d\n", serial, APP_getFwVer(conf.isUsingPF),
+	       conf.reportInterval);
 }
 
 void TEST_pwmeter(int numMeter, int type1, int port1, int type2, int port2,
@@ -724,9 +715,9 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 			/* Comment metering test */
 			/* StdAdjustResult_t result; */
 			/* if (METER_std_adjustResp(&result)) { */
-			/* 	printf("tmrsn %s %s %d %d ", sn, */
+			/* 	printf("tmrsn %s %s %d ", sn, */
 			/* 	       APP_getFwVer(conf.isUsingPF), */
-			/* 	       conf.reportInterval, conf.meterInterval); */
+			/* 	       conf.reportInterval); */
 			/* 	uint16 recv_q3, recv_qt, recv_q2, recv_q1; */
 			/* 	recv_q3 = result.q3[0] | result.q3[1] << 8; */
 			/* 	recv_qt = result.qt[0] | result.qt[1] << 8; */
@@ -788,10 +779,10 @@ void TEST_pmrsn(BOOL isJigTest)
 			/* 		       SERIAL_NUM_LEN); */
 			/* 		serial[SERIAL_NUM_LEN] = '\0'; */
 
-			/* 		printf("tmrsn %s %s %d %d ", serial, */
+			/* 		printf("tmrsn %s %s %d ", serial, */
 			/* 		       APP_getFwVer(conf.isUsingPF), */
-			/* 		       conf.reportInterval, */
-			/* 		       conf.meterInterval); */
+			/* 		       conf.reportInterval*/
+			/* 		       ); */
 			/* 		// 사실 40, 50mm은 소형/대형이 혼재하지만 따로 구분할 방법이 없어 */
 			/* 		// 50mm까진 소형으로 고려한다. */
 			/* 		if (result.caliber > MT_50mm) { */

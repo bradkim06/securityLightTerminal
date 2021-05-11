@@ -75,13 +75,14 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 	pUnit->cumPower = rx->cumPower;
 
 	printf("=============================================================\n");
-	printf("meterStatus : %02X \n", pUnit->meterStatus);
-	printf("voltage : %lumV 0x%lX\n", pUnit->volt, pUnit->volt);
-	printf("current : %lumV 0x%lX\n", pUnit->curr, pUnit->curr);
-	printf("short current : %lumV 0x%lX\n", pUnit->shortCurr,
+	printf("[ meterStatus   ] : %02X \n", pUnit->meterStatus);
+	printf("[ voltage       ] : %lumV 0x%lX\n", pUnit->volt, pUnit->volt);
+	printf("[ current       ] : %lumV 0x%lX\n", pUnit->curr, pUnit->curr);
+	printf("[ short current ] : %lumV 0x%lX\n", pUnit->shortCurr,
 	       pUnit->shortCurr);
-	printf("power : %lumV 0x%lX\n", pUnit->power, pUnit->power);
-	printf("cum Power : %lumV 0x%lX\n", pUnit->cumPower, pUnit->cumPower);
+	printf("[ power         ] : %lumV 0x%lX\n", pUnit->power, pUnit->power);
+	printf("[ cum Power     ] : %lumV 0x%lX\n", pUnit->cumPower,
+	       pUnit->cumPower);
 	printf("=============================================================\n");
 
 	return SUCCESS;

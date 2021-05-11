@@ -125,12 +125,6 @@ static void readConfig(FlashConfig_t *pInfo)
 	} else {
 		printf("Config: both side are false\n");
 		memcpy((uint8 *)pInfo, (uint8 *)&info_a, sizeof(FlashConfig_t));
-		pInfo->meterType = E_METER;
-		pInfo->meterInterval = 1;
-		pInfo->reportInterval = 1;
-		pInfo->rtCtrlMode = 0;
-		pInfo->isShortInterval = 0;
-		pInfo->debugPrint = 0;
 
 #if NBIOT_DEVICE
 		MISC_ipToHexArray((char *)ONEM2M_FOTA_SERVER_IP, pInfo->fotaIp);
@@ -251,7 +245,6 @@ void FLASH_saveConfigInfo(Config_t *config)
 
 	flashConfig.meterType = config->meterType;
 	flashConfig.rtCtrlMode = config->rtCtrlMode;
-	flashConfig.meterInterval = config->meterInterval;
 	flashConfig.reportInterval = config->reportInterval;
 	MISC_ipToHexArray(config->serverIp, flashConfig.serverIp);
 	memcpy(flashConfig.serverPort, &config->serverPort, 2);
@@ -283,7 +276,6 @@ void FLASH_readConfigInfo(Config_t *config)
 	readConfig(&flashConfig);
 
 	config->meterType = flashConfig.meterType;
-	config->meterInterval = flashConfig.meterInterval;
 	config->reportInterval = flashConfig.reportInterval;
 
 	sprintf(config->serverIp, "%d.%d.%d.%d", flashConfig.serverIp[0],

@@ -117,7 +117,6 @@ static int insert_meteringTime(NbiotTimeStamp_t *p)
 
 		Date_t now;
 		RTC_read(&now);
-		uint8 diff = conf.reportInterval % conf.meterInterval;
 		// 1. 주기보고의 경우 Base time 및 interval로 계산된 시간을 설정한다.
 		// 1.1. 이때 분단위 주기 동작 여부에 따라 다르게 설정한다.
 		// 2. 시간단위 주기동작 에서 검침시간 대비 보고시간은 report min만큼
@@ -126,7 +125,7 @@ static int insert_meteringTime(NbiotTimeStamp_t *p)
 			p->hour = 0;
 			p->min = 0;
 		} else {
-			p->hour = diff;
+			p->hour = conf.reportInterval;
 			p->min = conf.reportMin;
 		}
 		p->sec = 0;
@@ -326,7 +325,6 @@ int NBMSG_recvAck(char *p, int len)
 
 		int needReset = 0;
 		int mpChanged = 0;
-		uchar mi = 0;
 		uchar ri = 0;
 
 		if (pAck->len >= LEN_NBIOT_ACK_DATA) {
@@ -334,7 +332,6 @@ int NBMSG_recvAck(char *p, int len)
 				needReset = 1;
 			}
 
-			mi = pAck->mi;
 			ri = pAck->ri;
 
 			do {
@@ -343,23 +340,21 @@ int NBMSG_recvAck(char *p, int len)
 					break;
 				}
 
-				if (mi == conf.meterInterval &&
-				    ri == conf.reportInterval) {
+				if (ri == conf.reportInterval) {
 					// 기존 것과 같으면 무시
 					break;
 				}
 
-				if (ri == 0 || mi == 0 || ri < mi) {
-					// 둘 중 하나가 0이거나, 보고주기보다 검침주기보가 크면 무시
+				if (ri == 0) {
+					// Report Interval이 0이면 안됨.
 					break;
 				}
 
-				if ((24 % mi) || (24 % ri)) {
-					// 검침주기나 보고주기가 24의 약수가 아니면 무시
+				if (24 % ri) {
+					// 보고주기가 24의 약수가 아니면 무시
 					break;
 				}
 
-				conf.meterInterval = mi;
 				conf.reportInterval = ri;
 
 				FLASH_saveConfigInfo(&conf);
@@ -395,7 +390,7 @@ int NBMSG_recvAck(char *p, int len)
 			date.hour, date.min, date.sec);
 
 		if (mpChanged) {
-			printf(" RI(%d) MI(%d)", ri, mi);
+			printf(" RI(%d) ", ri);
 		}
 
 		if (needReset) {

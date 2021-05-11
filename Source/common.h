@@ -67,12 +67,6 @@
 #define ACCESS_STATE_WAIT_FEW_SEC 2 // 통신과 통신간의 일정 시간 대기하는 상태.
 #define ACCESS_STATE_IN_SETTING 3 // 모뎀 재설정 진행 중
 
-// Interval of saving meter data into flash
-#define METER_DATA_SAVE_INTERVAL 24
-#if (METER_DATA_SAVE_INTERVAL <= 0)
-#error "Meter data save interval have to be set above 0."
-#endif
-
 // Max num of stored metering data
 #if NBIOT_DEVICE
 #define MAX_NUM_STORED_DATA 24
@@ -101,7 +95,6 @@ struct Config {
 	uint8 rtCtrlThreshold;
 	uint8 rtCtrlInterval;
 	uint8 isShortInterval;
-	uint8 meterInterval;
 	uint8 reportInterval;
 	uint8 reportHour;
 	uint8 reportMin;

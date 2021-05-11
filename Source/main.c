@@ -182,7 +182,7 @@ void initSystem()
 
 int main()
 {
-	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
+    WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_VRST_3SEC; // Start watchdog timer(3.2768 sec)
 	initSystem();
 

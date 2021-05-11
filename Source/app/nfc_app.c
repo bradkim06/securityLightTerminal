@@ -216,7 +216,6 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 	/* memcpy(p->serverPort, &conf.serverPort, 2); */
 	/* p->batt = BATT_getLastVoltage() & 0xff; */
 	/* memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN); */
-	/* /1* p->meterInterval = conf.meterInterval; *1/ */
 	/* p->reportInterval = conf.reportInterval; */
 
 	/* readRtcV1(p->year); */
@@ -489,11 +488,6 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 	/* 	if ((24 % mi) != 0 || (24 % ri) != 0 || mi > ri) { */
 	/* 		error = CONFIG_ERR_METERING_PARAM; */
 	/* 		break; */
-	/* 	} */
-
-	/* 	if (tconfig.meterInterval != mi) { */
-	/* 		tconfig.meterInterval = mi; */
-	/* 		changed = 1; */
 	/* 	} */
 
 	/* 	if (tconfig.reportInterval != ri) { */

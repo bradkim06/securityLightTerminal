@@ -972,16 +972,19 @@ static void init()
 		   ATCMD_QLWEPNS "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWSERVERIP,
 		   ATCMD_QLWSERVERIP "?");
-	ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-		   ATCMD_CFUN "=0");
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-		   ATCMD_CPSMS "=0");
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-		   ATCMD_NBAND "=5");
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-		   ATCMD_NCONFIG "=CELL_RESELECTION,TRUE");
-	nbCtx.status.setCfg = 1;
+
+	if (!conf.isModemInit) {
+		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+			   ATCMD_CFUN "=0");
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+			   ATCMD_CPSMS "=0");
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+			   ATCMD_NBAND "=5");
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+			   ATCMD_NCONFIG "=CELL_RESELECTION,TRUE");
+		nbCtx.status.setCfg = 1;
+	}
 }
 
 static void attach()
@@ -1037,6 +1040,8 @@ static void transfer()
 
 	// PSM on 상태인 경우 데이터 전송을 위해 강제 off설정
 	nbCtx.status.psmOn = 0;
+	APP_runMetering(PERIODIC_METERING);
+
 	if (nbCtx.proc.updateQa) {
 		int qaMsgLen = 0;
 		char *qaMsg = NBMSG_getQaReport(&qaMsgLen);
@@ -1167,15 +1172,14 @@ BOOL NBIOT_sendDataProcess()
 		bip();
 		nbCtx.nextStep = NBIOT_STEP_INIT;
 	} else if (nbCtx.currentStep == NBIOT_STEP_INIT) {
-		if (isRejectedFromCell()) { // Cell reg 에 따른 예외처리 확인.
-			nbCtx.error = NBIOT_ERROR_ATTACH_FAIL;
-			return TRUE;
-		}
+		/* if (isRejectedFromCell()) { // Cell reg 에 따른 예외처리 확인. */
+		/* 	nbCtx.error = NBIOT_ERROR_ATTACH_FAIL; */
+		/* 	return TRUE; */
+		/* } */
 		init();
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
 		attach();
-		APP_runMetering(PERIODIC_METERING);
 		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 		transfer();

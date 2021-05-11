@@ -33,11 +33,9 @@ BOOL METER_isAllFF(uchar *p, int len);
 void METER_displayTempData();
 void METER_displayStoredData();
 void METER_clearTempData();
-void METER_clearStoredData(BOOL isClearAll);
 MeterUnitData_t *METER_getTempData();
 MeterUnitData_t *METER_getStoredData(int pos);
 void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit);
-void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit);
 
 BOOL METER_needNewMetering(int secLimit);
 int METER_getNumberOfStoredData();

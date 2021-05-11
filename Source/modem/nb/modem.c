@@ -515,14 +515,9 @@ static void eventFinish()
 	NBIOT_finishProcess();
 	if (modemCtx.currentProc == MODEM_PROC_PERIODIC_REPORT) {
 		if (nbCtx.error == NBIOT_ERROR_NONE) {
-			METER_clearStoredData(
-				FALSE); // 주기 보고 및 성공 시 METER clear
 		}
 	}
 	APP_ctrlReportTime();
-	// Set LPM3(MCU slpee mode) and release context
-	/* Comment APP_prepareToSleep */
-	/* APP_prepareToSleep(); */
 }
 
 static void eventSendCmd()

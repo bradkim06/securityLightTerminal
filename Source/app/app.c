@@ -70,8 +70,7 @@ void APP_showConfig(Config_t *p)
 		printf(" [ MI & RI    ] %d (minutes)\n", p->reportInterval);
 		printf(" [ Base Min   ] %d min\n", p->reportMin);
 	} else {
-		printf(" [ MI/RI/SI   ] %d/%d/%d (hours)\n", p->meterInterval,
-		       p->reportInterval, METER_DATA_SAVE_INTERVAL);
+		printf(" [ RI         ] %d (hours)\n", p->reportInterval);
 		printf(" [ Report Hour] ");
 		if (p->reportInterval == 1) {
 			printf("Every Hour\n");
@@ -310,7 +309,6 @@ void APP_init(uint8 taskId)
 	MISC_delayMs(500);
 
 	METER_clearTempData();
-	METER_clearStoredData(TRUE);
 
 	OSAL_setEvent(AppTaskId, APP_EVENT_INITIAL);
 }
