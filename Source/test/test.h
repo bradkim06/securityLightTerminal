@@ -46,7 +46,6 @@ void TEST_pmeter(int numMeter, int type1, int port1, int type2, int port2,
 		 int type3, int port3);
 void TEST_checkNFC();
 void TEST_resetNFC();
-void TEST_savePeriodData(uint16 year, uint8 month, uint8 day, uint8 dataCnt);
 
 void TEST_run();
 void TEST_runTasks();

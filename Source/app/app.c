@@ -307,10 +307,6 @@ void APP_init(uint8 taskId)
 		PRINT_disable();
 	}
 
-	// Flash memory에 저장된 데이터 점검 및 프린트
-	FLASH_initData();
-	FLASH_printData();
-
 	MISC_delayMs(500);
 
 	METER_clearTempData();

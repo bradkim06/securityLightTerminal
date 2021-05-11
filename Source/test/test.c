@@ -348,6 +348,8 @@ void TEST_readMeter(int type)
 			result = METER_recvResponse(meterType, &unit);
 		}
 		//TODO Print Result readMeter
+
+		printf("result : %d\n", result);
 	}
 
 TEST_RMETER_FINISH:
@@ -887,29 +889,6 @@ void TEST_checkNFC()
 		if (TEST_stop() == TRUE) {
 			break;
 		}
-	}
-}
-
-void TEST_savePeriodData(uint16 year, uint8 month, uint8 day, uint8 dataCnt)
-{
-	Date_t test_date = { .year = year,
-			     .mon = month,
-			     .day = day,
-			     .hour = 0,
-			     .min = 0,
-			     .sec = 0,
-			     .reserved = 0 };
-	if (MISC_isValidDate(&test_date)) {
-		uint8 meter_val[4] = { 0x12, 0x34, 0x56, 0 };
-
-		for (int idx = 0; idx < dataCnt; idx++) {
-			FLASH_saveData(&test_date, BATT_getVoltage(),
-				       meter_val);
-			MISC_incDateHour(&test_date, 24);
-		}
-		FLASH_printData();
-	} else {
-		printf("input date is not valid\n");
 	}
 }
 

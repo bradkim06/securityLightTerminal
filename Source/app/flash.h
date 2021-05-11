@@ -81,15 +81,6 @@ typedef struct {
 	uint8 diff[2]; // int type
 } FlashMeterData_t; // 12 byte
 
-/**************************************************
- * Flash R/W/E interface for Meter data
- **************************************************/
-void FLASH_printData();
-void FLASH_initData();
-void FLASH_deleteAllData();
-void FLASH_saveData(Date_t *date, uint8 batt, uint8 *value);
-int FLASH_readData(FlashMeterData_t *fData, uint8 num);
-
 /**
  * @brief
  *  Search and Get period flash data and Get period flash data count.

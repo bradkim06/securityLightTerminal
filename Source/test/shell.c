@@ -652,31 +652,6 @@ void SHELL_run()
 			TEST_pnbctx();
 			break;
 
-		case CMDN_RFMETER:
-			FLASH_printData();
-			break;
-
-		case CMDN_WFMETER:
-			if (nCmdArgs >= 4) {
-				uint32 year =
-					SHELL_decimal(cmdArgs[0]); /* year */
-				uint32 month =
-					SHELL_decimal(cmdArgs[1]); /* month */
-				uint32 day =
-					SHELL_decimal(cmdArgs[2]); /* day */
-				uint32 numData = SHELL_decimal(
-					cmdArgs[3]); /* data count */
-				TEST_savePeriodData((uint16)year, (uint8)month,
-						    (uint8)day, (uint8)numData);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_EFMETER:
-			FLASH_deleteAllData();
-			break;
-
 		case CMDN_MRSN:
 			TEST_pmrsn(FALSE);
 			break;

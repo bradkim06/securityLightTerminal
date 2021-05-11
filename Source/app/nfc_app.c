@@ -306,123 +306,6 @@ void sendMeterReport()
 	}
 }
 
-static void makeMeteringDateTime(uint8 *p, Date_t *date)
-{
-	*(p + 0) = date->year - 2000;
-	*(p + 1) = (date->mon & 0x0f) << 4;
-	*(p + 1) |= ((date->day & 0x1e) >> 1);
-	*(p + 2) = (date->day & 0x01) << 7;
-	*(p + 2) |= ((date->hour & 0x1f) << 2);
-	*(p + 2) &= 0xfc; // clear unused bits
-}
-
-static void sendPeriodMeterReport(int numOfDatas, FlashMeterData_t *periodDatas)
-{
-	uint8 msg[64];
-	memset(msg, 0, sizeof(msg));
-
-	// Flash data 개수에 따른 총 Report Block 개수 계산.
-	int totalBlock = numOfDatas / MAX_METER_DATA_PER_REPORT;
-	if (numOfDatas && (numOfDatas % MAX_METER_DATA_PER_REPORT) > 0) {
-		totalBlock++;
-	}
-
-	NfcPeriodMeterReport_t *p = (NfcPeriodMeterReport_t *)msg;
-	p->mtype = PERIOD_METER_REPORT;
-	p->mversion = 0;
-	p->totalBlock = totalBlock; // 0 ~ 255, 0 is no data
-	p->meterNum =
-		1; // 현재 복수의 계량기에 대한 고려가 안되어 있음. 필요하다만 추후 구현.
-
-	uint8 blkOffset = 0;
-	p->meterInfo[blkOffset++] =
-		conf.meterType; // 계량기 타입 (0인 경우 STANDARD로 설정)
-	//TODO nfc metering
-	/* Comment nfc metering */
-	/* if (conf.meterType == W_STANDARD_D) { */
-	/* 	p->meterInfo[blkOffset++] = */
-	/* 		METER_getMeterCaliberDp(); // 구경(VIF, MSB 4bit), 소수점 위치(DIF, LSB */
-	/* 	// 4bit) */
-	/* } */
-
-	if (!totalBlock) {
-		send(msg, sizeof(NfcPeriodMeterReport_t));
-	} else {
-		uint8 offset = 0;
-		for (int block = 1; block <= totalBlock; block++) {
-			offset = blkOffset;
-			// 기간검침 데이터가 존재할 경우 Current Block은 1부터 시작, 마지막
-			// Current Block 은 Total Block 값과 동일.
-			p->currentBlock = block; // 0 ~ 255, 0 is no data
-
-			// 각 4개의 Data 중 가장 마지막에 저장된 데이터의 hour interval을 입력.
-			p->meterInfo[offset++] =
-				METER_DATA_SAVE_INTERVAL; // Hour interval
-
-			uint8 dataNum;
-			if (numOfDatas < (block * MAX_METER_DATA_PER_REPORT)) {
-				dataNum =
-					numOfDatas % MAX_METER_DATA_PER_REPORT;
-			} else {
-				dataNum = MAX_METER_DATA_PER_REPORT;
-			}
-			p->meterInfo[offset++] =
-				dataNum; // Total number of meter data in current block
-
-			Date_t date;
-			uint8 dateTime[3];
-			for (int idx = 0; idx < dataNum; idx++) {
-				FlashMeterData_t *pFlashData =
-					(periodDatas + idx +
-					 (block - 1) *
-						 MAX_METER_DATA_PER_REPORT);
-				date.year = pFlashData->year + 2000;
-				date.mon = pFlashData->mon;
-				date.day = pFlashData->day;
-				date.hour = pFlashData->hour;
-				date.min = date.sec = 0;
-
-				makeMeteringDateTime(dateTime, &date);
-
-				// Year 8bit, Mon 4bit, Day 5bit, Hour 5bit, Not userd 2bit
-				int arrSize = sizeof(dateTime);
-				memcpy(&(p->meterInfo[offset]), dateTime,
-				       arrSize);
-				offset += (arrSize / sizeof(dateTime[0]));
-
-				arrSize = sizeof(pFlashData->firstValue);
-				memcpy(&(p->meterInfo[offset]),
-				       pFlashData->firstValue, arrSize);
-				offset += (arrSize /
-					   sizeof(pFlashData->firstValue[0]));
-
-				// Diff data of "2nd data - 1st data", Hex value
-				if (pFlashData->hourInterval !=
-				    HOUR_INTERVAL_NO_DATA) {
-					p->meterInfo[offset++] =
-						pFlashData->diff[0];
-					p->meterInfo[offset++] =
-						pFlashData->diff[1];
-				} else {
-					// Diff 데이터가 없는 경우 표현할 방법이 없으므로 MT DOWN으로
-					// 표시한다.
-					p->meterInfo[offset++] =
-						METER_DIFF_2ND_MT_DOWN & 0x00FF;
-					p->meterInfo[offset++] =
-						METER_DIFF_2ND_MT_DOWN &
-						0xFF00 >> 8;
-				}
-				p->meterInfo[offset++] =
-					pFlashData->batt; // Battery
-			}
-
-			continueSend(msg, sizeof(NfcPeriodMeterReport_t));
-			if (NFC_checkRead(100) == FALSE)
-				break;
-		}
-	}
-}
-
 void sendFwVerReport()
 {
 	byte msg[64];
@@ -669,33 +552,6 @@ void recvMeterReq(byte *data, uint8 len)
 
 	setRtcV1(p->year);
 	sendMeterReport();
-}
-
-void recvPeriodMeterReq(byte *data, uint8 len)
-{
-	NfcPeriodMeterReq_t *p = (NfcPeriodMeterReq_t *)data;
-
-	// Day 단위 request 이므로 From Date는 시분초를 최소로 설정.
-	Date_t fromDate = { .year = ((p->from_year[1] << 8) | p->from_year[0]),
-			    .mon = p->from_mon,
-			    .day = p->from_day,
-			    .hour = 0,
-			    .min = 0,
-			    .sec = 0 };
-
-	// Day 단위 request 이므로 To Date는 시분초를 최대로 설정.
-	Date_t toDate = { .year = ((p->to_year[1] << 8) | p->to_year[0]),
-			  .mon = p->to_mon,
-			  .day = p->to_day,
-			  .hour = 23,
-			  .min = 59,
-			  .sec = 59 };
-
-	int numOfDatas;
-	FlashMeterData_t *periodDatas =
-		FLASH_readPeriodData(&fromDate, &toDate, &numOfDatas);
-	sendPeriodMeterReport(numOfDatas, periodDatas);
-	free(periodDatas);
 }
 
 void recvServerConnectReq(byte *data, uint8 len)
@@ -958,7 +814,6 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 		break;
 
 	case PERIOD_METER_REQ:
-		recvPeriodMeterReq(data, len);
 		break;
 
 	case PULSE_METER_VALUE_SET:

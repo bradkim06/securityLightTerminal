@@ -38,9 +38,7 @@ MeterUnitData_t *METER_getTempData();
 MeterUnitData_t *METER_getStoredData(int pos);
 void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit);
 void METER_addStoredData(Date_t *pDate, MeterUnitData_t *pUnit);
-void METER_collectStoredData();
 
-void METER_saveInFlash(Date_t *pDate, MeterUnitData_t *pUnit);
 BOOL METER_needNewMetering(int secLimit);
 int METER_getNumberOfStoredData();
 int METER_getStoredInterval();
