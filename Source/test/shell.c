@@ -10,10 +10,6 @@
 #include "flash.h"
 #include "misc.h"
 
-#if REPEATER_DEVICE
-#include "rf_test.h"
-#endif
-
 #define PREV_KEY 0x5B /* "[" key */
 #define NEXT_KEY 0x5D /* "]" key */
 
@@ -611,54 +607,6 @@ void SHELL_run()
 			}
 			break;
 
-#if LORA_DEVICE
-		case CMDN_PWAEUI:
-			if (nCmdArgs >= 1) {
-				char appEui[LEN_ARG_STRING];
-				SHELL_string(cmdArgs[0],
-					     appEui); /* application EUI */
-				TEST_pwaeui(appEui);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_PRAEUI:
-			TEST_praeui();
-			break;
-
-		case CMDN_PWDEUI:
-			if (nCmdArgs >= 1) {
-				char devEui[LEN_ARG_STRING];
-				SHELL_string(cmdArgs[0],
-					     devEui); /* device EUI */
-				TEST_pwdeui(devEui);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_PRDEUI:
-			TEST_prdeui();
-			break;
-
-		case CMDN_PWAKEY:
-			if (nCmdArgs >= 1) {
-				char appKey[LEN_ARG_STRING];
-				SHELL_string(cmdArgs[0],
-					     appKey); /* device EUI */
-				TEST_pwakey(appKey);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_PRAKEY:
-			TEST_prakey();
-			break;
-
-#else // NBIOT_DEVICE
-
 		case CMDN_PRNBID:
 			TEST_prnbid();
 			break;
@@ -703,7 +651,6 @@ void SHELL_run()
 		case CMDN_PNBCTX:
 			TEST_pnbctx();
 			break;
-#endif
 
 		case CMDN_RFMETER:
 			FLASH_printData();
@@ -729,110 +676,6 @@ void SHELL_run()
 		case CMDN_EFMETER:
 			FLASH_deleteAllData();
 			break;
-
-#if REPEATER_DEVICE
-		case CMDN_PCTX:
-			if (nCmdArgs >= 1) {
-				int ch =
-					SHELL_decimal(cmdArgs[0]); /* channel */
-				int txLevel =
-					(nCmdArgs >= 2) ?
-						SHELL_decimal(cmdArgs[1]) :
-						0; /* tx power level */
-				TEST_ContinuousTx(ch, txLevel, 1);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_PTX:
-			if (nCmdArgs >= 1) {
-				int ch =
-					SHELL_decimal(cmdArgs[0]); /* channel */
-				int txLevel =
-					(nCmdArgs >= 2) ?
-						SHELL_decimal(cmdArgs[1]) :
-						0; /* tx power level */
-				int msgLen = (nCmdArgs >= 3) ?
-						     SHELL_decimal(cmdArgs[2]) :
-						     60; /* message len */
-				TEST_TxData(ch, txLevel, msgLen, 1);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_PRX:
-			if (nCmdArgs >= 1) {
-				int ch =
-					SHELL_decimal(cmdArgs[0]); /* channel */
-				TEST_RxData(ch, 1);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_RID:
-			TEST_readIDs();
-			break;
-
-		case CMDN_WID:
-			if (nCmdArgs >= 3) {
-				char panId[LEN_ARG_STRING];
-				char nwkId[LEN_ARG_STRING];
-				SHELL_string(cmdArgs[0], panId); /* pan id */
-				SHELL_string(cmdArgs[1], nwkId); /* nwk id */
-				int slaveId = SHELL_decimal(
-					cmdArgs[2]); /* slave ID */
-				TEST_writeIDs(panId, nwkId, slaveId);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_RMSG:
-			if (nCmdArgs >= 1) {
-				int ch =
-					SHELL_decimal(cmdArgs[0]); /* channel */
-				TEST_RxMsg(ch);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_SCAN:
-			if (nCmdArgs >= 1) {
-				int ch =
-					SHELL_decimal(cmdArgs[0]); /* channel */
-				if (ch < 1 || ch > 4) {
-					goto SHELL_CMD_ERROR;
-				}
-				TEST_channelScan(ch);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_RSSI:
-			if (nCmdArgs >= 1) {
-				int ch =
-					SHELL_decimal(cmdArgs[0]); /* channel */
-				TEST_checkRSSI(ch);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_POWER:
-			if (nCmdArgs >= 1) {
-				int ch =
-					SHELL_decimal(cmdArgs[0]); /* channel */
-				TEST_checkRxPower(ch);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-#endif // #if REPEATER_DEVICE
 
 		case CMDN_MRSN:
 			TEST_pmrsn(FALSE);

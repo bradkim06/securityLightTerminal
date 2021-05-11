@@ -44,13 +44,6 @@ void APP_bypassMetering(uint8 *body, int bodyLen);
 void APP_runMetering(MeteringType_t meteringType);
 void APP_showConfig(Config_t *p);
 
-#if REPEATER_DEVICE
-void APP_slaveAccessCompleted();
-void APP_slaveAccessFailed();
-void APP_slaveMeteringCompleted();
-void APP_slaveMeteringFailed();
-#endif
-
 event32_t APP_tasks(uint8 taskId, event32_t events);
 
 void APP_meterRxIsr();

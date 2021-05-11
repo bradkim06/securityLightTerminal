@@ -122,8 +122,5 @@ void MISC_intToBCD(uint32 *pInt, uint8 *pBCD, uint8 nDigit);
 uint8 MISC_asciiToHex(char ch);
 uint8 MISC_asciiToBCD(char a, char b);
 void MISC_ipToHexArray(char *ip, uint8 *hexIp);
-#if REPEATER_DEVICE
-int getFirstZeroPosition(uint32 nwk_addr);
-#endif
 
 #endif //__FLASH_DRIVER_H__

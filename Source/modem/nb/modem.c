@@ -231,6 +231,17 @@ void MODEM_run(ModemProc_t proc, BOOL isLcdOn)
 	modemCtx.currentProc = proc;
 
 	if (proc == MODEM_PROC_PERIODIC_REPORT) {
+		// Process 시작 전 error code 초기화
+		nbCtx.error = NBIOT_ERROR_NONE;
+		// Process 시작 전 step 초기화
+		nbCtx.currentStep = NBIOT_STEP_ATTACH_NW;
+		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
+		// Process 시작 전 status flag 초기화
+		nbCtx.status.error = 0;
+		nbCtx.status.setCfg = 0;
+		nbCtx.status.waitDL = 0;
+
+		ATCMD_release();
 		OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 	} else {
 		NBIOT_open();

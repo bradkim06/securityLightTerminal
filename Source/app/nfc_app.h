@@ -4,10 +4,6 @@
 #include "modem.h"
 #include "var_type.h"
 
-#if REPEATER_DEVICE
-#include "slave_access.h"
-#endif
-
 #define DEVICE_CODE_LORA 0x05
 #define DEVICE_CODE_NB 0x06
 #define DEVICE_CODE_LORA_RF 0x07
@@ -284,13 +280,9 @@ typedef struct {
 	uint8 serialNum[SERIAL_NUM_LEN];
 	uint8 sleepMode;
 	uint8 reserved;
-#if LORA_DEVICE
-	uint8 appEui[8];
-#else // NBIOT_DEVICE
 	uint8 imsi[8];
 	uint8 serverIp[4];
 	uint8 serverPort[2];
-#endif
 	uint8 batt;
 	uint8 fwVer[4];
 	uint8 meterInterval;
@@ -439,20 +431,6 @@ typedef struct {
 	uint8 result;
 } NfcMeterBypassError_t;
 
-#if REPEATER_DEVICE
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 checkState;
-	uint8 slaveSerialNum[LEN_SLAVE_SERIAL_NUM];
-	uint8 nwkAddr[LEN_NETWORK_ADDRESS];
-	uint8 slaveBatt;
-	uint8 slaveRssi;
-	uint8 masterRssi;
-} NfcSlaveCheckReport_t;
-#endif
-
 #if NBIOT_DEVICE
 typedef struct {
 	NfcHeader_t header;
@@ -462,34 +440,6 @@ typedef struct {
 	uint8 cseid[LEN_MODEM_EP_NAME];
 	uint8 iccid[10];
 } NfcNbiotIdReport_t;
-#endif
-
-#if LORA_DEVICE
-#define JOIN_MODE_SEUDO_JOIN 0
-#define JOIN_MODE_REAL_JOIN 1
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 serialNum[SERIAL_NUM_LEN];
-	uint8 joinMode;
-	uint8 appEui[8];
-	uint8 appKey[16];
-} NfcLoRaAppEuiKeySet_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 reportType;
-	uint8 result;
-	uint8 errorCode;
-	uint8 serialNum[SERIAL_NUM_LEN];
-	uint8 fwVer[4];
-	uint8 appEui[8];
-	uint8 appKey[16];
-} NfcLoRaAppEuiKeyReport_t;
 #endif
 
 // Functio Prototype

@@ -13,10 +13,6 @@
 #include "timer.h"
 #include "uart.h"
 
-#if REPEATER_DEVICE
-#include "cc1200.h"
-#endif
-
 BOOL DeviceSleepState;
 
 static BOOL IsTestModeOn = FALSE;
@@ -74,18 +70,6 @@ void initClock(void)
 
 void initPort()
 {
-#if LORA_DEVICE
-	P1SEL = 0x00;
-	P1DIR = 0xFF;
-	P1OUT = 0x00;
-
-	// P2.5 (BOOT0)  : Module BOOT0 pin, Input
-	// P2.3 (NRESET) : Module nReset pin, output high
-	// P2.0 (VCC)    : change power on
-	P2SEL = 0x00;
-	P2DIR = (0xFF & ~BM(MODEM_LORA_BOOT0_P2_PIN));
-	P2OUT = BM(MODEM_NRST_P2_PIN);
-#else
 	P1SEL = 0x00;
 	P1DIR = 0xFF;
 #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO)
@@ -107,7 +91,6 @@ void initPort()
 	// P2.0 (LDO_EN)    : power off Modem (output low)
 	P2OUT = 0x00;
 #endif
-#endif
 	P3SEL = 0x00;
 	P3DIR = 0xFF;
 	P3OUT = 0x00;
@@ -115,13 +98,6 @@ void initPort()
 	P4SEL = 0x00;
 	P4DIR = 0xFF;
 	P4OUT = 0x00;
-
-#if REPEATER_DEVICE
-	// √ ±‚ CC1200 power off
-	P4SEL &= ~BM(CC1200_VCC_P4_PIN);
-	P4DIR |= BM(CC1200_VCC_P4_PIN);
-	P4OUT |= BM(CC1200_VCC_P4_PIN);
-#endif
 
 	P5SEL = 0x00;
 	P5DIR = 0xFF;

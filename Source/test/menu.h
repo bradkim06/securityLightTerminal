@@ -291,44 +291,6 @@ const ShellCommandSet_t CmdSet[] = {
 		"platform FLAG(0,1)",
 		"On/Off platform interlock",
 	},
-#if LORA_DEVICE
-	{
-		CMDN_PWAEUI,
-		"pwaeui",
-		"pwaeui APP_EUI",
-		"Write LoRa App EUI",
-	},
-	{
-		CMDN_PRAEUI,
-		"praeui",
-		"praeui",
-		"Read LoRa App EUI",
-	},
-	{
-		CMDN_PWDEUI,
-		"pwdeui",
-		"pwdeui DEVICE_EUI",
-		"Write LoRa Device EUI",
-	},
-	{
-		CMDN_PRDEUI,
-		"prdeui",
-		"prdeui",
-		"Read LoRa Device EUI",
-	},
-	{
-		CMDN_PWAKEY,
-		"pwakey",
-		"pwakey APP_KEY",
-		"Write LoRa App Key",
-	},
-	{
-		CMDN_PRAKEY,
-		"prakey",
-		"prakey",
-		"Read LoRa App Key",
-	},
-#else // NBIOT_DEVICE
 	{
 		CMDN_PRNBID,
 		"prnbid",
@@ -365,24 +327,6 @@ const ShellCommandSet_t CmdSet[] = {
 		"pnbctx",
 		"Test NB-IoT Signal quality",
 	},
-#endif
-
-#if REPEATER_DEVICE
-	{ CMDN_PCTX, "pctx", "pctx CH(0~20) LV(0=10dBm 1=5dBm 2=-10dBm)",
-	  "Test RF carrier" },
-	{ CMDN_PTX, "ptx",
-	  "ptx CH(0~20) LV(0=10dBm 1=5dBm 2=-10dBm) LEN(30~80) ",
-	  "Test RF tx" },
-	{ CMDN_PRX, "prx", "prx CH(0~20)", "Test RF rx " },
-	{ CMDN_WID, "wid", "wid PAN NWK SLAVE_ID",
-	  "Write RF PAN, NEW, slave ID" },
-	{ CMDN_RID, "rid", "rid", "Read RF PAN, NEW, slave ID" },
-	{ CMDN_RMSG, "rmsg", "rmsg CH(0~20)", "Receive RF message " },
-	{ CMDN_SCAN, "scan", "scan CH_GROUP(1~4, 1=CH1~CH5 2=CH6~CH10 ...)",
-	  "Scan RF carrier" },
-	{ CMDN_RSSI, "rssi", "rssi CH(0~20)", "Check RSSI " },
-	{ CMDN_POWER, "power", "power CH(0~20)", "Check Rx power " },
-#endif
 };
 
 #endif // _MENU_H_

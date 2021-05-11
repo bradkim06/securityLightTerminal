@@ -18,11 +18,6 @@
 #include "timer.h"
 #include "uart.h"
 
-#if REPEATER_DEVICE
-#include "cc1200.h"
-#include "slave_access.h"
-#endif
-
 typedef struct {
 	uint8 nRetry;
 	uint8 inProcess;
@@ -181,45 +176,6 @@ __interrupt void Port_2(void)
 		}
 		WAKEUP_DEVICE();
 	}
-
-#if REPEATER_DEVICE
-	// CC1200 tx/rx interrupt
-	if (P2IFG & BM(CC1200_INT_P2_PIN)) {
-		P2IFG &= ~BM(CC1200_INT_P2_PIN);
-
-		if (SLAVE_getAccessState() == SLAVE_ACCESS_IDLE &&
-		    CC1200_getRfMode() == RF_MODE_RX) {
-			// Rx 동작은 Slave operating이 아닌 경우 쓰레기 값으로 간주하고 그 외에는
-			// 모두 처리. (Slave에 대한 ACK 전송 처리가 Interrupt에 의한 비동기로
-			// 처리되므로
-			//  Slave operating이 아니더라도 ISR에 의한 처리가 필요.)
-			if (TEST_isTestMode() == FALSE) {
-				// Test mode인 경우 모두 처리.
-				return;
-			}
-		}
-
-		if (CC1200_getRfMode() == RF_MODE_TX) {
-			// P2IES &= ~BM(CC1200_INT_P2_PIN);   // P2.7 Low/Hi edge
-			CC1200_isr();
-			WAKEUP_DEVICE();
-		} else { // RF_MODE_RX
-			if (P2IES & BM(CC1200_INT_P2_PIN)) {
-				P2IES &= ~BM(
-					CC1200_INT_P2_PIN); // P2.7 Low/Hi edge
-				CC1200_isr();
-				WAKEUP_DEVICE();
-				CC1200_worDuty(WOR_SHORT_DUTY);
-				CC1200_wor();
-			} else { // Change Len
-				P2IES |= BM(
-					CC1200_INT_P2_PIN); // P2.7 Hi/Low edge
-				CC1200_read_rxByte();
-				WAKEUP_DEVICE();
-			}
-		}
-	}
-#endif
 }
 
 #pragma vector = UNMI_VECTOR
@@ -245,13 +201,8 @@ __interrupt void UNMI_ISR(void)
 void APP_ctrlReportTime()
 {
 #define RT_CTRL_MAX_THRESHOLD 3 // 최종 반영 횟수
-#if LORA_DEVICE
-#define RT_CTRL_DEC_SIG_QUAL 90 // 보고주기 감소 기준 값
-#define RT_CTRL_INC_SIG_QUAL 120 // 보고주기 증가 기준 값
-#else
 #define RT_CTRL_DEC_SIG_QUAL 80 // 보고주기 감소 기준 값
 #define RT_CTRL_INC_SIG_QUAL 110 // 보고주기 증가 기준 값
-#endif
 
 	if (!conf.rtCtrlMode) {
 		printf_ts("report time [control:off] \n");
@@ -262,17 +213,8 @@ void APP_ctrlReportTime()
 		(conf.rtCtrlInterval > conf.reportInterval) ? TRUE : FALSE;
 	int error = MODEM_getResult();
 	switch (error) {
-#if LORA_DEVICE
-	// LoRa의 경우 GET TIME 실패도 데이터 전송은 성공한 것이므로 통신성공으로
-	// 간주한다.
-	case ERROR_CODE_GET_TIME:
-#endif
 	case ERROR_CODE_NONE: {
-#if LORA_DEVICE
-		int sigQual = MODEM_getAbsRssi();
-#else
 		int sigQual = MODEM_getAbsRsrp();
-#endif
 		if (sigQual <= RT_CTRL_DEC_SIG_QUAL) {
 			conf.rtCtrlThreshold =
 				(isIncreased) ? (conf.rtCtrlThreshold + 1) : 0;
@@ -283,10 +225,6 @@ void APP_ctrlReportTime()
 			conf.rtCtrlThreshold = 0;
 		}
 	} break;
-#if LORA_DEVICE
-	// LoRa의 경우 Join 실패도 통신실패로 간주한다.
-	case ERROR_CODE_NOT_JOINED:
-#endif
 	case ERROR_CODE_COMM: {
 		conf.rtCtrlThreshold =
 			(isIncreased) ? 0 : (conf.rtCtrlThreshold + 1);
@@ -315,10 +253,6 @@ void APP_ctrlReportTime()
 /* Comment APP_prepareToSleep */
 void APP_prepareToSleep()
 {
-	/* #if REPEATER_DEVICE */
-	/* 	SLAVE_close(); */
-	/* #endif */
-
 	/* 	BOOL isLcdOn = FALSE; */
 	/* 	if (Metering.type == INITIAL_METERING || */
 	/* 	    Metering.type == IMMEDIATE_METERING_FOR_REPORT) { */

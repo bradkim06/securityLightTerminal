@@ -9,21 +9,12 @@
 #include "modem.h"
 #include "uart.h"
 
-#if REPEATER_DEVICE
-#include "cc1200.h"
-#include "slave_access.h"
-#endif
-
 // The order in this table must be identical to the task initialization calls
 // below in osalInitTask.
 
 const pTaskEventHandlerFn TasksArray[] = {
 	APP_tasks,
 	MODEM_tasks,
-#if REPEATER_DEVICE
-	CC1200_tasks,
-	SLAVE_tasks,
-#endif
 };
 
 const uint8 TasksTotalCounts = sizeof(TasksArray) / sizeof(TasksArray[0]);
@@ -43,10 +34,6 @@ void TASKMGR_init(void)
 
 	APP_init(taskID++);
 	MODEM_init(taskID++);
-#if REPEATER_DEVICE
-	CC1200_init(taskID++);
-	SLAVE_init(taskID++);
-#endif
 }
 
 void TASKMGR_run(void)

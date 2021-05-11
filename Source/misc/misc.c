@@ -4,9 +4,6 @@
 
 int MISC_getDeviceType()
 {
-#if REPEATER_DEVICE
-	return TERM_MODEL_HAT_435W;
-#else
 	int type = TERM_MODEL_UNKNOWN;
 	if (LCD_Exist()) {
 		type = TERM_MODEL_HAT_114W;
@@ -26,7 +23,6 @@ int MISC_getDeviceType()
 		P8OUT &= ~BM(HTM115W_DETECT_P8_PIN);
 	}
 	return type;
-#endif
 }
 
 uint8 MISC_asciiToHex(char ch)

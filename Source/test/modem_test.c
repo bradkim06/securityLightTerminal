@@ -14,15 +14,9 @@
 #include "uuid.h"
 #endif
 
-#if LORA_DEVICE
-#define LEN_TEST_LORA_APPEUI 16
-#define LEN_TEST_LORA_DEVEUI 16
-#define LEN_TEST_LORA_APPKEY 32
-#else // NBIOT_DEVICE
 #define LEN_TEST_NBIOT_IMEI 15
 #define LEN_TEST_NBIOT_IMSI 15
 #define LEN_TEST_NBIOT_ICCID 19
-#endif
 
 struct {
 	// will be set '1' when reading success MODEM booting message
@@ -33,14 +27,6 @@ struct {
 	// 다만, 일부 AT COMMAND에 대해 처리가 안될 수 있으므로 사전 동작확인이 필요.
 	BOOL isAcked;
 	BOOL isError;
-#if LORA_DEVICE
-	char appEUI[LEN_TEST_LORA_APPEUI +
-		    1]; // +1 wii be set 0. '0' is for string print.
-	char devEUI[LEN_TEST_LORA_DEVEUI +
-		    1]; // +1 wii be set 0. '0' is for string print.
-	char appKey[LEN_TEST_LORA_APPKEY +
-		    1]; // +1 wii be set 0. '0' is for string print.
-#else // NBIOT_DEVICE
 	BOOL isBipOk;
 	BOOL isBootup;
 	uint32 bootupMsec;
@@ -50,7 +36,6 @@ struct {
 		  1]; // +1 will be set 0. '0' is for string print.
 	char iccid[LEN_TEST_NBIOT_ICCID +
 		   1]; // +1 will be set 0. '0' is for string print.
-#endif
 } modemTestCtx;
 
 /*
@@ -73,15 +58,7 @@ static void waitModem(int ms)
 
 static BOOL waitModemReady(int waitSec)
 {
-#if LORA_DEVICE
-#if LORA_THINGPLUG
-#define MODEM_CHECK_AT_CMD "AT+FWI"
-#else
-#define MODEM_CHECK_AT_CMD "AT+ADR"
-#endif
-#else // NBIOT_DEVICE
 #define MODEM_CHECK_AT_CMD "AT"
-#endif
 
 	if (modemTestCtx.isAlive) {
 		return TRUE;
@@ -192,43 +169,6 @@ static void printAtCmdList()
 	printf("\n");
 	printf(TP_ANSI_FG_GREEN);
 	printf("Mainly Used AT command List\n");
-#if LORA_DEVICE
-#if (LORA_THINGPLUG == 0)
-	printf(" AT+AK   : Read Application Key \n");
-	printf(" AT+DEUI : Read Device EUI \n");
-	printf(" AT+AEUI : Read Application EUI \n");
-	printf(" AT+POW  : Get/Set Tx Power (Range: 0~6) \n");
-	printf(" AT+REG  : Get/Set region \n");
-	printf("     (0:AS923, 1:AU915, 2:CN470, 3:CN779, 4:EU433, 5:EU868, 6:KR920, "
-	       "7:IN865, 8:US915, 9:US915_HYBRID) \n");
-	printf(" AT+ADR  : Get Current Adaptive Data Rate\n");
-	printf(" AT+CLS  : Get Current Select Class\n");
-	printf(" AT+GCFG : Get Configuration \n");
-	printf(" AT+LOG  : Set Log Message (0:Disable, 1:Enable) \n");
-	printf(" AT+CFM  : Set Confirm Message (0:Disable, 1:Enable) \n");
-	printf(" AT+SEND : SEND Message \n");
-	printf("     Eample) 'AT+SEND 02112233' Port:02, Data:112233 \n");
-	printf(" AT+RST  : Reset the LoRa Module \n");
-#else
-	printf(" AT+AK   : Read Application Key \n");
-	printf(" AT+DEUI : Read Device EUI \n");
-	printf(" AT+AEUI : Read Application EUI \n");
-	printf(" AT+SIG  : Get Latest SNR and RSSI Value \n");
-	printf(" AT+CH   : Get Current Tx Channel \n");
-	printf(" AT+ADR  : Get Current Adaptive Data Rate\n");
-	printf(" AT+CLS  : Get Current Select Class\n");
-	printf(" AT+FWI  : Get Firmware version \n");
-	printf(" AT+GCFG : Get Configuration \n");
-	printf(" AT+DUTC : Get duty cycle time\n");
-	printf(" AT+LOG  : Set Log Message (0:Disable, 1:Enable) \n");
-	printf(" AT+CFM  : Set Confirm Message (0:Disable, 1:Enable) \n");
-	printf(" AT+CHTX : Set Channel & TX power\n");
-	printf("     Eample) 'AT+CHTX 2701' CH:27, Power index:1\n");
-	printf(" AT+SEND : SEND Message \n");
-	printf("     Eample) 'AT+SEND 02112233' Port:02, Data:112233 \n");
-	printf(" AT+RST  : Reset the LoRa Module \n");
-#endif // (LORA_THINGPLUG == 0)
-#else // NBIOT_DEVICE
 	printf(" AT+CEREG?   : Get Current Attach Status (0:Nothing, 1:OK, 2:Running, "
 	       "3:Reject)\n");
 	printf("               Eample) '+CEREG:x,N' 'N' is status\n");
@@ -244,77 +184,9 @@ static void printAtCmdList()
 	printf(" AT+CIMI     : Read IMSI \n");
 	printf(" AT+NCCID    : Read ICCID \n");
 	printf(" AT+NRB      : Reset the NB-IoT Module\n");
-#endif
 	printf(TP_ANSI_RESET);
 	printf("\n");
 }
-
-#if LORA_DEVICE
-
-static void parseLoraModemResp(char *pStr)
-{
-	char *p = NULL;
-
-#if (LORA_THINGPLUG == 0)
-#define PATTERN_AEUI "+AEUI="
-#else
-#define PATTERN_AEUI "APPLICATION EUI : "
-#endif
-	if ((p = strstr(pStr, PATTERN_AEUI))) {
-		p += strlen(PATTERN_AEUI);
-		int nDigit = 0;
-		while (nDigit < LEN_TEST_LORA_APPEUI) {
-			if (isxdigit(*p)) {
-				modemTestCtx.appEUI[nDigit++] = *p;
-			}
-			p++;
-		}
-	}
-
-#if (LORA_THINGPLUG == 0)
-#define PATTERN_DEUI "+DEUI="
-#else
-#define PATTERN_DEUI "Device EUI : "
-#endif
-	if ((p = strstr(pStr, PATTERN_DEUI))) {
-		p += strlen(PATTERN_DEUI);
-		int nDigit = 0;
-		while (nDigit < LEN_TEST_LORA_DEVEUI) {
-			if (isxdigit(*p)) {
-				modemTestCtx.devEUI[nDigit++] = *p;
-			}
-			p++;
-		}
-	}
-
-#if (LORA_THINGPLUG == 0)
-#define PATTERN_AKEY "+AK="
-#else
-#define PATTERN_AKEY "Application Key : "
-#endif
-	if ((p = strstr(pStr, PATTERN_AKEY))) {
-		p += strlen(PATTERN_AKEY);
-		int nDigit = 0;
-		while (nDigit < LEN_TEST_LORA_APPKEY) {
-			if (isxdigit(*p)) {
-				modemTestCtx.appKey[nDigit++] = *p;
-			}
-			p++;
-		}
-	}
-
-	// Check default AT command response pattern
-#if (LORA_THINGPLUG == 0)
-#define PATTERN_ACK_OK "OK"
-#else
-#define PATTERN_ACK_OK "- "
-#endif
-	if (p = strstr(pStr, PATTERN_ACK_OK)) {
-		modemTestCtx.isAcked = TRUE;
-	}
-}
-
-#else // NBIOT_DEVICE
 
 static void parseNbiotModemResp(char *pStr)
 {
@@ -395,8 +267,6 @@ static void parseNbiotModemResp(char *pStr)
 #endif
 }
 
-#endif
-
 void TEST_initModem()
 {
 	memset(&modemTestCtx, 0, sizeof(modemTestCtx));
@@ -452,12 +322,7 @@ void TEST_modemResponse()
 
 	// semco: REBOOT_CAUSE, solu-m: VERSION(debug=0), LOG Message(debug=1)
 	if (!modemTestCtx.isAlive) {
-#if LORA_DEVICE
-		if (strstr(buf, "VERSION") || strstr(buf, "LOG Message")) {
-			modemTestCtx.isAlive = TRUE;
-		}
-#else // NBIOT_DEVICE                                                          \
-	// 기타 문제로 모듈이 지속적으로 리셋될 경우를 고려하여                \
+		// 기타 문제로 모듈이 지속적으로 리셋될 경우를 고려하여                \
 	// REBOOT이 발생될 경우 Flag 및 시간값 초기화.
 		if (strstr(buf, "REBOOT_CAUSE_")) {
 			modemTestCtx.isBootup = TRUE;
@@ -480,149 +345,19 @@ void TEST_modemResponse()
 		}
 		OSAL_startEventTimer(APP_getTaskId(), TEST_EVENT_MODEM_RX,
 				     1000);
-#endif
 	} else {
-#if LORA_DEVICE
-		parseLoraModemResp(buf);
-#else // NBIOT_DEVICE
 		parseNbiotModemResp(buf);
-#endif
 	}
 }
 
 void TEST_pmodem()
 {
-#if LORA_DEVICE
-	if (waitModemReady(1)) {
-#else // NBIOT_DEVICE
 	if (waitModemReady(1) && waitModemBipOk(5)) {
-#endif
 		printf("tmodem OK\n");
 	} else {
 		printf("tmodem ERR\n");
 	}
 }
-
-/*
- ***************************************************************
-    LoRa test functions
- ***************************************************************
- */
-#if LORA_DEVICE
-
-void TEST_prdeui()
-{
-	sendToModem("AT+DEUI");
-	if (waitModemAck(2) == FALSE) {
-		printf("trdeui ERR\n");
-	} else {
-		printf("trdeui %s\n", modemTestCtx.devEUI);
-	}
-
-	// save devEui in flash
-	FLASH_readConfigInfo(&conf);
-
-	for (int i = 0; i < 8; i++) {
-		conf.devEui[i] =
-			MISC_asciiToBCD(modemTestCtx.devEUI[2 * i + 0],
-					modemTestCtx.devEUI[2 * i + 1]);
-	}
-	FLASH_saveConfigInfo(&conf);
-}
-
-void TEST_pwdeui(char *deui)
-{
-	// By default,LoRa modem prohibit to write Device EUI
-	printf("tdeui ERR\n");
-}
-
-void TEST_praeui()
-{
-	sendToModem("AT+AEUI");
-	if (waitModemAck(2) == FALSE) {
-		printf("traeui ERR\n");
-	} else {
-		printf("traeui %s\n", modemTestCtx.appEUI);
-	}
-}
-
-void TEST_pwaeui(char *aeui)
-{
-	if (strlen(aeui) != LEN_TEST_LORA_APPEUI) {
-		printf("traeui ERR\n");
-		return;
-	}
-
-	// 9 is length of 'AT+AEUI ' and string end
-	char cmd[LEN_TEST_LORA_APPEUI + 9] = "";
-	snprintf(cmd, sizeof(cmd), "AT+AEUI %s", aeui);
-
-	sendToModem(cmd);
-	waitModem(500);
-	sendToModem("AT+SCFG");
-	waitModem(500);
-
-	TEST_praeui();
-}
-
-void TEST_prakey()
-{
-	sendToModem("AT+AK");
-	if (waitModemAck(2) == FALSE) {
-		printf("trakey ERR\n");
-	} else {
-		printf("trakey %s\n", modemTestCtx.appKey);
-	}
-}
-
-void TEST_pwakey(char *akey)
-{
-	if (strlen(akey) != LEN_TEST_LORA_APPKEY) {
-		printf("trakey ERR\n");
-		return;
-	}
-
-	// 7 is length of 'AT+AK ' and string end
-	char cmd[LEN_TEST_LORA_APPKEY + 7] = "";
-	snprintf(cmd, sizeof(cmd), "AT+AK %s", akey);
-
-	sendToModem(cmd);
-	waitModem(500);
-	sendToModem("AT+SCFG");
-	waitModem(500);
-
-	TEST_prakey();
-}
-
-BOOL TEST_writeAppKeyUsingDEUI()
-{
-	sendToModem("AT+DEUI");
-	waitModem(500);
-
-	// 7 is length of 'AT+AK ' and string end
-	char modemTx[LEN_TEST_LORA_APPKEY + 7];
-	snprintf(modemTx, sizeof(modemTx), "AT+AK ");
-
-	// Dev EUI를 AppKey로 변환 (Hex to ASCII)
-	for (int i = 0; i < LEN_TEST_LORA_DEVEUI; i++) {
-		snprintf(modemTx, sizeof(modemTx), "%s%x", modemTx,
-			 modemTestCtx.devEUI[i]);
-	}
-
-	sendToModem(modemTx);
-	waitModem(500);
-	// Read AppKey가 기대값과 동일한지 확인.
-	if (memcmp(&modemTx[6], modemTestCtx.appKey, LEN_TEST_LORA_APPKEY) ==
-	    0) {
-		// Write한 AppKey 저장.
-		sendToModem("AT+SCFG");
-		waitModem(500);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-#endif // LORA_DEVICE
 
 /*
  ***************************************************************

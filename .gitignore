@@ -56,5 +56,6 @@ Release/
 Debug/
 settings/
 Build/
+build/
 *.dep
 .svn/

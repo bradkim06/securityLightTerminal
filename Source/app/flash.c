@@ -265,23 +265,6 @@ static void readID(FlashId_t *pInfo)
 	}
 }
 
-#if REPEATER_DEVICE
-int getFirstZeroPosition(uint32 nwk_addr)
-{
-	uint8 temp[4];
-	int firstZero = 0;
-	memcpy(temp, &nwk_addr, 4);
-
-	for (int i = 0; i < 4; i++) {
-		if (temp[i]) {
-			break;
-		}
-		firstZero = i;
-	}
-	return firstZero;
-}
-#endif
-
 void FLASH_saveConfigInfo(Config_t *config)
 {
 	// save serial number

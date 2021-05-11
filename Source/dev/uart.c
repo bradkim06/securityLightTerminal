@@ -447,11 +447,6 @@ void PRINT_string(char *p, int len)
 	printf_ts("");
 	for (int i = 0; i < len; i++) {
 		char ch = *(p + i);
-#if LORA_DEVICE
-		if (ch != '\r') {
-			printf("%c", ch);
-		}
-#else
 		if (ch == '\r' || ch == '\n') {
 			if (TEST_isTestMode())
 				printf("%c", ch);
@@ -460,7 +455,6 @@ void PRINT_string(char *p, int len)
 		} else {
 			printf("%c", ch);
 		}
-#endif
 	}
 	printf("\n");
 }

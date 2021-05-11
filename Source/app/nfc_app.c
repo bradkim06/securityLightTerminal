@@ -15,10 +15,6 @@
 #include "timer.h"
 #include "uart.h"
 
-#if REPEATER_DEVICE
-#include "slave_access.h"
-#endif
-
 #define TERMINAL_WORKING 0
 #define TERMINAL_FINISH 1
 #define TERMINAL_BUSY 2
@@ -62,11 +58,7 @@ static int copyToAsyncCmd(uint8 *p, int len)
 
 uint8 getMyDeviceCode()
 {
-#if LORA_DEVICE
-	return DEVICE_CODE_LORA;
-#else
 	return DEVICE_CODE_NB;
-#endif
 }
 
 void send(byte *p, int len)
@@ -74,11 +66,7 @@ void send(byte *p, int len)
 	NfcHeader_t *head = (NfcHeader_t *)p;
 
 	head->deviceCode = getMyDeviceCode();
-#if LORA_DEVICE
-	memcpy(head->device_id, conf.devEui, 8);
-#else
 	memcpy(head->device_id, conf.imei, 8);
-#endif
 	head->len = len - MSG_OFFSET_LEN;
 
 	NFC_sendMessage(p, len);
@@ -98,11 +86,7 @@ void continueSend(byte *p, int len)
 	NfcHeader_t *head = (NfcHeader_t *)p;
 
 	head->deviceCode = getMyDeviceCode();
-#if LORA_DEVICE
-	memcpy(head->device_id, conf.devEui, 8);
-#else
 	memcpy(head->device_id, conf.imei, 8);
-#endif
 	head->len = len - MSG_OFFSET_LEN;
 
 	NFC_sendMessage(p, len);
@@ -274,27 +258,6 @@ void sendMeterReport()
 
 	int needNewMetering = 0;
 
-#if REPEATER_DEVICE
-	SlaveAccessState_t state = SLAVE_getAccessState();
-	if (state == SLAVE_ACCESS_IDLE) {
-		if (SLAVE_needToUpdateMeterInfo()) {
-			// Only check modem working. (not wait delay for MODEM)
-			if (getModemAccessState() == ACCESS_STATE_IN_PROGRESS) {
-				p->meterState = TERMINAL_BUSY;
-			} else {
-				needNewMetering = 1;
-				p->meterState = TERMINAL_WORKING;
-			}
-		} else {
-			p->meterState = TERMINAL_FINISH;
-		}
-	} else if (state == SLAVE_ACCESS_GET_METER_INFO) {
-		p->meterState = TERMINAL_WORKING;
-	} else {
-		// Another working, will be report BUSY
-		p->meterState = TERMINAL_BUSY;
-	}
-#else // #if REPEATER_DEVICE
 	if (APP_isMetering()) { // 현재 검침중이면 재 검침하지 않음
 		p->meterState = TERMINAL_WORKING; // 0: 검침중 1: 검침완료
 	} else {
@@ -307,7 +270,6 @@ void sendMeterReport()
 				TERMINAL_WORKING; // 0: 검침중 1: 검침완료
 		}
 	}
-#endif // #if REPEATER_DEVICE
 
 	p->nMeter = 1;
 
@@ -611,55 +573,6 @@ void sendBdControlAck(uint8 mversion, uint8 reset, uint8 sleepMode,
 	send(msg, messageLen);
 }
 
-#if REPEATER_DEVICE
-void sendSlaveCheckReport()
-{
-	byte msg[64];
-	memset(msg, 0, sizeof(msg));
-
-	NfcSlaveCheckReport_t *p = (NfcSlaveCheckReport_t *)msg;
-
-	p->mtype = SLAVE_CHECK_REPORT;
-	p->mversion = NFC_PROTOCOL_VER_1;
-
-	memcpy(p->nwkAddr, (void *)&conf.slaveNwk, sizeof(uint32));
-
-	SlaveAccessState_t state = SLAVE_getAccessState();
-	if (state == SLAVE_ACCESS_IDLE) {
-		if (SLAVE_needToUpdateSlaveInfo()) {
-			// Only check modem working. (not wait delay for MODEM)
-			if (getModemAccessState() == ACCESS_STATE_IN_PROGRESS) {
-				p->checkState = TERMINAL_BUSY;
-			} else {
-				SLAVE_updateSlaveInfo();
-				p->checkState = TERMINAL_WORKING;
-			}
-		} else {
-			// 정해진 Interval내 받은 Slave info가 있을 경우 해당 데이터 전송.
-			SlaveAccessInfo_t pStatus;
-			memset(&pStatus, 0, sizeof(SlaveAccessInfo_t));
-
-			SLAVE_getSlaveInfo(&pStatus);
-
-			p->checkState = (pStatus.lastError == SLAVE_SUCCESS) ?
-						TERMINAL_FINISH :
-						TERMINAL_FAIL;
-			memcpy(p->slaveSerialNum, pStatus.slaveSerial,
-			       LEN_SLAVE_SERIAL_NUM);
-			p->slaveBatt = pStatus.slaveBatt;
-			p->slaveRssi = pStatus.slaveRssi;
-			p->masterRssi = pStatus.masterRssi;
-		}
-	} else if (state == SLAVE_ACCESS_GET_SLAVE_INFO) {
-		p->checkState = TERMINAL_WORKING;
-	} else {
-		p->checkState = TERMINAL_BUSY;
-	}
-
-	send(msg, sizeof(NfcSlaveCheckReport_t));
-}
-#endif // #if REPEATER_DEVICE
-
 ///////////////////////////////
 /////  Recv Message
 ///////////////////////////////
@@ -744,112 +657,6 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 
 	/* sendNodeConfReport(REPORT_TYPE_SET, error); */
 }
-
-#if REPEATER_DEVICE
-
-void recvNodeConfSetV2(byte *data, uint8 len)
-{
-	NfcConfSetV2_t *p = (NfcConfSetV2_t *)data;
-
-	setRtcV2(p->dateTime);
-
-	Config_t tconfig;
-	memcpy(&tconfig, &conf, sizeof(Config_t));
-
-	int error = 0;
-	int changed = 0;
-	do {
-		// p->serialNum --> check하여 에러 처리할 필요가 있는가?
-		if (memcmp(p->serialNum, tconfig.serialNum, SERIAL_NUM_LEN) !=
-		    0) {
-			error = CONFIG_ERR_SERIAL_NUM;
-			break;
-		}
-
-		if (p->sleepMode == SLEEP_MODE_SLEEP) {
-			if (!tconfig.sleepMode) {
-				tconfig.sleepMode = 1;
-				changed = 1;
-			}
-		} else if (p->sleepMode == SLEEP_MODE_NORMAL) {
-			if (tconfig.sleepMode) {
-				tconfig.sleepMode = 0;
-				changed = 1;
-			}
-		}
-
-		uint8 mi = p->meterInterval;
-		uint8 ri = p->reportInterval;
-
-		if ((24 % mi) != 0 || (24 % ri) != 0 || mi > ri) {
-			error = CONFIG_ERR_METERING_PARAM;
-			break;
-		}
-
-		if (tconfig.meterInterval != mi) {
-			tconfig.meterInterval = mi;
-			changed = 1;
-		}
-
-		if (tconfig.reportInterval != ri) {
-			tconfig.reportInterval = ri;
-			changed = 1;
-		}
-
-#if NBIOT_DEVICE
-		char newIP[SERVER_IP_STR_LEN];
-		sprintf(newIP, "%d.%d.%d.%d", p->serverIp[3], p->serverIp[2],
-			p->serverIp[1], p->serverIp[0]);
-
-		if (strncmp(newIP, tconfig.serverIp, SERVER_IP_STR_LEN) != 0) {
-			strcpy(tconfig.serverIp, newIP);
-			changed = 1;
-		}
-
-		uint16 newPort;
-		memcpy(&newPort, p->serverPort, 2);
-
-		if (newPort != tconfig.serverPort) {
-			tconfig.serverPort = newPort;
-			changed = 1;
-		}
-#endif
-		uint16 panId;
-		uint32 nwkAddr;
-		memcpy((void *)&panId, p->amiInfo.panId, sizeof(uint16));
-		memcpy((void *)&nwkAddr, p->amiInfo.nwkAddr, sizeof(uint32));
-
-		if (tconfig.pan_id != panId) {
-			tconfig.pan_id = panId;
-			changed = 1;
-		}
-
-		if (tconfig.nwk_addr != nwkAddr) {
-			tconfig.nwk_addr = nwkAddr;
-			// Master NWK변경 시 Slave도 변경되야 하므로 새로운 NWK로 변경.
-			tconfig.slaveNwk = tconfig.nwk_addr;
-			changed = 1;
-		}
-
-		int slaveIdPos = getFirstZeroPosition(tconfig.nwk_addr);
-		uint8 *slaveNwk = (uint8 *)&tconfig.slaveNwk;
-		if (*(slaveNwk + slaveIdPos) != p->amiInfo.slaveId) {
-			*(slaveNwk + slaveIdPos) = p->amiInfo.slaveId;
-			changed = 1;
-		}
-
-		error = 0;
-	} while (0);
-
-	if (error == 0 && changed) {
-		memcpy(&conf, &tconfig, sizeof(Config_t));
-		OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG);
-	}
-
-	sendNodeConfReport(REPORT_TYPE_SET, error);
-}
-
-#endif // #if REPEATER_DEVICE
 
 void recvNodeConfSet(byte *data, uint8 len)
 {
@@ -1101,68 +908,6 @@ void recvNbiotIdSet(byte *data, uint8 len)
 
 #endif
 
-#if LORA_DEVICE
-
-void sendLoRaAppEuiKeyReport(uint8 reportType, int result, int error)
-{
-	byte msg[64];
-	memset(msg, 0, sizeof(msg));
-
-	NfcLoRaAppEuiKeyReport_t *p = (NfcLoRaAppEuiKeyReport_t *)msg;
-
-	p->mtype = LORA_APP_EUI_KEY_REPORT;
-	p->mversion = 0;
-	p->reportType = reportType;
-	p->result = result;
-	p->errorCode = error;
-	if (result == TERMINAL_FINISH && error == CONFIG_ERR_NONE) {
-		// 정상완료인 경우에만 설정
-		MODEM_getAppEui(p->appEui);
-		MODEM_getAppKey(p->appKey);
-	}
-
-	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
-	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
-
-	send(msg, sizeof(NfcLoRaAppEuiKeyReport_t));
-}
-
-void recvLoRaAppEuiKeySet(byte *data, uint8 len)
-{
-	NfcLoRaAppEuiKeySet_t *p = (NfcLoRaAppEuiKeySet_t *)data;
-
-	int result, error;
-	if (memcmp(p->serialNum, conf.serialNum, SERIAL_NUM_LEN) != 0) {
-		//  Serial number 불일치 애러
-		result = TERMINAL_FAIL;
-		error = CONFIG_ERR_SERIAL_NUM;
-	} else {
-		if (getModemAccessState() == ACCESS_STATE_IN_SETTING) {
-			// 모뎀 설정 중
-			result = TERMINAL_WORKING;
-			error = CONFIG_ERR_NONE;
-		} else {
-			JoinMode_t joinMode =
-				(p->joinMode == JOIN_MODE_SEUDO_JOIN) ?
-					LORA_SEUDO_JOIN :
-					LORA_REAL_JOIN;
-			if (MODEM_setUserNwk(p->appEui, p->appKey, joinMode)) {
-				// 현재 AppKey or AppEUI 이 불일치 할 경우 TRUE로 설정 시작.
-				result = TERMINAL_WORKING;
-				error = CONFIG_ERR_NONE;
-			} else {
-				// 모뎀 AppKey and AppEUI 이 요청받은 값과 동일할 경우 완료 및 보고.
-				result = TERMINAL_FINISH;
-				error = CONFIG_ERR_NONE;
-			}
-		}
-	}
-
-	sendLoRaAppEuiKeyReport(REPORT_TYPE_SET, result, error);
-}
-
-#endif
-
 ///////////////////////////////
 /////  NFC process and print
 ///////////////////////////////
@@ -1226,11 +971,7 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 		break;
 
 	case SLAVE_CHECK_REQ:
-#if REPEATER_DEVICE
-		sendSlaveCheckReport();
-#else
 		sendFwVerReport();
-#endif
 		break;
 
 #if NBIOT_DEVICE
@@ -1248,21 +989,10 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 		break;
 #endif
 
-#if LORA_DEVICE
-	case LORA_APP_EUI_KEY_REQ:
-		sendLoRaAppEuiKeyReport(REPORT_TYPE_REQ, TERMINAL_FINISH,
-					CONFIG_ERR_NONE);
-		break;
-
-	case LORA_APP_EUI_KEY_SET:
-		recvLoRaAppEuiKeySet(data, len);
-		break;
-#else
 	case LORA_APP_EUI_KEY_REQ:
 	case LORA_APP_EUI_KEY_SET:
 		sendFwVerReport();
 		break;
-#endif
 	case METER_BYPASS_REQ:
 		recvMeterBypassRequest(data, len);
 		break;

@@ -23,11 +23,6 @@
 #include "uuid.h"
 #endif
 
-#if REPEATER_DEVICE
-#include "cc1200.h"
-#include "rf_test.h"
-#endif
-
 static BOOL IsTestMode = FALSE;
 static BOOL IsMeterTesting = FALSE;
 static BOOL IsReedTesting = FALSE;
@@ -472,11 +467,6 @@ void TEST_lpm3()
 	LCD_disable();
 	PRINT_disable();
 
-#if REPEATER_DEVICE
-	CC1200_setSleep();
-	CC1200_rfOff();
-#endif
-
 	MODEM_turnOff();
 
 	DeviceSleepState = FALSE;
@@ -527,11 +517,6 @@ void TEST_lpm2()
 	PRINT_disable();
 
 	MODEM_turnOff();
-
-#if REPEATER_DEVICE
-	CC1200_setSleep();
-	CC1200_rfOff();
-#endif
 
 	DeviceSleepState = FALSE;
 	GLOBAL_DISABLE_INT();
@@ -953,10 +938,8 @@ static event32_t interruptTask(uint8 taskId, event32_t events)
 	return 0;
 }
 
-const pTaskEventHandlerFn TestTasksArray[] = { interruptTask,
-#if REPEATER_DEVICE
-					       CC1200_tasks
-#endif
+const pTaskEventHandlerFn TestTasksArray[] = {
+	interruptTask,
 };
 
 const uint8 testTasksCnt = sizeof(TestTasksArray) / sizeof(TestTasksArray[0]);
@@ -1023,10 +1006,6 @@ void TEST_run()
 
 	// task 초기화
 	TestTaskId = 0;
-#if REPEATER_DEVICE
-	// 테스트를 위한 Radio task 동작이 필요하므로 초기화.
-	CC1200_init(1);
-#endif
 
 	ALARM_init();
 	FLASH_readConfigInfo(&conf);
@@ -1039,11 +1018,7 @@ void TEST_run()
 	printf("\n\n\n\n");
 	printf("===========================================\n");
 	printf("             TEST MODE ");
-#if LORA_DEVICE
-	printf("(Solu-M)\n");
-#else // NBIOT_DEVICE
 	printf("(NB-IoT)\n");
-#endif
 	printf("   Compiled at (%s / %s)\n", __DATE__, __TIME__);
 	printf("===========================================\n");
 	printf("\n");
