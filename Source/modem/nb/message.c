@@ -95,14 +95,10 @@ static int insert_meteringParam(NbiotMeteringParam_t *p)
 	return sizeof(NbiotMeteringParam_t);
 }
 
-static int insert_meteringTime(NbiotTimeStamp_t *p, BOOL isJoinMsg)
+static int insert_meteringTime(NbiotTimeStamp_t *p)
 {
 	MeterUnitData_t *pUnit;
-	if (isJoinMsg) {
-		pUnit = METER_getTempData();
-	} else {
-		pUnit = METER_getStoredData(0);
-	}
+	pUnit = METER_getTempData();
 
 	if (pUnit->isTimeSync) {
 		p->year = pUnit->year;
@@ -114,36 +110,26 @@ static int insert_meteringTime(NbiotTimeStamp_t *p, BOOL isJoinMsg)
 	} else {
 		// 검침 데이터의 시간이 동기화된 것이 아닐 경우 전송시간에 대한 차이값으로
 		// 설정.
-		if (isJoinMsg) {
-			// Join message 의경우 검침 직후 보고하므로 차이값을 0로 설정.
-			p->year = 0xFF;
-			p->mon = 0xFF;
-			p->day = 0xFF;
+		// Join message가 아닐 경우 전송시간에 대한 차이값을 계산하여 설정.
+		p->year = 0xFF;
+		p->mon = 0xFF;
+		p->day = 0xFF;
+
+		Date_t now;
+		RTC_read(&now);
+		uint8 diff = conf.reportInterval % conf.meterInterval;
+		// 1. 주기보고의 경우 Base time 및 interval로 계산된 시간을 설정한다.
+		// 1.1. 이때 분단위 주기 동작 여부에 따라 다르게 설정한다.
+		// 2. 시간단위 주기동작 에서 검침시간 대비 보고시간은 report min만큼
+		// 이후에 보고한다. 2.1. 위의 이유로 분단위는 report min 값을 설정한다.
+		if (conf.isShortInterval) {
 			p->hour = 0;
 			p->min = 0;
-			p->sec = 0;
 		} else {
-			// Join message가 아닐 경우 전송시간에 대한 차이값을 계산하여 설정.
-			p->year = 0xFF;
-			p->mon = 0xFF;
-			p->day = 0xFF;
-
-			Date_t now;
-			RTC_read(&now);
-			uint8 diff = conf.reportInterval % conf.meterInterval;
-			// 1. 주기보고의 경우 Base time 및 interval로 계산된 시간을 설정한다.
-			// 1.1. 이때 분단위 주기 동작 여부에 따라 다르게 설정한다.
-			// 2. 시간단위 주기동작 에서 검침시간 대비 보고시간은 report min만큼
-			// 이후에 보고한다. 2.1. 위의 이유로 분단위는 report min 값을 설정한다.
-			if (conf.isShortInterval) {
-				p->hour = 0;
-				p->min = 0;
-			} else {
-				p->hour = diff;
-				p->min = conf.reportMin;
-			}
-			p->sec = 0;
+			p->hour = diff;
+			p->min = conf.reportMin;
 		}
+		p->sec = 0;
 	}
 
 	return sizeof(NbiotTimeStamp_t);
@@ -275,20 +261,12 @@ static int insert_oneData(NbiotMeterData_t *p)
 {
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
-	/* p->status = pUnitData->meterStatus; */
-	/* p->volt = pUnitData->volt; */
-	/* p->curr = pUnitData->curr; */
-	/* p->shortCurr = pUnitData->shortCurr; */
-	/* p->power = pUnitData->power; */
-	/* p->cumPower = pUnitData->cumPower; */
-	pUnitData->volt = 0x12345678;
-	pUnitData->cumPower = 0x87654321;
-
-	p->status = 0xff;
+	p->status = pUnitData->meterStatus;
 	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
-	memcpy(&p->curr, 0, sizeof(pUnitData->volt));
-	memcpy(&p->shortCurr, 0, sizeof(pUnitData->volt));
-	memcpy(&p->power, 0, sizeof(pUnitData->volt));
+	memcpy(&p->curr, &pUnitData->curr, sizeof(pUnitData->curr));
+	memcpy(&p->shortCurr, &pUnitData->shortCurr,
+	       sizeof(pUnitData->shortCurr));
+	memcpy(&p->power, &pUnitData->power, sizeof(pUnitData->power));
 	memcpy(&p->cumPower, &pUnitData->cumPower, sizeof(pUnitData->cumPower));
 
 	return sizeof(NbiotMeterData_t);
@@ -311,7 +289,7 @@ static int getCurrentDataMessage(uchar *buf)
 	len += insert_meteringParam(&p->mp);
 	// Join message는 아니지만 즉시검침/보고를 위한 message이므로
 	// Join message와 동일한 방식의 metering time을 얻는다.
-	len += insert_meteringTime(&p->meterTime, TRUE);
+	len += insert_meteringTime(&p->meterTime);
 	len += insert_oneData(&p->data);
 
 	p->len = len;

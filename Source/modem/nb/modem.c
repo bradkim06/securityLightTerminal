@@ -178,11 +178,11 @@ void MODEM_enable()
 
 void MODEM_disable()
 {
-	if (nbCtx.status.psmOn) {
-		UART_close(UART_A2, GPIO_INPUT);
-	} else {
-		UART_close(UART_A2, GPIO_LOW);
-	}
+	/* if (nbCtx.status.psmOn) { */
+	/* 	UART_close(UART_A2, GPIO_INPUT); */
+	/* } else { */
+	/* 	UART_close(UART_A2, GPIO_LOW); */
+	/* } */
 }
 
 void MODEM_write(const char *pCmd)
@@ -230,18 +230,18 @@ void MODEM_run(ModemProc_t proc, BOOL isLcdOn)
 	modemCtx.isStop = FALSE;
 	modemCtx.currentProc = proc;
 
-	if (isLcdOn) {
-		LCD_accessModem();
-	}
-
-	NBIOT_open();
-	MODEM_enable();
-	if (nbCtx.status.psmOn) {
-		MODEM_wakeup();
+	if (proc == MODEM_PROC_PERIODIC_REPORT) {
+		OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 	} else {
-		MODEM_turnOn();
+		NBIOT_open();
+		MODEM_enable();
+		if (nbCtx.status.psmOn) {
+			MODEM_wakeup();
+		} else {
+			MODEM_turnOn();
+		}
+		OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 	}
-	OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 }
 
 void MODEM_stop(BOOL isVccOff, BOOL isLcdOn)
@@ -531,16 +531,7 @@ static void eventSendCmd()
 			if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 				int len = 0;
 				char *data = NULL;
-				if (modemCtx.currentProc ==
-				    MODEM_PROC_PERIODIC_REPORT) {
-					data = NBMSG_getMeterReport(FALSE,
-								    &len);
-				} else if (modemCtx.currentProc ==
-					   MODEM_PROC_TEST_REPORT) {
-					data = NBMSG_getMeterReport(TRUE, &len);
-				} else {
-					data = NBMSG_getMeterReport(TRUE, &len);
-				}
+				data = NBMSG_getMeterReport(FALSE, &len);
 				NBIOT_registerData(data, len);
 			}
 		}

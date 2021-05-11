@@ -125,6 +125,9 @@ static void notifyParser(const char *pHead, const int *len)
 		} break;
 		case LWM2M_EVENT_REG_DELETE: {
 			nbCtx.lwm2m.regDelete = 1;
+			nbCtx.lwm2m.regFinish = 0;
+			nbCtx.lwm2m.obsObj10250 = 0;
+			nbCtx.lwm2m.obsObj16241 = 0;
 		} break;
 		case LWM2M_EVENT_REG_UPDATE: {
 			nbCtx.lwm2m.regUpdate = 1;
@@ -239,7 +242,7 @@ static BOOL parseLwm2mBootstrap(const char *pHead, const int *len,
 static BOOL parseLwm2mRegStart(const char *pHead, const int *len,
 			       uint32 *nextDelay)
 {
-	if (nbCtx.lwm2m.regFinish && nbCtx.lwm2m.obsObj10250) {
+	if (nbCtx.lwm2m.regFinish && nbCtx.lwm2m.obsObj16241) {
 		if (ALARM_isTimeSync()) {
 			RTC_read(&nbInfo.lastCertifyTime);
 		}
@@ -1065,19 +1068,13 @@ static void transfer()
 			ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV,
 				   parseLwm2mBootstrap, ATCMD);
 		}
-		if (!nbCtx.lwm2m.regFinish || !nbCtx.lwm2m.obsObj10250) {
+		if (!nbCtx.lwm2m.regFinish || !nbCtx.lwm2m.obsObj16241) {
 			ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV,
 				   parseLwm2mRegStart, ATCMD_QLWSREGIND "=0");
 		}
 		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseQLWULDATA,
 			   ATCMD_QLWULDATA "=0,%d,%s", RegisteredDataLen,
 			   RegisteredData);
-	} else {
-		// Wait response
-		ATCMD_push(TIMEOUT_UDP_SEND, RETRY_UDP_SEND, parseNSOST,
-			   ATCMD_NSOST "=%d,%s,%d,%d,%s", nbCtx.socket,
-			   (char *)conf.serverIp, conf.serverPort,
-			   RegisteredDataLen, RegisteredData);
 	}
 	// Free original Data afeter Seding Uplink registration is finished
 	free(RegisteredData);
@@ -1178,6 +1175,7 @@ BOOL NBIOT_sendDataProcess()
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
 		attach();
+		APP_runMetering(PERIODIC_METERING);
 		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 		transfer();
@@ -1281,7 +1279,7 @@ static NbIotError_t getErrorCode(AtCmd_t *atCmd)
 
 			if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 				if (conf.isUsingPF &&
-				    !nbCtx.lwm2m.obsObj10250) {
+				    !nbCtx.lwm2m.obsObj16241) {
 					return NBIOT_ERROR_PF_CERITY_FAIL;
 				}
 			}
@@ -1356,10 +1354,10 @@ void NBIOT_finishProcess()
 	printf("[ OPERATION    ] LAST(%s) NEXT(%s) ERROR(%02Xh) CEREG(%d)\n",
 	       NBIOT_STEP_STR(nbCtx.currentStep),
 	       NBIOT_STEP_STR(nbCtx.nextStep), nbCtx.error, nbCtx.cellreg);
-	printf("[ LWM2M STATUS ] REG FIN/UD/DEL(%d/%d/%d) BS(%d) 10250(%d)\n",
+	printf("[ LWM2M STATUS ] REG FIN/UD/DEL(%d/%d/%d) BS(%d) 16241(%d)\n",
 	       nbCtx.lwm2m.regFinish, nbCtx.lwm2m.regUpdate,
 	       nbCtx.lwm2m.regDelete, nbCtx.lwm2m.bsFinish,
-	       nbCtx.lwm2m.obsObj10250);
+	       nbCtx.lwm2m.obsObj16241);
 	printf("[ FOTA STATUS  ] DOWN REQ(%d) UPDATE REQ(%d) FINISH(%d)\n",
 	       nbCtx.lwm2m.fotaDownReq, nbCtx.lwm2m.fotaUpdateReq,
 	       nbCtx.lwm2m.fotaFinish);

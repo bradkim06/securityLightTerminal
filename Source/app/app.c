@@ -387,119 +387,36 @@ void APP_init(uint8 taskId)
 
 static void meteringCompleted()
 {
-	int state = MODEM_getState();
-	if (state != DEVICE_STATUS_IDLE) {
-		// INITIAL_METERING 때 모뎀이 동작 중인 경우
-		// 1. 부팅 후 MODEM_init()을 호출하지 않은 경우
-		// 2. Active 상태에서 INITIAL_METERING 를 수행하는 경우.
-		if (Metering.type == INITIAL_METERING) {
-			// 위 2가지 경우를 모두 만족하기 위해 close 수행.
-			MODEM_stop(TRUE, FALSE);
-		} else {
-			printf_ts(
-				"MODEM is running(%d) even afeter metering completed\n",
-				state);
-			return;
-		}
-	}
+	/* int state = MODEM_getState(); */
+	/* if (state != DEVICE_STATUS_IDLE) { */
+	/* 	// INITIAL_METERING 때 모뎀이 동작 중인 경우 */
+	/* 	// 1. 부팅 후 MODEM_init()을 호출하지 않은 경우 */
+	/* 	// 2. Active 상태에서 INITIAL_METERING 를 수행하는 경우. */
+	/* 	if (Metering.type == INITIAL_METERING) { */
+	/* 		// 위 2가지 경우를 모두 만족하기 위해 close 수행. */
+	/* 		MODEM_stop(TRUE, FALSE); */
+	/* 	} else { */
+	/* 		printf_ts( */
+	/* 			"MODEM is running(%d) even afeter metering completed\n", */
+	/* 			state); */
+	/* 		return; */
+	/* 	} */
+	/* } */
 
-	if (conf.isShortInterval) {
-		if (Metering.type == PERIODIC_METERING) {
-			MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE);
-		} else if (Metering.type == INITIAL_METERING) {
-			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
-		}
-	} else {
-		if (Metering.type == INITIAL_METERING) {
-			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
-		} else if (Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
-			MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
-		}
-	}
+	/* if (conf.isShortInterval) { */
+	/* 	if (Metering.type == PERIODIC_METERING) { */
+	/* 		MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE); */
+	/* 	} else if (Metering.type == INITIAL_METERING) { */
+	/* 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE); */
+	/* 	} */
+	/* } else { */
+	/* 	if (Metering.type == INITIAL_METERING) { */
+	/* 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE); */
+	/* 	} else if (Metering.type == IMMEDIATE_METERING_FOR_REPORT) { */
+	/* 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE); */
+	/* 	} */
+	/* } */
 }
-
-#if REPEATER_DEVICE
-
-void APP_slaveAccessCompleted()
-{
-	printf_ts("Slave access complete\n");
-	Metering.inProcess = 0;
-	Metering.success = 1;
-	APP_prepareToSleep();
-}
-
-void APP_slaveAccessFailed()
-{
-	printf_ts("Slave access fail\n");
-	Metering.inProcess = 0;
-	Metering.success = 0;
-	APP_prepareToSleep();
-}
-
-void APP_slaveMeteringCompleted()
-{
-	printf_ts("Slave metering complete\n");
-	Metering.inProcess = 0;
-	Metering.success = 1;
-
-	// Slave 검침 후 LCD에 검침데이터를 표시할 때 LCD Icon 정보가 없으므로
-	// 기본 Icon 정보를 설정한 후 LCD에 표시함.
-	if (Metering.type == PERIODIC_METERING) {
-		// 최초 주기동작에서 Slave가 검침데이터를 안줄 수 있음.
-		if (METER_getNumberOfStoredData() > 0) {
-			MeterUnitData_t *unit = METER_getStoredData(0);
-			unit->icon.fArrow = 1;
-			unit->icon.m3 = 1;
-			unit->icon.notUsed = 0;
-			LCD_updateMeterValue(
-				(uint8 *)unit); // Display meter data
-		}
-	} else {
-		MeterUnitData_t *unit = METER_getTempData();
-		unit->icon.fArrow = 1;
-		unit->icon.m3 = 1;
-		unit->icon.notUsed = 0;
-		LCD_updateMeterValue((uint8 *)unit); // Display meter data
-	}
-
-	meteringCompleted();
-}
-
-void APP_slaveMeteringFailed()
-{
-	printf_ts("Slave metering fail\n");
-	Metering.inProcess = 0;
-	Metering.success = 0;
-
-	if (Metering.type == INITIAL_METERING ||
-	    Metering.type == IMMEDIATE_METERING ||
-	    Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
-		MeterUnitData_t unit;
-		memset(&unit, 0, sizeof(unit));
-		memset(unit.meterData, 0xff, 4);
-		unit.meterStatus = 0xff;
-
-		Date_t date;
-		RTC_read(&date);
-		METER_addTempData(&date, &unit);
-		METER_displayTempData();
-	}
-
-	meteringCompleted();
-
-	/*
-   * 주기검침 MT DOWN 데이터를 저장 및 전송시 2가지 고려 사항이 필요.
-   * 1. 단말기에서 다음 주기에 정상적인 데이터를 받을 경우 기존(MT_DOWN) 데이터
-   * 삭제.
-   * 2. 서버에서 다음 주기에 정상적인 데이터를 받을 경우 기존(MT_DOWN) 데이터
-   * 삭제.
-   *
-   * 다만, 위 사항을 추가하여 얻을 수 있는 이점이 미미하므로 주기 검침 시 MT
-   * DOWN을 저장하지 않고 기존 데이터만 (데이터 개수가 0 포함) 전송하도록 적용.
-   */
-}
-
-#endif
 
 BOOL APP_isMetering()
 {
@@ -592,19 +509,19 @@ static void meteringTimeout()
 
 			Date_t date;
 			RTC_read(&date);
-			switch (Metering.type) {
-			case PERIODIC_METERING:
-				METER_addStoredData(&date, &unit);
-				METER_displayStoredData();
-				break;
-			case PERIODIC_METERING_FOR_SAVE:
-				METER_saveInFlash(&date, &unit);
-				break;
-			default:
-				METER_addTempData(&date, &unit);
-				METER_displayTempData();
-				break;
-			}
+			/* switch (Metering.type) { */
+			/* case PERIODIC_METERING: */
+			/* 	METER_addStoredData(&date, &unit); */
+			/* 	METER_displayStoredData(); */
+			/* 	break; */
+			/* case PERIODIC_METERING_FOR_SAVE: */
+			/* 	METER_saveInFlash(&date, &unit); */
+			/* 	break; */
+			/* default: */
+			METER_addTempData(&date, &unit);
+			/* METER_displayTempData(); */
+			/* break; */
+			/* } */
 
 			meteringCompleted();
 		}
@@ -628,19 +545,7 @@ static void meteringRecvResponse()
 
 			Date_t date;
 			RTC_read(&date);
-			switch (Metering.type) {
-			case PERIODIC_METERING:
-				// 주기검침의 경우 초단위는 0으로 설정한다.
-				unit.sec = 0;
-				METER_addStoredData(&date, &unit);
-				break;
-			case PERIODIC_METERING_FOR_SAVE:
-				METER_saveInFlash(&date, &unit);
-				break;
-			default:
-				METER_addTempData(&date, &unit);
-				break;
-			}
+			METER_addTempData(&date, &unit);
 
 			if (Metering.type == IMMEDIATE_METERING ||
 			    Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
@@ -667,7 +572,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 {
 	if (events & APP_EVENT_IMMEDIATE_REPORT) {
 		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
-			APP_runMetering(IMMEDIATE_METERING_FOR_REPORT);
+			/* APP_runMetering(IMMEDIATE_METERING_FOR_REPORT); */
 		}
 		return (events ^ APP_EVENT_IMMEDIATE_REPORT);
 	}
@@ -678,7 +583,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_INITIAL) {
-		APP_runMetering(INITIAL_METERING);
+		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
 		return (events ^ APP_EVENT_INITIAL);
 	}
 
@@ -698,12 +603,12 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_IMMEDIATE_METERING) {
-		APP_runMetering(IMMEDIATE_METERING);
+		/* APP_runMetering(IMMEDIATE_METERING); */
 		return (events ^ APP_EVENT_IMMEDIATE_METERING);
 	}
 
 	if (events & APP_EVENT_SENSOR_REED) {
-		APP_runMetering(IMMEDIATE_METERING);
+		/* APP_runMetering(IMMEDIATE_METERING); */
 		return (events ^ APP_EVENT_SENSOR_REED);
 	}
 
@@ -718,12 +623,6 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_CHANGE_CONFIG) {
-		/* Comment sleepMode */
-		/* if (SMART_WATER_METER(conf.termModel)) { */
-		/* 	// SWM인 경우 sleep 모드에 따라 H마크 on/off */
-		/* 	METER_std_lcdMarkReq(conf.sleepMode); */
-		/* 	MISC_delayMs(100); // UART 전송완료 대기. */
-		/* } */
 		FLASH_saveConfigInfo(&conf);
 		REBOOT_SYSTEM();
 		return (events ^ APP_EVENT_CHANGE_CONFIG);

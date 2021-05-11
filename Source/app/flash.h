@@ -14,22 +14,7 @@ extern const uint8 *FlashAddr[];
 //! Configuration data length without checksum
 #define LEN_FLASH_CONFIG 31
 
-#if LORA_DEVICE
-typedef struct {
-	uint8 meterType; // 0
-	/* uint8 sleepMode; // 1 */
-	uint8 meterInterval; // 2
-	uint8 reportInterval; // 3
-	uint8 unused; // 4
-	uint8 isShortInterval; // 5
-	uint8 resetCount[2]; // 6-7
-	uint8 debugPrint; // 8
-	uint8 rtCtrlMode; // 9
-	uint8 isUsingPF; // 10
-	uint8 reserved[20]; // 11 ~ 30
-	uint8 checksum; // 31
-} FlashConfig_t;
-#else // NBIOT_DEVICE
+// NBIOT_DEVICE
 typedef struct {
 	uint8 meterType; // 0
 	uint8 meterInterval; // 2
@@ -50,41 +35,14 @@ typedef struct {
 	uint8 reserved[3]; // 28 ~ 30
 	uint8 checksum; // 31
 } FlashConfig_t;
-#endif
 
 #define LEN_FLASH_ID 31
-#if LORA_DEVICE
-typedef struct {
-	uint8 serialNum[SERIAL_NUM_LEN]; //  0 ~ 11
-	uint8 devEui[8]; // 12 ~ 19
-#if REPEATER_DEVICE
-	// 주의 - pan/nwk는 구조체의 짝수 번째 위치(아래의 20, 22와 같이)에서 시작해야
-	// 함.
-	uint16 pan_id; // 20 ~ 21
-	uint32 nwk_addr; // 22 ~ 25
-	uint8 slaveId; // 26
-	uint8 reserved[4]; // 27 ~ 30
-#else
-	uint8 reserved[11]; // 20 ~ 30
-#endif
-	uint8 checksum; // 31
-} FlashId_t;
-#else
 typedef struct {
 	uint8 serialNum[SERIAL_NUM_LEN]; //  0 ~ 11
 	uint8 imei[8]; // 12 ~ 19
-#if REPEATER_DEVICE
-	// 주의 - pan/nwk는 구조체의 짝수 번째 위치에서 시작해야 함.
-	uint16 pan_id; // 20 ~ 21
-	uint32 nwk_addr; // 22 ~ 25
-	uint8 slaveId; // 26
-	uint8 reserved[4]; // 27 ~ 30
-#else
 	uint8 reserved[11]; // 20 ~ 30
-#endif
 	uint8 checksum; // 31
 } FlashId_t;
-#endif
 
 //! Meter data position in sector
 #define POS_METER_REPORT 32

@@ -105,7 +105,7 @@ typedef struct {
 	uint32_t curr;
 	uint32_t shortCurr;
 	int32_t power;
-	int32_t cumPower;
+	uint32_t cumPower;
 	uint8_t checkSum;
 	uint8_t etx;
 } elecMeterResp_t;

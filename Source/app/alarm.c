@@ -191,10 +191,6 @@ void ALARM_schedule()
 void ALARM_run()
 {
 	printf_ts("alarm occurred - '%s'\n", ALARM_TYPE_STR(NextAlarm->type));
-	if (conf.isShortInterval) {
-		APP_runMetering(PERIODIC_METERING);
-		return;
-	}
 
 	Date_t date;
 	RTC_read(&date);
@@ -203,7 +199,6 @@ void ALARM_run()
 	if (alarmType == RTC_ALARM_REPORT) {
 		if (MISC_checkInterval(date.hour, conf.reportHour,
 				       conf.rtCtrlInterval)) {
-			APP_runMetering(PERIODIC_METERING);
 			APP_runPeriodicReport();
 		}
 	} else {

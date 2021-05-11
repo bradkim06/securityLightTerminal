@@ -66,12 +66,20 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 		return FAIL;
 	}
 
-	pUnit->meterStatus = rx->status;
+	pUnit->meterStatus = 0xab;
+	/* pUnit->meterStatus = rx->status; */
 	pUnit->volt = rx->volt;
 	pUnit->curr = rx->curr;
 	pUnit->shortCurr = rx->shortCurr;
 	pUnit->power = rx->power;
 	pUnit->cumPower = rx->cumPower;
+
+	printf_ts(
+		"meterStatus : %02X \nvolt : %lumV 0x%lX \ncurr : %lumA 0x%lX \n\
+        shortCurr : %lumA 0x%lX \npower : %ldmW 0x%lX \ncumPower : %luW/h 0x%lX \n",
+		pUnit->meterStatus, rx->volt, rx->volt, rx->curr, rx->curr,
+		rx->shortCurr, rx->shortCurr, rx->power, rx->power,
+		rx->cumPower, rx->cumPower);
 
 	return SUCCESS;
 }

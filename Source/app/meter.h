@@ -24,7 +24,7 @@ typedef struct {
 	uint32 curr;
 	uint32 shortCurr;
 	int32 power;
-	int32 cumPower;
+	uint32 cumPower;
 } MeterUnitData_t;
 
 char *METER_getMeterName(int meterType);

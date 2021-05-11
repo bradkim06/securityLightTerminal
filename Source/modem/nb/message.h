@@ -131,7 +131,7 @@ typedef struct {
 	uchar volt[4];
 	uchar curr[4];
 	uchar shortCurr[4];
-	uchar power[4];
+	char power[4];
 	uchar cumPower[4];
 } NbiotMeterData_t;
 
