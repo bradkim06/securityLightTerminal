@@ -142,13 +142,6 @@ void initPort()
 	P1IFG = 0x00;
 	P2IFG = 0x00;
 
-	if (LCD_Exist()) {
-		P2DIR &= ~BM(REED_SENSOR_P2_PIN); // Set to Input
-		P2IE |= BM(REED_SENSOR_P2_PIN); // Interrupt enabled
-		P2IES &= ~BM(REED_SENSOR_P2_PIN); // Low/Hi edge
-		P2IFG &= ~BM(REED_SENSOR_P2_PIN); // IFG cleared
-	}
-
 	P6DIR |= BM(BATT_ADC_IN_P6_PIN);
 	P6REN |= BM(BATT_ADC_IN_P6_PIN);
 }
@@ -182,7 +175,7 @@ void initSystem()
 
 int main()
 {
-    WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
+	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_VRST_3SEC; // Start watchdog timer(3.2768 sec)
 	initSystem();
 

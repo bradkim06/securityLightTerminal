@@ -345,9 +345,6 @@ void TEST_readMeter(int type)
 
 TEST_RMETER_FINISH:
 	IsMeterTesting = FALSE;
-
-	LCD_init();
-	LCD_displayString("TEST");
 }
 
 void TEST_writeMeter(char *valueStr)
@@ -452,12 +449,8 @@ void TEST_lpm3()
 	P1DIR = 0xFF;
 	P1OUT = 0x00;
 
-	LCD_init();
-	LCD_wait();
-
 	NFC_fdDisable();
 
-	LCD_disable();
 	PRINT_disable();
 
 	MODEM_turnOff();
@@ -471,7 +464,6 @@ void TEST_lpm3()
 		if (DeviceSleepState == FALSE) {
 			P2OUT &= ~0x20;
 			TIMER_stop();
-			LCD_disable();
 			PRINT_disable();
 			MODEM_disable();
 			WDTCTL = WDTPW | WDTHOLD;
@@ -500,13 +492,9 @@ void TEST_lpm2()
 	P1DIR = 0xFF;
 	P1OUT = 0x00;
 
-	LCD_init();
-	LCD_wait();
-
 	NFC_fdDisable();
 
 	TIMER_stop();
-	LCD_disable();
 	PRINT_disable();
 
 	MODEM_turnOff();
@@ -526,19 +514,15 @@ void TEST_readFwVersion()
 
 void TEST_lcd()
 {
-	LCD_init();
 	printf("ACK\n");
 
 	while (1) {
-		LCD_displayAll();
 		MISC_delayMs(800);
-		LCD_displayFirmwareVersion();
 		MISC_delayMs(500);
 		if (TEST_stop() == TRUE) {
 			break;
 		}
 	}
-	LCD_displayString("TEST");
 }
 
 void TEST_meterLCD()
@@ -746,9 +730,6 @@ void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
 		}
 	}
 	IsMeterTesting = FALSE;
-
-	LCD_init();
-	LCD_displayString("TEST");
 }
 
 void TEST_pmrsn(BOOL isJigTest)
@@ -843,9 +824,6 @@ void TEST_pmrsn(BOOL isJigTest)
 		}
 	}
 	IsMeterTesting = FALSE;
-
-	/* LCD_init(); */
-	/* LCD_displayString("TEST"); */
 }
 
 void TEST_resetNFC()
@@ -971,8 +949,6 @@ void TEST_run()
 
 	BATT_init();
 	NFC_init();
-	LCD_init();
-	LCD_displayString("TEST");
 
 	// task √ ±‚»≠
 	TestTaskId = 0;

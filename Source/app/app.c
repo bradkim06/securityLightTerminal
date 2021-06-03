@@ -289,7 +289,6 @@ void APP_init(uint8 taskId)
 	conf.isUsingPF = TRUE;
 
 	BATT_init();
-	LCD_init();
 	NFC_init();
 	ALARM_init();
 

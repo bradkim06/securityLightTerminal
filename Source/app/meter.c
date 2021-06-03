@@ -166,29 +166,6 @@ MeterUnitData_t *METER_getStoredData(int pos)
 	return NULL;
 }
 
-static int checkStoreInterval(MeterUnitData_t *after, MeterUnitData_t *before,
-			      int si)
-{
-	Date_t prev;
-	copyDateFromData(before, &prev, TRUE);
-
-	Date_t next;
-	copyDateFromData(after, &next, TRUE);
-
-	int elapsed = 0;
-	if (conf.isShortInterval) {
-		if (MISC_calcMinDiff(&prev, &next) >= si) {
-			elapsed = 1;
-		}
-	} else {
-		if (MISC_calcHourDiff(&prev, &next) >= si) {
-			elapsed = 1;
-		}
-	}
-
-	return elapsed;
-}
-
 void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit)
 {
 	insertDateToData(pDate, pUnit, FALSE);
