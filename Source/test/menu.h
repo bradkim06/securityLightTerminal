@@ -112,7 +112,7 @@ const ShellCommandSet_t CmdSet[] = {
 	{
 		CMDN_RMETER,
 		"rmeter",
-		"rmeter TYPE",
+		"rmeter TYPE TIME(sec)",
 		"Read meter continuously",
 	},
 	{

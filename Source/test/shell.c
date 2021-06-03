@@ -458,12 +458,14 @@ void SHELL_run()
 			break;
 
 		case CMDN_RMETER:
-			if (nCmdArgs >= 1) {
+			if (nCmdArgs >= 2) {
 				int type = SHELL_decimal(
 					cmdArgs[0]); /* meter type */
-				TEST_readMeter(type);
+				int sec = SHELL_decimal(
+					cmdArgs[1]); /* Time(sec) */
+				TEST_readMeter(type, sec);
 			} else {
-				TEST_readMeter(0xFF);
+				TEST_readMeter(0xFF, 0xFF);
 			}
 			break;
 

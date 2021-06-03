@@ -277,20 +277,23 @@ static void reedResponse()
 		printf("treed OK\n");
 }
 
-void TEST_readMeter(int type)
+void TEST_readMeter(int type, int sec)
 {
 	int meterType;
 	if (type == 1) {
 		meterType = E_METER;
 	} else {
-		printf("Meter type error, see below\n");
+		printf("rmeter [TYPE] [TIME(sec)]\n");
+		printf("First Arg Meter type, see below\n");
 		printf(" 1 : Electric STD\n");
+		printf("Second Arg Time(Sec)\n");
 		return;
 	}
 
 	int nLoop = 0;
 	while (++nLoop) {
-		METER_sendRequest(meterType);
+		printf("Meter Send Req Count : %d Result : %d set Time : %d\n",
+		       nLoop, METER_sendRequest(meterType), sec);
 
 		IsMeterTesting = TRUE;
 		uint32 ms = TIMER_getMsec();
@@ -314,6 +317,12 @@ void TEST_readMeter(int type)
 		}
 
 		printf("result : %d\n", result);
+
+		while (TIMER_getMsecDiff(ms) < (sec * 1000)) {
+			if (TEST_stop()) {
+				goto TEST_RMETER_FINISH;
+			}
+		}
 	}
 
 TEST_RMETER_FINISH:
@@ -508,6 +517,7 @@ void TEST_run()
 
 	BATT_init();
 	NFC_init();
+	METER_enable(E_METER);
 
 	// task ÃÊ±âÈ­
 	TestTaskId = 0;

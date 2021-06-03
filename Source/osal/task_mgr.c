@@ -52,6 +52,8 @@ void TASKMGR_run(void)
 		WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 		WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 
+		P2OUT ^= 0x02;
+
 		counter++;
 		if (counter == 500000) {
 			P3OUT |= 0x02;
@@ -65,6 +67,10 @@ void TASKMGR_run(void)
 				P3SEL, P3DIR, P3OUT, counter);
 			counter = 0;
 		}
+		// H/W Watch Dog Reset
+#define HW_WDT_PIN 0x02
+		P2OUT ^= HW_WDT_PIN;
+
 		if (++idx >= TasksTotalCounts) {
 			idx = 0;
 		}

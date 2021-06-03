@@ -24,7 +24,7 @@ void TEST_riCtrlMode(int flag);
 void TEST_setMeterType(int type);
 void TEST_shortInterval(int flag);
 void TEST_debugPrint(int flag);
-void TEST_readMeter(int type);
+void TEST_readMeter(int type, int sec);
 
 void TEST_pwsn(char *sn, int ri);
 
