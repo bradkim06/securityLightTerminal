@@ -115,12 +115,12 @@ extern struct Config conf;
  */
 #if NBIOT_DEVICE
 #if defined(__MODEM_BC95G__)
-#define FW_VER_MAJOR "3"
+#define FW_VER_MAJOR "0"
 #endif
 
-#define FW_VER_MINOR "31"
+#define FW_VER_MINOR "01"
 
-#define FIRMWARE_VER_NBIOT_ONEM2M ("U" FW_VER_MAJOR FW_VER_MINOR)
+#define FIRMWARE_VER_NBIOT_ONEM2M ("L" FW_VER_MAJOR FW_VER_MINOR)
 
 #else
 #error "Have to define NBIOT_DEVICE"
