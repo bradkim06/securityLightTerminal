@@ -38,14 +38,33 @@ void TASKMGR_init(void)
 
 void TASKMGR_run(void)
 {
+	static uint32 counter = 0;
 	uint8 idx = 0;
 
 	DeviceSleepState = FALSE;
+
+	P3OUT |= 0x02;
+	printf_ts(
+		"P3SEL : 0x%02X P3DIR : 0x%02X P3OUT : 0x%02X P3counter : %d\n",
+		P3SEL, P3DIR, P3OUT, counter);
 
 	for (;;) { // Forever Loop
 		WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 		WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 
+		counter++;
+		if (counter == 500000) {
+			P3OUT |= 0x02;
+			printf_ts(
+				"P3SEL : 0x%02X P3DIR : 0x%02X P3OUT : 0x%02X P3counter : %lu\n",
+				P3SEL, P3DIR, P3OUT, counter);
+		} else if (counter == 1000000) {
+			P3OUT &= 0xFD;
+			printf_ts(
+				"P3SEL : 0x%02X P3DIR : 0x%02X P3OUT : 0x%02X P3counter : %lu\n",
+				P3SEL, P3DIR, P3OUT, counter);
+			counter = 0;
+		}
 		if (++idx >= TasksTotalCounts) {
 			idx = 0;
 		}

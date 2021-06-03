@@ -1137,26 +1137,6 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 	}
 }
 
-static BOOL isRejectedFromCell()
-{
-	if (nbCtx.cellreg == NBIOT_CELLREG_PAUSE) {
-		Date_t now;
-		RTC_read(&now);
-		int diffHour = MISC_calcHourDiff(&nbInfo.lastAttachTime, &now);
-		if (diffHour < NBIOT_PUASED_DELAY) {
-			NBIOT_DBG("cellreg paused - wait(remain : %d)\n",
-				  (NBIOT_PUASED_DELAY - diffHour));
-			return TRUE;
-		} else {
-			NBIOT_DBG("cellreg paused - over\n");
-		}
-	} else if (nbCtx.cellreg == NBIOT_CELLREG_REJECTED) {
-		NBIOT_DBG("cellreg rejected - wait change USIM\n");
-		return TRUE;
-	}
-	return FALSE;
-}
-
 BOOL NBIOT_sendDataProcess()
 {
 	if (nbCtx.cellreg == NBIOT_CELLREG_NO_SERVICE) {
@@ -1172,10 +1152,6 @@ BOOL NBIOT_sendDataProcess()
 		bip();
 		nbCtx.nextStep = NBIOT_STEP_INIT;
 	} else if (nbCtx.currentStep == NBIOT_STEP_INIT) {
-		/* if (isRejectedFromCell()) { // Cell reg 에 따른 예외처리 확인. */
-		/* 	nbCtx.error = NBIOT_ERROR_ATTACH_FAIL; */
-		/* 	return TRUE; */
-		/* } */
 		init();
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {

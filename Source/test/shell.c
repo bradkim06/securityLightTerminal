@@ -398,18 +398,6 @@ void SHELL_run()
 			TEST_readBattery();
 			break;
 
-		case CMDN_PLPM3:
-			TEST_lpm3();
-			break;
-
-		case CMDN_PLPM2:
-			TEST_lpm2();
-			break;
-
-		case CMDN_PREED:
-			TEST_reedSensor();
-			break;
-
 		case CMDN_RSN:
 			TEST_readSerialNum();
 			break;
@@ -428,34 +416,16 @@ void SHELL_run()
 			REBOOT_SYSTEM();
 			break;
 
-		case CMDN_PLCD:
-			TEST_lcd();
-			break;
-
-		case CMDN_PMLCD:
-			TEST_meterLCD();
-			break;
-
 		case CMDN_CONFIG:
 			TEST_config();
 			break;
 
 		case CMDN_MP:
-			if (nCmdArgs >= 2) {
+			if (nCmdArgs >= 1) {
 				int ri = SHELL_decimal(cmdArgs[0]); /* ri */
-				int mi = SHELL_decimal(cmdArgs[1]); /* mi */
-				TEST_meteringParamer(ri, mi);
+				TEST_meteringParamer(ri);
 			} else {
 				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_SLEEP:
-			if (nCmdArgs >= 1) {
-				int flag = SHELL_decimal(cmdArgs[0]);
-				TEST_sleepMode(flag);
-			} else {
-				TEST_sleepMode(0xFF);
 			}
 			break;
 
@@ -505,44 +475,6 @@ void SHELL_run()
 			TEST_readFwVersion();
 			break;
 
-		case CMDN_PWMETER:
-		case CMDN_PMETER:
-			if (nCmdArgs >= 3) {
-				// 처음 3개 파라미터를 제외한 나머지 4개는 선택이므로 아래와 같이
-				// 처리.
-				int numMeter = SHELL_decimal(
-					cmdArgs[0]); /* num of meter */
-				int type1 =
-					SHELL_decimal(cmdArgs[1]); /* type 1 */
-				int port1 =
-					SHELL_decimal(cmdArgs[2]); /* port 1 */
-				int type2 = (nCmdArgs >= 4) ?
-						    SHELL_decimal(cmdArgs[3]) :
-						    0xFF; /* type 2 */
-				int port2 = (nCmdArgs >= 5) ?
-						    SHELL_decimal(cmdArgs[4]) :
-						    0xFF; /* port 2 */
-				int type3 = (nCmdArgs >= 6) ?
-						    SHELL_decimal(cmdArgs[5]) :
-						    0xFF; /* type 3 */
-				int port3 = (nCmdArgs >= 7) ?
-						    SHELL_decimal(cmdArgs[6]) :
-						    0xFF; /* port 3 */
-				if (cmdIdx == CMDN_PWMETER) {
-					TEST_pwmeter(numMeter, type1, port1,
-						     type2, port2, type3,
-						     port3);
-				} else if (cmdIdx == CMDN_PMETER) {
-					TEST_pmeter(numMeter, type1, port1,
-						    type2, port2, type3, port3);
-				} else {
-					goto SHELL_CMD_ERROR;
-				}
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
 		case CMDN_PMODEM:
 			TEST_pmodem();
 			break;
@@ -556,33 +488,11 @@ void SHELL_run()
 			break;
 
 		case CMDN_PWSN:
-			if (nCmdArgs >= 3) {
+			if (nCmdArgs >= 2) {
 				char sn[LEN_ARG_STRING];
 				SHELL_string(cmdArgs[0], sn); /* serial num */
 				int ri = SHELL_decimal(cmdArgs[1]); /* ri */
-				int mi = SHELL_decimal(cmdArgs[2]); /* mi */
-				TEST_pwsn(sn, ri, mi);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
-			break;
-
-		case CMDN_PMWSN:
-			if (nCmdArgs >= 9) {
-				char sn[LEN_ARG_STRING];
-				SHELL_string(cmdArgs[0], sn); /* serial num */
-				int ri = SHELL_decimal(cmdArgs[1]); /* ri */
-				int mi = SHELL_decimal(cmdArgs[2]); /* mi */
-				int caliber = SHELL_decimal(
-					cmdArgs[3]); /* Meter caliber */
-				int q3 = SHELL_decimal(cmdArgs[4]); /* Q3 */
-				int qt = SHELL_decimal(cmdArgs[5]); /* Qt */
-				int q2 = SHELL_decimal(cmdArgs[6]); /* Q2 */
-				int q1 = SHELL_decimal(cmdArgs[7]); /* Q1 */
-				int marker =
-					SHELL_decimal(cmdArgs[8]); /* Maker */
-				TEST_pmwsn(sn, ri, mi, caliber, q3, qt, q2, q1,
-					   marker);
+				TEST_pwsn(sn, ri);
 			} else {
 				goto SHELL_CMD_ERROR;
 			}
@@ -590,21 +500,6 @@ void SHELL_run()
 
 		case CMDN_PRSN:
 			TEST_prsn();
-			break;
-
-		case CMDN_PMRSN:
-			TEST_pmrsn(TRUE);
-			break;
-
-		case CMDN_WMETER:
-			if (nCmdArgs >= 1) {
-				char meterValue[LEN_ARG_STRING];
-				SHELL_string(cmdArgs[0],
-					     meterValue); /* value */
-				TEST_writeMeter(meterValue);
-			} else {
-				goto SHELL_CMD_ERROR;
-			}
 			break;
 
 		case CMDN_PRNBID:
@@ -652,25 +547,12 @@ void SHELL_run()
 			TEST_pnbctx();
 			break;
 
-		case CMDN_MRSN:
-			TEST_pmrsn(FALSE);
-			break;
-
 		case CMDN_RI_CTRL:
 			if (nCmdArgs >= 1) {
 				int flag = SHELL_decimal(cmdArgs[0]);
 				TEST_riCtrlMode(flag);
 			} else {
 				TEST_riCtrlMode(0xFF);
-			}
-			break;
-
-		case CMDN_PF_CTRL:
-			if (nCmdArgs >= 1) {
-				int flag = SHELL_decimal(cmdArgs[0]);
-				TEST_platformIneterlock(flag);
-			} else {
-				TEST_platformIneterlock(0xFF);
 			}
 			break;
 

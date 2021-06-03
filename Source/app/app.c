@@ -67,7 +67,7 @@ void APP_showConfig(Config_t *p)
 		       p->fotaPort, p->fotaInterval);
 	}
 	if (p->isShortInterval) {
-		printf(" [ MI & RI    ] %d (minutes)\n", p->reportInterval);
+		printf(" [ RI         ] %d (minutes)\n", p->reportInterval);
 		printf(" [ Base Min   ] %d min\n", p->reportMin);
 	} else {
 		printf(" [ RI         ] %d (hours)\n", p->reportInterval);

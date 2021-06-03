@@ -72,7 +72,7 @@ uint8 TEST_getTaskId()
     Other functions
  ***************************************************************
  */
-static BOOL saveTerminalConfig(const char *sn, const int ri, const int mi)
+static BOOL saveTerminalConfig(const char *sn, const int ri)
 {
 	BOOL valid = FALSE;
 
@@ -86,33 +86,20 @@ static BOOL saveTerminalConfig(const char *sn, const int ri, const int mi)
 			printf("wrong report interval(%d)\n", ri);
 			break;
 		}
-		if (mi <= 0 || mi > 24 || (24 % mi) != 0 || mi > ri) {
-			printf("metering interval(%d) is wrong or greater than report "
-			       "interval(%d)\n",
-			       mi, ri);
-			break;
-		}
 		valid = TRUE;
 	} while (0);
 
 	if (valid) {
-#if (LORA_DEVICE && (LORA_THINGPLUG == 0))
-		if (!TEST_writeAppKeyUsingDEUI()) {
-			return FALSE;
-		}
-#endif
 		FLASH_readConfigInfo(&conf);
 
 		memcpy(conf.serialNum, sn, SERIAL_NUM_LEN);
 		conf.reportInterval = ri;
 		conf.isShortInterval = 0;
-#if NBIOT_DEVICE
 		conf.isModemInit = FALSE;
 		// Set default FOTA IP/Port and interval
 		strcpy(conf.fotaIp, ONEM2M_FOTA_SERVER_IP);
 		conf.fotaPort = ONEM2M_FOTA_SERVER_PORT;
 		conf.fotaInterval = ONEM2M_FOTA_DAY_INTERVAL;
-#endif
 
 		FLASH_saveConfigInfo(&conf);
 	}
@@ -139,7 +126,7 @@ void TEST_debugPrint(int flag)
 	printf("debug printing %s\n", conf.debugPrint ? "on" : "off");
 }
 
-void TEST_meteringParamer(int ri, int mi)
+void TEST_meteringParamer(int ri)
 {
 	if (ri == 0 || 24 % ri) {
 		printf("reportInterval should be one of 1, 2, 3, 4, 6, 12, 24\n");
@@ -290,19 +277,6 @@ static void reedResponse()
 		printf("treed OK\n");
 }
 
-void TEST_reedSensor()
-{
-	printf("ACK\n");
-	IsReedTesting = TRUE;
-	while (1) {
-		MISC_delayMs(100);
-		if (TEST_stop() == TRUE) {
-			break;
-		}
-	}
-	IsReedTesting = FALSE;
-}
-
 void TEST_readMeter(int type)
 {
 	int meterType;
@@ -338,7 +312,6 @@ void TEST_readMeter(int type)
 		} else {
 			result = METER_recvResponse(meterType, &unit);
 		}
-		//TODO Print Result readMeter
 
 		printf("result : %d\n", result);
 	}
@@ -347,206 +320,9 @@ TEST_RMETER_FINISH:
 	IsMeterTesting = FALSE;
 }
 
-void TEST_writeMeter(char *valueStr)
-{
-	//TODO TEST_writeMeter
-	/* Comment TEST_writeMeter() */
-	/* char value[12]; */
-	/* memset(value, '0', 12); */
-
-	/* int valid = 0; */
-	/* do { */
-	/* 	char *pStart = valueStr; */
-	/* 	char *pDot = strstr(pStart, "."); */
-	/* 	if (pDot == NULL) { */
-	/* 		break; */
-	/* 	} */
-
-	/* 	char *p = pDot - 1; */
-	/* 	for (int i = 5; i >= 0; i--) { */
-	/* 		if (p < pStart) { */
-	/* 			break; */
-	/* 		} */
-	/* 		value[i] = *p--; */
-	/* 	} */
-
-	/* 	p = pDot + 1; */
-	/* 	for (int i = 6; i < 11; i++) { */
-	/* 		if (*p == '\r' || *p == '\n' || *p == '\0') { */
-	/* 			break; */
-	/* 		} */
-	/* 		value[i] = *p++; */
-	/* 	} */
-
-	/* 	valid = 1; */
-
-	/* 	for (int i = 0; i < 12; i++) { */
-	/* 		if (isxdigit(value[i]) == 0) { */
-	/* 			valid = 0; */
-	/* 			break; */
-	/* 		} */
-	/* 	} */
-	/* } while (0); */
-
-	/* if (valid == 0) { */
-	/* 	printf("invalid value(%s) try again with xxxxxx.yyyyy format\n", */
-	/* 	       valueStr); */
-	/* 	return; */
-	/* } */
-
-	/* typedef struct { */
-	/* 	uint8 stx; */
-	/* 	uint8 cfield; */
-	/* 	uint8 afield; */
-	/* 	uint8 value[6]; */
-	/* 	uint8 checksum; */
-	/* 	uint8 etx; */
-	/* } set_meter_value_t; */
-
-	/* set_meter_value_t txMsg; */
-	/* set_meter_value_t *pMsg = &txMsg; */
-	/* memset(pMsg, 0, sizeof(set_meter_value_t)); */
-
-	/* pMsg->stx = STD_REQ_START; */
-	/* pMsg->cfield = 0xA1; */
-	/* pMsg->afield = STD_REQ_ADDR; */
-	/* for (int i = 0; i < 6; i++) { */
-	/* 	pMsg->value[i] = MISC_asciiToBCD(value[10 - 2 * i + 0], */
-	/* 					 value[10 - 2 * i + 1]); */
-	/* } */
-	/* pMsg->checksum = pMsg->cfield + pMsg->afield; */
-	/* for (int i = 0; i < 6; i++) { */
-	/* 	pMsg->checksum += pMsg->value[i]; */
-	/* } */
-	/* pMsg->etx = STD_REQ_STOP; */
-
-	/* uint8 *p = (uint8 *)pMsg; */
-
-	/* printf("set meter value: "); */
-	/* for (int i = 0; i < sizeof(set_meter_value_t); i++) { */
-	/* 	printf(" %02X", *(p + i)); */
-	/* } */
-	/* printf("\n"); */
-
-	/* /1* METER_enable(W_STANDARD_D); *1/ */
-	/* UART_send(UART_A3, &txMsg, sizeof(set_meter_value_t), FALSE); */
-
-	/* MISC_delayMs(1500); */
-}
-
-void TEST_lpm3()
-{
-	printf("ACK\n");
-
-	FLASH_readConfigInfo(&conf);
-
-	/* Comment config sleepMode */
-	/* conf.sleepMode = 1; */
-	FLASH_saveConfigInfo(&conf);
-
-	MODEM_disable();
-
-	P1DIR = 0xFF;
-	P1OUT = 0x00;
-
-	NFC_fdDisable();
-
-	PRINT_disable();
-
-	MODEM_turnOff();
-
-	DeviceSleepState = FALSE;
-	GLOBAL_DISABLE_INT();
-	/* Comment SLEEP_DEVICE */
-	/* SLEEP_DEVICE(); */
-
-	do {
-		if (DeviceSleepState == FALSE) {
-			P2OUT &= ~0x20;
-			TIMER_stop();
-			PRINT_disable();
-			MODEM_disable();
-			WDTCTL = WDTPW | WDTHOLD;
-			DeviceSleepState = TRUE;
-			__bis_SR_register(POWER_MODE + GIE);
-		}
-		__no_operation();
-	} while (0);
-
-	while (1)
-		;
-}
-
-void TEST_lpm2()
-{
-	printf("ACK\n");
-
-	FLASH_readConfigInfo(&conf);
-
-	/* Comment config sleepMode */
-	/* conf.sleepMode = 1; */
-	FLASH_saveConfigInfo(&conf);
-
-	MODEM_disable();
-
-	P1DIR = 0xFF;
-	P1OUT = 0x00;
-
-	NFC_fdDisable();
-
-	TIMER_stop();
-	PRINT_disable();
-
-	MODEM_turnOff();
-
-	DeviceSleepState = FALSE;
-	GLOBAL_DISABLE_INT();
-	LPM2_ON();
-
-	while (1)
-		;
-}
-
 void TEST_readFwVersion()
 {
 	printf("tver %s\n", APP_getFwVer(conf.isUsingPF));
-}
-
-void TEST_lcd()
-{
-	printf("ACK\n");
-
-	while (1) {
-		MISC_delayMs(800);
-		MISC_delayMs(500);
-		if (TEST_stop() == TRUE) {
-			break;
-		}
-	}
-}
-
-void TEST_meterLCD()
-{
-	/* Comment METER_std_lcdTestReq() */
-	/* if (METER_std_lcdTestReq()) { */
-	/* 	printf("ACK\n"); */
-	/* } */
-}
-
-void TEST_sleepMode(int flag)
-{
-	/* Comment config sleepMode */
-	/* if (flag != 0xff) { */
-	/* 	FLASH_readConfigInfo(&conf); */
-	/* 	conf.sleepMode = flag ? 1 : 0; */
-	/* 	FLASH_saveConfigInfo(&conf); */
-	/* } */
-
-	/* if (conf.sleepMode) { */
-	/* 	printf("sleep mode\n"); */
-	/* } else { */
-	/* 	printf("active mode\n"); */
-	/* } */
 }
 
 void TEST_riCtrlMode(int flag)
@@ -560,17 +336,6 @@ void TEST_riCtrlMode(int flag)
 	}
 
 	printf("report control %s\n", conf.rtCtrlMode ? "on" : "off");
-}
-
-void TEST_platformIneterlock(int flag)
-{
-	if (flag != 0xff) {
-		FLASH_readConfigInfo(&conf);
-		conf.isUsingPF = flag ? 1 : 0;
-		FLASH_saveConfigInfo(&conf);
-	}
-
-	printf("platform ineterlock %s\n", conf.isUsingPF ? "on" : "off");
 }
 
 void TEST_shortInterval(int flag)
@@ -593,16 +358,16 @@ void TEST_setMeterType(int type)
 		conf.meterType = E_METER;
 	} else {
 		printf("Meter type error, see below\n");
-		printf(" 1 : Water STD\n");
+		printf(" 1 : Security Light\n");
 		return;
 	}
 
 	FLASH_saveConfigInfo(&conf);
 }
 
-void TEST_pwsn(char *sn, int ri, int mi)
+void TEST_pwsn(char *sn, int ri)
 {
-	if (saveTerminalConfig(sn, ri, mi) != TRUE) {
+	if (saveTerminalConfig(sn, ri) != TRUE) {
 		printf("trsn ERR\n");
 		return;
 	}
@@ -618,212 +383,6 @@ void TEST_prsn()
 
 	printf("trsn %s %s %d\n", serial, APP_getFwVer(conf.isUsingPF),
 	       conf.reportInterval);
-}
-
-void TEST_pwmeter(int numMeter, int type1, int port1, int type2, int port2,
-		  int type3, int port3)
-{
-	FLASH_readConfigInfo(&conf);
-	conf.meterType = type1;
-	FLASH_saveConfigInfo(&conf);
-
-	MISC_delayMs(
-		1000); // 생산공정에서 모뎀 BIP완료 메세지 대기를 위한 딜레이
-	printf("trmeter %d %d %d %d %d %d %d\n", numMeter, type1, port1, type2,
-	       port2, type3, port3);
-}
-
-void TEST_pmeter(int numMeter, int type1, int port1, int type2, int port2,
-		 int type3, int port3)
-{
-	FLASH_readConfigInfo(&conf);
-	conf.meterType = type1;
-	FLASH_saveConfigInfo(&conf);
-
-	METER_sendRequest(conf.meterType);
-
-	MeterUnitData_t unit;
-	int result = FAIL;
-
-	IsMeterTesting = TRUE;
-	uint32 ms = TIMER_getMsec();
-	while (TIMER_getMsecDiff(ms) < (3 * 1000)) {
-		TEST_runTasks();
-		if (IsMeterTesting) {
-			MISC_delayMs(1);
-		} else {
-			result = METER_recvResponse(conf.meterType, &unit);
-			if (result == SUCCESS) {
-				break;
-			}
-		}
-	}
-
-	if (result == SUCCESS) {
-		/* printf("tmeter 1 %02x%02x%02x%02x\n", unit.meterData[0], */
-		/*        unit.meterData[1], unit.meterData[2], unit.meterData[3]); */
-	} else {
-		printf("tmeter 1 ERR\n");
-	}
-
-	IsMeterTesting = FALSE;
-}
-
-void TEST_pmwsn(char *sn, int ri, int mi, int caliber, int q3, int qt, int q2,
-		int q1, int maker)
-{
-	if (saveTerminalConfig(sn, ri, mi) != TRUE) {
-		printf("tmrsn ERR\n");
-		return;
-	}
-
-	/* Comment meter sn */
-	/* char meter_sn[4]; */
-	/* meter_sn[3] = MISC_asciiToBCD(sn[4], sn[5]); */
-	/* meter_sn[2] = MISC_asciiToBCD(sn[6], sn[7]); */
-	/* meter_sn[1] = MISC_asciiToBCD(sn[8], sn[9]); */
-	/* meter_sn[0] = MISC_asciiToBCD(sn[10], sn[11]); */
-	/* Comment METER_std_adjustReq */
-	/* if (METER_std_adjustReq(meter_sn, caliber, maker, q3, qt, q2, q1) != */
-	/*     TRUE) { */
-	/* 	return; */
-	/* } */
-
-	IsMeterTesting = TRUE;
-	uint32 ms = TIMER_getMsec();
-	while (TIMER_getMsecDiff(ms) < (3 * 1000)) {
-		TEST_runTasks();
-		if (IsMeterTesting) {
-			MISC_delayMs(1);
-		} else {
-			/* Comment metering test */
-			/* StdAdjustResult_t result; */
-			/* if (METER_std_adjustResp(&result)) { */
-			/* 	printf("tmrsn %s %s %d ", sn, */
-			/* 	       APP_getFwVer(conf.isUsingPF), */
-			/* 	       conf.reportInterval); */
-			/* 	uint16 recv_q3, recv_qt, recv_q2, recv_q1; */
-			/* 	recv_q3 = result.q3[0] | result.q3[1] << 8; */
-			/* 	recv_qt = result.qt[0] | result.qt[1] << 8; */
-			/* 	recv_q2 = result.q2[0] | result.q2[1] << 8; */
-			/* 	recv_q1 = result.q1[0] | result.q1[1] << 8; */
-			/* 	// 사실 40, 50mm은 소형/대형이 혼재하지만 따로 구분할 방법이 없어 */
-			/* 	// 50mm까진 소형으로 고려한다. */
-			/* 	if (caliber > MT_50mm) { */
-			/* 		printf("%d %d %d %d %d %d %d %d\n", */
-			/* 		       result.caliber, recv_q3, recv_qt, */
-			/* 		       recv_q2, recv_q1, result.maker, */
-			/* 		       result.fwVersion, */
-			/* 		       result.errorCode); */
-			/* 	} else { */
-			/* 		printf("%d %d.%d %d.%d %d.%d %d.%d %d %d %d\n", */
-			/* 		       result.caliber, recv_q3 / 10, */
-			/* 		       recv_q3 % 10, recv_qt / 10, */
-			/* 		       recv_qt % 10, recv_q2 / 10, */
-			/* 		       recv_q2 % 10, recv_q1 / 10, */
-			/* 		       recv_q1 % 10, result.maker, */
-			/* 		       result.fwVersion, */
-			/* 		       result.errorCode); */
-			/* 	} */
-			/* } */
-			/* break; */
-		}
-	}
-	IsMeterTesting = FALSE;
-}
-
-void TEST_pmrsn(BOOL isJigTest)
-{
-	/* Comment METER_std_configRequest */
-	/* if (METER_std_configRequest() != TRUE) { */
-	/* 	return; */
-	/* } */
-
-	IsMeterTesting = TRUE;
-	uint32 ms = TIMER_getMsec();
-	while (TIMER_getMsecDiff(ms) < (3 * 1000)) {
-		TEST_runTasks();
-		if (IsMeterTesting) {
-			MISC_delayMs(1);
-		} else {
-			/* Comment metering test */
-			/* StdAdjustResult_t result; */
-			/* if (METER_std_adjustResp(&result)) { */
-			/* 	uint16 recv_q3, recv_qt, recv_q2, recv_q1; */
-			/* 	recv_q3 = result.q3[0] | result.q3[1] << 8; */
-			/* 	recv_qt = result.qt[0] | result.qt[1] << 8; */
-			/* 	recv_q2 = result.q2[0] | result.q2[1] << 8; */
-			/* 	recv_q1 = result.q1[0] | result.q1[1] << 8; */
-			/* 	if (isJigTest) { */
-			/* 		char serial[SERIAL_NUM_LEN + 1] = ""; */
-			/* 		memcpy(serial, conf.serialNum, */
-			/* 		       SERIAL_NUM_LEN); */
-			/* 		serial[SERIAL_NUM_LEN] = '\0'; */
-
-			/* 		printf("tmrsn %s %s %d ", serial, */
-			/* 		       APP_getFwVer(conf.isUsingPF), */
-			/* 		       conf.reportInterval*/
-			/* 		       ); */
-			/* 		// 사실 40, 50mm은 소형/대형이 혼재하지만 따로 구분할 방법이 없어 */
-			/* 		// 50mm까진 소형으로 고려한다. */
-			/* 		if (result.caliber > MT_50mm) { */
-			/* 			printf("%d %d %d %d %d %d %d %d\n", */
-			/* 			       result.caliber, recv_q3, */
-			/* 			       recv_qt, recv_q2, */
-			/* 			       recv_q1, result.maker, */
-			/* 			       result.fwVersion, */
-			/* 			       result.errorCode); */
-			/* 		} else { */
-			/* 			printf("%d %d.%d %d.%d %d.%d %d.%d %d %d %d\n", */
-			/* 			       result.caliber, */
-			/* 			       recv_q3 / 10, */
-			/* 			       recv_q3 % 10, */
-			/* 			       recv_qt / 10, */
-			/* 			       recv_qt % 10, */
-			/* 			       recv_q2 / 10, */
-			/* 			       recv_q2 % 10, */
-			/* 			       recv_q1 / 10, */
-			/* 			       recv_q1 % 10, */
-			/* 			       result.maker, */
-			/* 			       result.fwVersion, */
-			/* 			       result.errorCode); */
-			/* 		} */
-			/* 	} else { */
-			/* 		if (result.caliber > MT_50mm) { */
-			/* 			printf("S/N(%02x%02x%02x%02x) F/W(%d) caliber(%02x) Q3(%d) Qt(%d) " */
-			/* 			       "Q2(%d) Q1(%d)\n", */
-			/* 			       result.serial[3], */
-			/* 			       result.serial[2], */
-			/* 			       result.serial[1], */
-			/* 			       result.serial[0], */
-			/* 			       result.fwVersion, */
-			/* 			       result.caliber, recv_q3, */
-			/* 			       recv_qt, recv_q2, */
-			/* 			       recv_q1); */
-			/* 		} else { */
-			/* 			printf("S/N(%02x%02x%02x%02x) F/W(%d) caliber(%02x) Q3(%d.%d) " */
-			/* 			       "Qt(%d.%d) Q2(%d.%d) Q1(%d.%d)\n", */
-			/* 			       result.serial[3], */
-			/* 			       result.serial[2], */
-			/* 			       result.serial[1], */
-			/* 			       result.serial[0], */
-			/* 			       result.fwVersion, */
-			/* 			       result.caliber, */
-			/* 			       recv_q3 / 10, */
-			/* 			       recv_q3 % 10, */
-			/* 			       recv_qt / 10, */
-			/* 			       recv_qt % 10, */
-			/* 			       recv_q2 / 10, */
-			/* 			       recv_q2 % 10, */
-			/* 			       recv_q1 / 10, */
-			/* 			       recv_q1 % 10); */
-			/* 		} */
-			/* 	} */
-			/* } */
-			/* break; */
-		}
-	}
-	IsMeterTesting = FALSE;
 }
 
 void TEST_resetNFC()

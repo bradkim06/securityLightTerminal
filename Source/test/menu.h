@@ -11,61 +11,30 @@ typedef struct {
 #define CMDN_RFLASH 1
 #define CMDN_EFLASH 2
 #define CMDN_PBATT 3
-#define CMDN_PLPM3 4
-#define CMDN_PLPM2 5
-#define CMDN_PREED 6
-#define CMDN_RSN 7
-#define CMDN_WSN 8
-#define CMDN_PRESET 9
-#define CMDN_PLCD 10
-#define CMDN_PMLCD 11
-#define CMDN_CONFIG 12
-#define CMDN_MP 13
-#define CMDN_SLEEP 14
-#define CMDN_MT 15
-#define CMDN_SI 16
-#define CMDN_DEBUG 17
-#define CMDN_RMETER 18
-#define CMDN_MODEM 19
-#define CMDN_PWSN 20
-#define CMDN_PMWSN 21
-#define CMDN_PRSN 22
-#define CMDN_PMRSN 23
-#define CMDN_PVER 24
-#define CMDN_PWMETER 25
-#define CMDN_PMODEM 26
-#define CMDN_PMETER 27
-#define CMDN_PWRTC 28
-#define CMDN_PNFC 29
-#define CMDN_RNFC 30
-#define CMDN_WMETER 31
-#define CMDN_RFMETER 32
-#define CMDN_WFMETER 33
-#define CMDN_EFMETER 34
-#define CMDN_MRSN 35
-#define CMDN_RI_CTRL 36
-#define CMDN_PWAEUI 37
-#define CMDN_PRAEUI 38
-#define CMDN_PWDEUI 39
-#define CMDN_PRDEUI 40
-#define CMDN_PWAKEY 41
-#define CMDN_PRAKEY 42
-#define CMDN_PRNBID 37
-#define CMDN_PWSERVER 38
-#define CMDN_PRSERVER 39
-#define CMDN_PWFOTA 40
-#define CMDN_PRFOTA 41
-#define CMDN_PNBCTX 42
-#define CMDN_PCTX 43
-#define CMDN_PTX 44
-#define CMDN_PRX 45
-#define CMDN_RID 46
-#define CMDN_WID 47
-#define CMDN_RMSG 48
-#define CMDN_SCAN 49
-#define CMDN_RSSI 50
-#define CMDN_POWER 51
-#define CMDN_PF_CTRL 52
+#define CMDN_RSN 4
+#define CMDN_WSN 5
+#define CMDN_PRESET 6
+#define CMDN_CONFIG 7
+#define CMDN_MP 8
+#define CMDN_MT 9
+#define CMDN_SI 10
+#define CMDN_DEBUG 11
+#define CMDN_RMETER 12
+#define CMDN_MODEM 13
+#define CMDN_PWSN 14
+#define CMDN_PRSN 15
+#define CMDN_PVER 16
+#define CMDN_PMODEM 17
+#define CMDN_PWRTC 18
+#define CMDN_PNFC 19
+#define CMDN_RNFC 20
+#define CMDN_RI_CTRL 21
+#define CMDN_PRNBID 22
+#define CMDN_PWSERVER 23
+#define CMDN_PRSERVER 24
+#define CMDN_PWFOTA 25
+#define CMDN_PRFOTA 26
+#define CMDN_PNBCTX 27
 
 const ShellCommandSet_t CmdSet[] = {
 	{
@@ -93,24 +62,11 @@ const ShellCommandSet_t CmdSet[] = {
 		"Read battery level",
 	},
 	{
-		CMDN_PLPM3,
-		"plpm3",
-		"plpm3",
-		"Test LPM3",
+		CMDN_RSN,
+		"rsn",
+		"rsn",
+		"Read serial number",
 	},
-	{
-		CMDN_PLPM2,
-		"plpm2",
-		"plpm2",
-		"Test LPM2",
-	},
-	{
-		CMDN_PREED,
-		"preed",
-		"preed",
-		"Check reed sensor",
-	},
-	{ CMDN_RSN, "rsn", "rsn", "Read serial number" },
 	{
 		CMDN_WSN,
 		"wsn",
@@ -124,18 +80,6 @@ const ShellCommandSet_t CmdSet[] = {
 		"Reset system",
 	},
 	{
-		CMDN_PLCD,
-		"plcd",
-		"plcd",
-		"Check LCD",
-	},
-	{
-		CMDN_PMLCD,
-		"pmlcd",
-		"pmlcd",
-		"Check meter LCD",
-	},
-	{
 		CMDN_CONFIG,
 		"config",
 		"config",
@@ -144,14 +88,8 @@ const ShellCommandSet_t CmdSet[] = {
 	{
 		CMDN_MP,
 		"mp",
-		"mp RI(1~24) MI(1~24)",
+		"mp RI(1~24)",
 		"Write metering parameter",
-	},
-	{
-		CMDN_SLEEP,
-		"sleep",
-		"sleep FLAG(0,1)",
-		"On/Off sleep mode",
 	},
 	{
 		CMDN_MT,
@@ -186,14 +124,8 @@ const ShellCommandSet_t CmdSet[] = {
 	{
 		CMDN_PWSN,
 		"pwsn",
-		"pwsn S/N RI(1~24) MI(1~24)",
+		"pwsn S/N RI(1~24)",
 		"Write device parameter",
-	},
-	{
-		CMDN_PMWSN,
-		"pmwsn",
-		"pmwsn S/N RI(1~24) MI(1~24) CAL Q3 Qt Q2 Q1 MK(1) ",
-		"Write device & meter param",
 	},
 	{
 		CMDN_PRSN,
@@ -202,34 +134,16 @@ const ShellCommandSet_t CmdSet[] = {
 		"Read device config",
 	},
 	{
-		CMDN_PMRSN,
-		"pmrsn",
-		"pmrsn",
-		"Read device & meter config",
-	},
-	{
 		CMDN_PVER,
 		"pver",
 		"pver",
 		"Read F/W version",
 	},
 	{
-		CMDN_PWMETER,
-		"pwmeter",
-		"pwmeter NUM_OF_METER METER_TYPE UART_NUM",
-		"Write meter setting",
-	},
-	{
 		CMDN_PMODEM,
 		"pmodem",
 		"pmodem",
 		"Check modem ready",
-	},
-	{
-		CMDN_PMETER,
-		"pmeter",
-		"pmeter NUM_OF_METER METER_TYPE UART_NUM",
-		"Read meter setting",
 	},
 	{
 		CMDN_PWRTC,
@@ -250,46 +164,10 @@ const ShellCommandSet_t CmdSet[] = {
 		"Factory reset of NFC Tag",
 	},
 	{
-		CMDN_WMETER,
-		"wmeter",
-		"wmeter VALUE(XXXXXX.YYYYY)",
-		"Write meter value",
-	},
-	{
-		CMDN_RFMETER,
-		"rfmeter",
-		"rfmeter",
-		"Read meter data from flash",
-	},
-	{
-		CMDN_WFMETER,
-		"wfmeter",
-		"wfmeter YEAR MONTH DAY NUM_OF_DATA",
-		"Write meter data in flash",
-	},
-	{
-		CMDN_EFMETER,
-		"efmeter",
-		"efmeter",
-		"Erase all meter data in flash",
-	},
-	{
-		CMDN_MRSN,
-		"mrsn",
-		"mrsn",
-		"Read meter information",
-	},
-	{
 		CMDN_RI_CTRL,
 		"rictrl",
 		"rictrl FLAG(0,1)",
 		"On/Off report interval",
-	},
-	{
-		CMDN_PF_CTRL,
-		"platform",
-		"platform FLAG(0,1)",
-		"On/Off platform interlock",
 	},
 	{
 		CMDN_PRNBID,
