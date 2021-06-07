@@ -7,6 +7,7 @@
 #include "flash.h"
 #include "lcd.h"
 #include "rtc.h"
+#include "device.h"
 
 typedef struct {
 	uint8 meterSerial[4];
@@ -62,76 +63,9 @@ char *METER_getMeterName(int meterType)
 	return name;
 }
 
-void METER_displayStoredData()
-{
-	//TODO METER_displayStoredData
-	/* char termSerial[0x10] = ""; */
-	/* strncpy(termSerial, (char *)conf.serialNum, SERIAL_NUM_LEN); */
-	/* termSerial[SERIAL_NUM_LEN] = '\0'; */
-
-	/* MeteringData_t *q = &LastMetering; */
-	/* MeterStoredData_t *p = &StoredMeterData; */
-
-	/* printf("# %d data, serial no: %02x%02x%02x%02x(%02x) T: %s\n", p->nData, */
-	/*        q->meterSerial[0], q->meterSerial[1], q->meterSerial[2], */
-	/*        q->meterSerial[3], q->caliberDp, termSerial); */
-
-	/* for (int i = 0; i < p->nData; i++) { */
-	/* 	MeterUnitData_t *pUnit = &p->unit[i]; */
-	/* 	printf("   %2d)  %2d-%02d-%02d %02d:%02d:%02d   %02x%02x%02x%02x(%02x)\n", */
-	/* 	       i + 1, pUnit->year, pUnit->mon, pUnit->day, pUnit->hour, */
-	/* 	       pUnit->min, pUnit->sec, pUnit->meterData[0], */
-	/* 	       pUnit->meterData[1], pUnit->meterData[2], */
-	/* 	       pUnit->meterData[3], pUnit->meterStatus); */
-	/* } */
-}
-
-void METER_displayTempData()
-{
-	//TODO METER_displayTempData
-	/* char termSerial[0x10] = ""; */
-	/* strncpy(termSerial, (char *)conf.serialNum, SERIAL_NUM_LEN); */
-	/* termSerial[SERIAL_NUM_LEN] = '\0'; */
-
-	/* MeteringData_t *p = &LastMetering; */
-
-	/* printf("# serial no: %02x%02x%02x%02x(%02x) T: %s\n", p->meterSerial[0], */
-	/*        p->meterSerial[1], p->meterSerial[2], p->meterSerial[3], */
-	/*        p->caliberDp, termSerial); */
-
-	/* MeterUnitData_t *pUnit = &LastMetering.unit; */
-	/* printf("         %2d-%02d-%02d %02d:%02d:%02d   %02x%02x%02x%02x(%02x)\n", */
-	/*        pUnit->year, pUnit->mon, pUnit->day, pUnit->hour, pUnit->min, */
-	/*        pUnit->sec, pUnit->meterData[0], pUnit->meterData[1], */
-	/*        pUnit->meterData[2], pUnit->meterData[3], pUnit->meterStatus); */
-}
-
-BOOL METER_isAllFF(uchar *p, int len)
-{
-	BOOL result = TRUE;
-
-	for (int i = 0; i < len; i++) {
-		if (*(p + i) != 0xFF) {
-			result = FALSE;
-			break;
-		}
-	}
-	return result;
-}
-
 void METER_clearTempData()
 {
 	memset(&LastMetering, 0, sizeof(LastMetering));
-}
-
-int METER_getNumberOfStoredData()
-{
-	return StoredMeterData.nData;
-}
-
-int METER_getStoredInterval()
-{
-	return StoredMeterData.storedInterval;
 }
 
 uint8 *METER_getSerialNum()
@@ -157,32 +91,37 @@ BOOL METER_needNewMetering(int secLimit)
 	return (secDiff < 0 || secDiff > secLimit) ? TRUE : FALSE;
 }
 
-MeterUnitData_t *METER_getStoredData(int pos)
-{
-	int nData = METER_getNumberOfStoredData();
-	if (pos >= 0 && pos < nData) {
-		return &StoredMeterData.unit[pos];
-	}
-	return NULL;
-}
-
 void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit)
 {
 	insertDateToData(pDate, pUnit, FALSE);
 	memcpy(&LastMetering.unit, pUnit, sizeof(MeterUnitData_t));
 }
 
-int METER_getFirstValidPos()
+void Relay_Status(int on)
 {
-	int pos = 0xFF;
+	switch (on) {
+	case RELAY_ON:
+		P3OUT |= RELAY_PIN;
+		break;
+	case RELAY_OFF:
+		P3OUT &= ~RELAY_PIN;
+		break;
+	case RELAY_NO_CHANGE:
+		break;
+	case RELAY_TOGGLE:
+		P3OUT ^= RELAY_PIN;
+		break;
+	}
 
-	/* for (int i = 0; i < StoredMeterData.nData; i++) { */
-	/* 	if (METER_isAllFF(StoredMeterData.unit[i].meterData, 4) == */
-	/* 	    FALSE) { */
-	/* 		pos = i; */
-	/* 		break; */
-	/* 	} */
-	/* } */
+#define RELAY_STATUS_STR(x)                                                    \
+	(((x) == RELAY_OFF) ?                                                  \
+		 "RELAY OFF" :                                                 \
+		 ((x) == RELAY_NO_CHANGE) ?                                    \
+		 "RELAY NO CHANGE" :                                           \
+		 ((x) == RELAY_ON) ?                                           \
+		 "RELAY ON" :                                                  \
+		 ((x) == RELAY_TOGGLE) ? "RELAY TOGGLE" : "UNKNOWN")
 
-	return pos;
+	printf_ts("Relay Status : %s, %s, 0x02%X\n", RELAY_STATUS_STR(on),
+		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)), (P3OUT & RELAY_PIN));
 }

@@ -8,6 +8,13 @@
 //=======================================
 #define E_METER 0x01
 
+#define RELAY_PIN 0x02
+
+#define RELAY_OFF 0
+#define RELAY_NO_CHANGE 1
+#define RELAY_ON 2
+#define RELAY_TOGGLE 3
+
 //**************************************
 // Meter data unit structure
 //**************************************
@@ -28,19 +35,13 @@ typedef struct {
 } MeterUnitData_t;
 
 char *METER_getMeterName(int meterType);
-
-BOOL METER_isAllFF(uchar *p, int len);
-void METER_displayTempData();
-void METER_displayStoredData();
 void METER_clearTempData();
 MeterUnitData_t *METER_getTempData();
-MeterUnitData_t *METER_getStoredData(int pos);
 void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit);
-
 BOOL METER_needNewMetering(int secLimit);
-int METER_getNumberOfStoredData();
-int METER_getStoredInterval();
 uint8 *METER_getSerialNum();
-int METER_getFirstValidPos();
+
+// 점멸기용 추가
+void Relay_Status(int on);
 
 #endif // __METER_H__

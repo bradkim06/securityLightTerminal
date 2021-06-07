@@ -329,6 +329,7 @@ static BOOL parseCGSN(const char *pHead, const int *len, uint32 *nextDelay)
 		MODEM_getImei(imei);
 		if (memcmp(conf.imei, imei, 8) != 0) {
 			memcpy(conf.imei, imei, 8);
+			conf.isModemInit = 0;
 			FLASH_saveConfigInfo(&conf);
 			NBIOT_DBG("IMEI is changed\n");
 		}
@@ -367,6 +368,7 @@ static BOOL parseCIMI(const char *pHead, const int *len, uint32 *nextDelay)
 				NBIOT_DBG("USIM is changed\n");
 				memcpy(conf.imsi, imsi, 8);
 				nbCtx.cellreg = NBIOT_CELLREG_TRYING;
+				conf.isModemInit = 0;
 			}
 
 			return TRUE;
@@ -407,7 +409,6 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 		p += strlen(ATCMD_RESP_QLWEPNS);
 		if (strncmp((const char *)p, (const char *)nbInfo.epName,
 			    strlen(nbInfo.epName)) == 0) {
-			return TRUE;
 		} else {
 			NBIOT_DBG("LWM2M endpoint name is changed \n");
 			isSetCfg = TRUE;
@@ -420,21 +421,17 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 		}
 	}
 
-	if (isSetCfg) {
-		nbCtx.status.setCfg = 1;
+	nbCtx.status.setCfg = 1;
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+		   ATCMD_QLWEPNS "=1,\"%s\"", nbInfo.epName);
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+		   ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
+	if (!conf.isModemInit) {
+		// Have to set "+QBOOTSTRAPHOLDOFF=0" afeter setting LWM2M parameter
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_QLWEPNS "=1,\"%s\"", nbInfo.epName);
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
-		if (!conf.isModemInit) {
-			// Have to set "+QBOOTSTRAPHOLDOFF=0" afeter setting LWM2M parameter
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
-				   parseOk, ATCMD_QBOOTSTRAPHOLDOFF "=0");
-		}
-		return TRUE;
+			   ATCMD_QBOOTSTRAPHOLDOFF "=0");
 	}
-
-	return FALSE;
+	return TRUE;
 }
 
 static BOOL parseQLWSERVERIP(const char *pHead, const int *len,
@@ -913,30 +910,10 @@ static void idle()
 				nbCtx.proc.updateReg =
 					(nbCtx.status.psmOn) ? 1 : 0;
 			}
-		} else {
-			int serialBase =
-				MISC_asciiToHex(conf.serialNum[8]) * 1000 +
-				MISC_asciiToHex(conf.serialNum[9]) * 100 +
-				MISC_asciiToHex(conf.serialNum[10]) * 10 +
-				MISC_asciiToHex(conf.serialNum[11]);
-			if (conf.fotaInterval > 0) {
-				if ((now.day % conf.fotaInterval) ==
-				    (serialBase % conf.fotaInterval)) {
-					if (now.hour == conf.reportHour) {
-						nbCtx.proc.runFota = 1;
-					}
-				}
-			} else {
-				nbCtx.proc.runFota = 1;
-			}
 		}
 	} else {
 		nbCtx.proc.updateReg = 0;
 		nbCtx.proc.updateQa = 1;
-		if (conf.isUsingPF == FALSE) {
-			// 현재 단말기 동작이 최초 부팅 동작일 경우 FOTA 진행.
-			nbCtx.proc.runFota = (conf.isModemInit) ? 0 : 1;
-		}
 	}
 
 	if (nbCtx.proc.updateReg) {
@@ -956,6 +933,8 @@ static void bip()
 		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseBootup, ATCMD);
 	}
 	ATCMD_push(TIMEOUT_BIP, RETRY_BIP, parseCIMI, ATCMD_CIMI);
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+		   ATCMD_CPSMS "=0");
 }
 
 static void init()
@@ -1040,7 +1019,6 @@ static void transfer()
 
 	// PSM on 상태인 경우 데이터 전송을 위해 강제 off설정
 	nbCtx.status.psmOn = 0;
-	APP_runMetering(PERIODIC_METERING);
 
 	if (nbCtx.proc.updateQa) {
 		int qaMsgLen = 0;
@@ -1139,12 +1117,6 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 
 BOOL NBIOT_sendDataProcess()
 {
-	if (nbCtx.cellreg == NBIOT_CELLREG_NO_SERVICE) {
-		NBIOT_DBG("cellreg no service\n");
-		nbCtx.error = NBIOT_ERROR_ATTACH_FAIL;
-		return TRUE;
-	}
-
 	if (nbCtx.currentStep == NBIOT_STEP_IDLE) {
 		idle();
 		nbCtx.nextStep = NBIOT_STEP_BIP;
@@ -1155,6 +1127,7 @@ BOOL NBIOT_sendDataProcess()
 		init();
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
+		APP_runMetering(PERIODIC_METERING);
 		attach();
 		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
@@ -1172,7 +1145,7 @@ BOOL NBIOT_sendDataProcess()
 		}
 		return TRUE;
 	} else {
-		// UNKNOWN STEP
+		printf_ts("Unknown Step\n");
 	}
 	return FALSE;
 }

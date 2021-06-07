@@ -8,6 +8,7 @@
 #include "misc.h"
 #include "modem.h"
 #include "uart.h"
+#include "meter.h"
 
 // The order in this table must be identical to the task initialization calls
 // below in osalInitTask.
@@ -38,38 +39,26 @@ void TASKMGR_init(void)
 
 void TASKMGR_run(void)
 {
-	static uint32 counter = 0;
+	uint32 ms = TIMER_getMsec();
 	uint8 idx = 0;
 
 	DeviceSleepState = FALSE;
-
-	P3OUT |= 0x02;
-	printf_ts(
-		"P3SEL : 0x%02X P3DIR : 0x%02X P3OUT : 0x%02X P3counter : %d\n",
-		P3SEL, P3DIR, P3OUT, counter);
 
 	for (;;) { // Forever Loop
 		WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 		WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 
-		P2OUT ^= 0x02;
-
-		counter++;
-		if (counter == 500000) {
-			P3OUT |= 0x02;
-			printf_ts(
-				"P3SEL : 0x%02X P3DIR : 0x%02X P3OUT : 0x%02X P3counter : %lu\n",
-				P3SEL, P3DIR, P3OUT, counter);
-		} else if (counter == 1000000) {
-			P3OUT &= 0xFD;
-			printf_ts(
-				"P3SEL : 0x%02X P3DIR : 0x%02X P3OUT : 0x%02X P3counter : %lu\n",
-				P3SEL, P3DIR, P3OUT, counter);
-			counter = 0;
-		}
 		// H/W Watch Dog Reset
 #define HW_WDT_PIN 0x02
 		P2OUT ^= HW_WDT_PIN;
+
+#define TEN_SECOND 10000
+		/* if (TIMER_getMsecDiff(ms) > TEN_SECOND) { */
+		/* 	printf_ts("diff : %ld, ms : %ld\n", */
+		/* 		  TIMER_getMsecDiff(ms), ms); */
+		/* 	ms = TIMER_getMsec(); */
+		/* 	Relay_Status(RELAY_TOGGLE); */
+		/* } */
 
 		if (++idx >= TasksTotalCounts) {
 			idx = 0;
