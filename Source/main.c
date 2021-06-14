@@ -59,6 +59,7 @@ void initClock(void)
 	if (IsSetInternalClock) {
 		UCSCTL4 |= SELA_2; // Set ACLK = REFO
 		P7SEL &= ~(0x03); // Clear XIN/XOUT(P7.0, P7.1)
+		SFRIE1 |= (VMAIE + NMIIE);
 	} else {
 		// OSC fault, Vacant memory access, NMI pin interrupt,
 		SFRIE1 |= (OFIE + VMAIE + NMIIE);
