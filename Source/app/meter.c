@@ -106,10 +106,11 @@ void Relay_Status(int on)
 	case RELAY_OFF:
 		P3OUT &= ~RELAY_PIN;
 		break;
-	case RELAY_NO_CHANGE:
-		break;
 	case RELAY_TOGGLE:
 		P3OUT ^= RELAY_PIN;
+		break;
+	case RELAY_NO_CHANGE:
+	default:
 		break;
 	}
 

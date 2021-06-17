@@ -52,9 +52,9 @@
 
 // Modem cell registration status(= attach status)
 typedef enum {
-	NBIOT_CELLREG_TRYING = 0,
+	NBIOT_CELLREG_NOT_REG = 0,
 	NBIOT_CELLREG_ATTACHED = 1,
-	NBIOT_CELLREG_PAUSE = 2,
+	NBIOT_CELLREG_TRY_ATTACH = 2,
 	NBIOT_CELLREG_REJECTED = 3,
 	NBIOT_CELLREG_NO_SERVICE = 4,
 } NbIotCellreg_t;

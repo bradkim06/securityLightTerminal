@@ -161,19 +161,48 @@ static void notifyParser(const char *pHead, const int *len)
 	}
 
 // Check PSM on/off event
-#define NOTIFY_PSM_STATUS "+NPSMR:"
-#define STATUS_PSM_ON 1
-	if ((p = strstr(pHead, NOTIFY_PSM_STATUS))) {
-		p += strlen(NOTIFY_PSM_STATUS);
-		nbCtx.status.psmOn = (atoi(p) == STATUS_PSM_ON) ? 1 : 0;
-		NBIOT_DBG("PSM event notify (%d)\n", nbCtx.status.psmOn);
+#define PATTERN_CHK_PSM_PREFIX "+NPSMR:"
+#define PATTERN_CHK_PSM_PREFIX2 "+NPSMR:1,"
+#define PATTERN_ENTER_PSM 1
+	if ((p = strstr(pHead, PATTERN_CHK_PSM_PREFIX2))) {
+		p += strlen(PATTERN_CHK_PSM_PREFIX2);
+		nbCtx.status.psmOn = (atoi(p) == PATTERN_ENTER_PSM) ? 1 : 0;
+		printf_ts("MODEM : Get PSM Status(%d).\n", nbCtx.status.psmOn);
+	} else if ((p = strstr(pHead, PATTERN_CHK_PSM_PREFIX))) {
+		p += strlen(PATTERN_CHK_PSM_PREFIX);
+		nbCtx.status.psmOn = (atoi(p) == PATTERN_ENTER_PSM) ? 1 : 0;
+		printf_ts("MODEM : event of changing PSM(%d).\n",
+			  nbCtx.status.psmOn);
 	}
 
-// Check no service event.  if detected, attach flag clear.
-#define NOTIFY_NO_SERVICE "+CEREG:4"
-	if ((p = strstr(pHead, NOTIFY_NO_SERVICE))) {
+// Check exception service event.  if detected, attach flag clear.
+#define PATTERN_CEREG_NOT_REG_EVENT "+CEREG:0"
+#define PATTERN_CEREG_ATTACH_EVENT "+CEREG:1"
+#define PATTERN_CEREG_TRY_ATTACH_EVENT "+CEREG:2"
+#define PATTERN_CEREG_REJECT_EVENT "+CEREG:3"
+#define PATTERN_CEREG_NO_SERVICE_PREFIX "+CEREG:4"
+	if ((p = strstr(pHead, PATTERN_CEREG_ATTACH_EVENT))) {
+		nbCtx.cellreg = NBIOT_CELLREG_ATTACHED;
+	} else if ((p = strstr(pHead, PATTERN_CEREG_NOT_REG_EVENT))) {
+		nbCtx.lwm2m.regFinish = 0;
+		nbCtx.lwm2m.obsObj10250 = 0;
+		nbCtx.lwm2m.obsObj16241 = 0;
+		nbCtx.cellreg = NBIOT_CELLREG_NOT_REG;
+	} else if ((p = strstr(pHead, PATTERN_CEREG_TRY_ATTACH_EVENT))) {
+		nbCtx.lwm2m.regFinish = 0;
+		nbCtx.lwm2m.obsObj10250 = 0;
+		nbCtx.lwm2m.obsObj16241 = 0;
+		nbCtx.cellreg = NBIOT_CELLREG_TRY_ATTACH;
+	} else if ((p = strstr(pHead, PATTERN_CEREG_REJECT_EVENT))) {
+		nbCtx.lwm2m.regFinish = 0;
+		nbCtx.lwm2m.obsObj10250 = 0;
+		nbCtx.lwm2m.obsObj16241 = 0;
+		nbCtx.cellreg = NBIOT_CELLREG_REJECTED;
+	} else if ((p = strstr(pHead, PATTERN_CEREG_NO_SERVICE_PREFIX))) {
+		nbCtx.lwm2m.regFinish = 0;
+		nbCtx.lwm2m.obsObj10250 = 0;
+		nbCtx.lwm2m.obsObj16241 = 0;
 		nbCtx.cellreg = NBIOT_CELLREG_NO_SERVICE;
-		NBIOT_DBG("cellreg event notify (%d)\n", nbCtx.cellreg);
 	}
 
 // Check no service event.  if detected, attach flag clear.
@@ -367,7 +396,7 @@ static BOOL parseCIMI(const char *pHead, const int *len, uint32 *nextDelay)
 			if (memcmp(conf.imsi, imsi, sizeof(imsi)) != 0) {
 				NBIOT_DBG("USIM is changed\n");
 				memcpy(conf.imsi, imsi, 8);
-				nbCtx.cellreg = NBIOT_CELLREG_TRYING;
+				nbCtx.cellreg = NBIOT_CELLREG_NOT_REG;
 				conf.isModemInit = 0;
 			}
 
@@ -561,7 +590,7 @@ static BOOL parseCGATT(const char *pHead, const int *len, uint32 *nextDelay)
 {
 	if (strstr(pHead, ATCMD_RESP_DEFAULT)) {
 		// CGATT only use when attached modem detach
-		nbCtx.cellreg = NBIOT_CELLREG_TRYING;
+		nbCtx.cellreg = NBIOT_CELLREG_NOT_REG;
 		*nextDelay = DELAY_NBIOT_UPLINK;
 		return TRUE;
 	}
@@ -570,19 +599,17 @@ static BOOL parseCGATT(const char *pHead, const int *len, uint32 *nextDelay)
 
 static BOOL parseCEREG(const char *pHead, const int *len, uint32 *nextDelay)
 {
-#define CEREG_ATTACH_EVENT "+CEREG:1"
-#define CEREG_PREFIX "+CEREG:"
-#define CEREG_ATTACHED 1
-#define CEREG_REJECTED 3
-
 	char *p = NULL;
-	nbCtx.cellreg = NBIOT_CELLREG_TRYING;
-	if (strstr(pHead, CEREG_ATTACH_EVENT)) {
-		nbCtx.cellreg = NBIOT_CELLREG_ATTACHED;
-	} else if ((p = strstr(pHead, CEREG_PREFIX))) {
+#define PATTERN_CEREG_PREFIX "+CEREG:5"
+	if ((p = strstr(pHead, PATTERN_CEREG_PREFIX))) {
+#define CEREG_ATTACHED 1
+#define CEREG_NOT_REG 2
+#define CEREG_REJECTED 3
+#define CEREG_UNKNOWN 4
+#define CEREG_ROAMING 5
+
 #define CEREG_STATUS_POS 1
 #define CEREG_REJECT_CAUSE_POS 6
-
 		int pos = 0;
 		char *token = strtok(p, ",");
 		while (token != NULL) {
@@ -591,37 +618,30 @@ static BOOL parseCEREG(const char *pHead, const int *len, uint32 *nextDelay)
 				if (state == CEREG_ATTACHED) {
 					nbCtx.cellreg = NBIOT_CELLREG_ATTACHED;
 					break;
-				}
-				if (state == CEREG_REJECTED) {
-					nbCtx.cellreg = NBIOT_CELLREG_REJECTED;
+				} else {
+					// PSM On -> Off 전환 시 Cellreg 변화 체크
+					if (state == CEREG_REJECTED) {
+						nbCtx.cellreg =
+							NBIOT_CELLREG_REJECTED;
+					} else {
+						nbCtx.cellreg =
+							NBIOT_CELLREG_NOT_REG;
+					}
+					nbCtx.lwm2m.regFinish = 0;
+					nbCtx.lwm2m.obsObj10250 = 0;
+					nbCtx.lwm2m.obsObj16241 = 0;
 				}
 			}
 
-			if (pos == CEREG_REJECT_CAUSE_POS) {
-				int rejectCause = atoi(token);
-				if (rejectCause == 19) {
-					nbCtx.cellreg = NBIOT_CELLREG_PAUSE;
-				} else if (rejectCause == 8 ||
-					   rejectCause == 2 ||
-					   rejectCause == 26) {
-					nbCtx.cellreg = NBIOT_CELLREG_REJECTED;
-				} else { /* unknown reject cause code*/
-				}
-				break;
-			}
 			token = strtok(NULL, ",");
 			pos++;
 		}
 	}
 
-	if (nbCtx.cellreg == NBIOT_CELLREG_TRYING) {
-		return FALSE;
-	} else {
-		if (nbCtx.cellreg != NBIOT_CELLREG_ATTACHED) {
-			nbCtx.error = NBIOT_ERROR_ATTACH_FAIL;
-		}
+	if (nbCtx.cellreg == NBIOT_CELLREG_ATTACHED) {
 		return TRUE;
 	}
+	return FALSE;
 }
 
 static BOOL parseCCLK(const char *pHead, const int *len, uint32 *nextDelay)
@@ -978,7 +998,7 @@ static void attach()
 		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
 	}
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-		   ATCMD_CEREG "=3");
+		   ATCMD_CEREG "=5");
 	ATCMD_push(TIMEOUT_ATTACH, RETRY_ATTACH, parseCEREG, ATCMD_CEREG "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
 		   ATCMD_NPSMR "=1");
@@ -1093,7 +1113,7 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 
 	if (isNeedAttach) {
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_CEREG "=3");
+			   ATCMD_CEREG "=5");
 		ATCMD_push(TIMEOUT_ATTACH, RETRY_ATTACH, parseCEREG,
 			   ATCMD_CEREG "?");
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
@@ -1350,6 +1370,6 @@ void NBIOT_release()
 	nbCtx.status.psmOn = 0;
 	nbCtx.lwm2m.value = 0;
 	if (nbCtx.cellreg == NBIOT_CELLREG_NO_SERVICE) {
-		nbCtx.cellreg = NBIOT_CELLREG_TRYING;
+		nbCtx.cellreg = NBIOT_CELLREG_NOT_REG;
 	}
 }
