@@ -567,6 +567,28 @@ void SHELL_run()
 			}
 			break;
 
+		case CMDN_GPIO_WRITE:
+			if (nCmdArgs >= 3) {
+				int port = SHELL_decimal(cmdArgs[0]);
+				int pin = SHELL_decimal(cmdArgs[1]);
+				int status = SHELL_decimal(cmdArgs[2]);
+
+				TEST_gpioWrite(port, pin, status);
+			} else {
+				printf("command usage: %s\n", shellCmd->usage);
+			}
+			break;
+
+		case CMDN_GPIO_READ:
+			if (nCmdArgs >= 1) {
+				int port = SHELL_decimal(cmdArgs[0]);
+
+				TEST_gpioRead(port);
+			} else {
+				printf("command usage: %s\n", shellCmd->usage);
+			}
+			break;
+
 		default:
 			printf("unknown command\n");
 			break;

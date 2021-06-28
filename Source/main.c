@@ -176,10 +176,13 @@ void initSystem()
 
 int main()
 {
-
-    WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
+	WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 	WDTCTL = WDT_VRST_3SEC; // Start watchdog timer(3.2768 sec)
+#define HW_WDT_PIN 0x02
+	P2OUT ^= HW_WDT_PIN;
 	initSystem();
+#define HW_WDT_PIN 0x02
+	P2OUT ^= HW_WDT_PIN;
 
 	// 시스템 초기화 및 테스트모드 여부 확인 후 WDT는 16초로 재설정
 	// 1. App level의 코드 구동 시 Console 출력이 포함되어 동작 시간이 유동적으로

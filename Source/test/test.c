@@ -353,6 +353,52 @@ void TEST_relayMode(int flag)
 	}
 }
 
+static volatile unsigned char *gpioPortSelect(int port, int isInput)
+{
+	volatile unsigned char *portAddress = &P1OUT;
+	char pinSelect = (port - 1) / 2;
+
+	for (int i = 0; i < pinSelect; i++) {
+		portAddress += 0x20;
+	}
+
+	if ((port % 2) == 0) {
+		portAddress++;
+	}
+
+	if (isInput) {
+		portAddress -= 0x02;
+	}
+
+	return portAddress;
+}
+
+void TEST_gpioWrite(int port, int pin, int status)
+{
+#define OUTPUT 0
+	volatile unsigned char *portAddress = gpioPortSelect(port, OUTPUT);
+
+	printf("port(%d) pin(%d) status(0x%02X)\n", port, pin, portAddress);
+
+	if (status) {
+		*portAddress |= BM(pin);
+	} else if (status == 0) {
+		*portAddress &= ~BM(pin);
+	}
+
+	printf("P%dOUT address : 0x%02X, status : 0x%02X\n", port, portAddress,
+	       *portAddress);
+}
+
+void TEST_gpioRead(int port)
+{
+#define INPUT 1
+	volatile unsigned char *portAddress = gpioPortSelect(port, INPUT);
+
+	printf("P%dIN address : 0x%02X, status : 0x%02X\n", port, portAddress,
+	       *portAddress);
+}
+
 void TEST_riCtrlMode(int flag)
 {
 	if (flag != 0xff) {

@@ -36,6 +36,8 @@ typedef struct {
 #define CMDN_PRFOTA 26
 #define CMDN_PNBCTX 27
 #define CMDN_RELAY 28
+#define CMDN_GPIO_WRITE 29
+#define CMDN_GPIO_READ 30
 
 const ShellCommandSet_t CmdSet[] = {
 	{
@@ -211,6 +213,18 @@ const ShellCommandSet_t CmdSet[] = {
 		"relay",
 		"relay status(off[0],status[1],on[2],toggle[3])",
 		"Test Relay off(0),status[1],on(2),toggle(3)",
+	},
+	{
+		CMDN_GPIO_WRITE,
+		"wgpio",
+		"wgpio port pin status(off[0], on[1]),"
+		"wgpio status control off(0), on(1)",
+	},
+	{
+		CMDN_GPIO_READ,
+		"rgpio",
+		"rgpio port"
+		"rgpio port",
 	},
 };
 

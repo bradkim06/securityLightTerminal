@@ -44,6 +44,13 @@ void TASKMGR_run(void)
 
 	DeviceSleepState = FALSE;
 
+#define LED1 1
+#define LED2 2
+	P11SEL = 0x00;
+	P11DIR = 0xFF;
+	P11OUT |= LED1;
+	P11OUT |= LED2;
+
 	for (;;) { // Forever Loop
 		WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
 		WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
