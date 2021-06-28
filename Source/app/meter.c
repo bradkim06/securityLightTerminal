@@ -115,14 +115,13 @@ void Relay_Status(int on)
 	}
 
 #define RELAY_STATUS_STR(x)                                                    \
-	(((x) == RELAY_OFF) ?                                                  \
-		 "RELAY OFF" :                                                 \
-		 ((x) == RELAY_NO_CHANGE) ?                                    \
-		 "RELAY NO CHANGE" :                                           \
-		 ((x) == RELAY_ON) ?                                           \
-		 "RELAY ON" :                                                  \
-		 ((x) == RELAY_TOGGLE) ? "RELAY TOGGLE" : "UNKNOWN")
+	(((x) == RELAY_OFF) ? "OFF" :                                          \
+			      ((x) == RELAY_NO_CHANGE) ?                       \
+			      "NO CHANGE" :                                    \
+			      ((x) == RELAY_ON) ?                              \
+			      "ON" :                                           \
+			      ((x) == RELAY_TOGGLE) ? "TOGGLE" : "UNKNOWN")
 
-	printf_ts("Relay Status : %s, %s, 0x02%X\n", RELAY_STATUS_STR(on),
-		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)), (P3OUT & RELAY_PIN));
+	printf_ts("Relay Status : %s[Command], %s[Status]\n",
+		  RELAY_STATUS_STR(on), RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
 }

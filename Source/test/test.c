@@ -334,6 +334,25 @@ void TEST_readFwVersion()
 	printf("tver %s\n", APP_getFwVer(conf.isUsingPF));
 }
 
+void TEST_relayMode(int flag)
+{
+	uint32 ms = TIMER_getMsec();
+	Relay_Status(flag);
+
+	if (flag == RELAY_TOGGLE) {
+		while (1) {
+			if (TIMER_getMsecDiff(ms) > 10000) {
+				ms = TIMER_getMsec();
+				Relay_Status(flag);
+			}
+
+			if (TEST_stop()) {
+				return;
+			}
+		}
+	}
+}
+
 void TEST_riCtrlMode(int flag)
 {
 	if (flag != 0xff) {

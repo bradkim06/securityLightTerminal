@@ -35,6 +35,7 @@ typedef struct {
 #define CMDN_PWFOTA 25
 #define CMDN_PRFOTA 26
 #define CMDN_PNBCTX 27
+#define CMDN_RELAY 28
 
 const ShellCommandSet_t CmdSet[] = {
 	{
@@ -204,6 +205,12 @@ const ShellCommandSet_t CmdSet[] = {
 		"pnbctx",
 		"pnbctx",
 		"Test NB-IoT Signal quality",
+	},
+	{
+		CMDN_RELAY,
+		"relay",
+		"relay status(off[0],status[1],on[2],toggle[3])",
+		"Test Relay off(0),status[1],on(2),toggle(3)",
 	},
 };
 

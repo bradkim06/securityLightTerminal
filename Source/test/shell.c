@@ -558,6 +558,15 @@ void SHELL_run()
 			}
 			break;
 
+		case CMDN_RELAY:
+			if (nCmdArgs >= 1) {
+				int flag = SHELL_decimal(cmdArgs[0]);
+				TEST_relayMode(flag);
+			} else {
+				printf("command usage: %s\n", shellCmd->usage);
+			}
+			break;
+
 		default:
 			printf("unknown command\n");
 			break;

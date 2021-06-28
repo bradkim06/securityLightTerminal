@@ -52,14 +52,6 @@ void TASKMGR_run(void)
 #define HW_WDT_PIN 0x02
 		P2OUT ^= HW_WDT_PIN;
 
-#define TEN_SECOND 10000
-		/* if (TIMER_getMsecDiff(ms) > TEN_SECOND) { */
-		/* 	printf_ts("diff : %ld, ms : %ld\n", */
-		/* 		  TIMER_getMsecDiff(ms), ms); */
-		/* 	ms = TIMER_getMsec(); */
-		/* 	Relay_Status(RELAY_TOGGLE); */
-		/* } */
-
 		if (++idx >= TasksTotalCounts) {
 			idx = 0;
 		}
