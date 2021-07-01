@@ -133,6 +133,7 @@ static void readConfig(FlashConfig_t *pInfo)
 		pInfo->fotaInterval = ONEM2M_FOTA_DAY_INTERVAL;
 #endif
 
+		pInfo->meterType = E_METER;
 		memset(pInfo->resetCount, 0, 2);
 		saveConfig(pInfo);
 	}

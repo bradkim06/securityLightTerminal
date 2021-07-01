@@ -44,10 +44,10 @@
 #define RETRY_UDP_SEND 2
 #define RETRY_UDP_RECV 1
 #define RETRY_LWM2M_SEND 1
-#define RETRY_LWM2M_RECV 0
+#define RETRY_LWM2M_RECV 3
 #define RETRY_LWM2M_FOTA 0
 
-#define DELAY_NBIOT_BOOTUP 7000
+#define DELAY_NBIOT_BOOTUP 2000
 #define DELAY_NBIOT_UPLINK 5000
 
 // Modem cell registration status(= attach status)

@@ -1,6 +1,7 @@
 #include "queue.h"
 #include "at_cmd.h"
 #include "modem.h"
+#include "misc.h"
 
 #include "common.h"
 //#include "assert.h"
@@ -154,6 +155,64 @@ BOOL ATCMD_read(uint32 *nextDelay)
 		ATCMD_DBG("parser is not registered\n");
 	}
 	return FALSE;
+}
+
+BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser,
+		   const char *cmd, ...)
+{
+	AtCmd_t *atCmd = (AtCmd_t *)malloc(sizeof(AtCmd_t));
+	if (atCmd == NULL) {
+		ATCMD_DBG("fail to malloc AT command structure\n");
+		return FALSE;
+	}
+	memset((void *)atCmd, 0, sizeof(AtCmd_t));
+	atCmd->timeout = timeout;
+	atCmd->retry = retry;
+	atCmd->parser = parser;
+
+	if (cmd != NULL) {
+		va_list arg;
+		va_start(arg, cmd);
+		char buffer[LEN_MAX_MODEM_TX];
+		int cmdLen = vsnprintf(buffer, LEN_MAX_MODEM_TX, cmd, arg);
+		va_end(arg);
+
+		atCmd->cmd = (char *)malloc(cmdLen + 1);
+		if (atCmd->cmd == NULL) {
+			ATCMD_DBG("fail to malloc AT command\n");
+			return FALSE;
+		}
+		memset(atCmd->cmd, 0, cmdLen + 1);
+		memcpy(atCmd->cmd, buffer, cmdLen);
+	}
+
+	if (atCmd->parser == NULL || atCmd->cmd == NULL) {
+		ATCMD_DBG("register fail (parser or command empty)\n");
+		return FALSE;
+	}
+
+	ATCMD_WRITER(atCmd->cmd);
+
+	char buf[LEN_MAX_MODEM_RX];
+	int len;
+	uint32 *nextDelay;
+	*nextDelay = ATCMD_DEFAULT_NEXT_INTERVAL;
+
+	while (retry--) {
+		MISC_delayMs(100);
+		memset(buf, 0, LEN_MAX_MODEM_RX);
+		int len = ATCMD_READER(buf);
+		buf[len - 1] = '\0';
+
+		if (parser(buf, &len, nextDelay)) {
+			break;
+		} else {
+			ATCMD_WRITER(atCmd->cmd);
+		}
+	}
+
+	free(atCmd->cmd);
+	free(atCmd);
 }
 
 BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd,

@@ -287,6 +287,7 @@ void APP_init(uint8 taskId)
 	conf.rtCtrlInterval = conf.reportInterval;
 	conf.rtCtrlThreshold = 0;
 	conf.isUsingPF = TRUE;
+	conf.meterType = E_METER;
 
 	BATT_init();
 	NFC_init();
@@ -298,12 +299,12 @@ void APP_init(uint8 taskId)
 
 	// TEST
 	conf.debugPrint = 1;
-	if (conf.debugPrint == 0) {
-		printf("\n--console disabled--\n");
-		MISC_delayMs(2000);
-		PRINT_stop();
-		PRINT_disable();
-	}
+	// if (conf.debugPrint == 0) {
+	// 	printf("\n--console disabled--\n");
+	// 	MISC_delayMs(2000);
+	// 	PRINT_stop();
+	// 	PRINT_disable();
+	// }
 
 	MISC_delayMs(500);
 
@@ -314,35 +315,35 @@ void APP_init(uint8 taskId)
 
 static void meteringCompleted()
 {
-	/* int state = MODEM_getState(); */
-	/* if (state != DEVICE_STATUS_IDLE) { */
-	/* 	// INITIAL_METERING 때 모뎀이 동작 중인 경우 */
-	/* 	// 1. 부팅 후 MODEM_init()을 호출하지 않은 경우 */
-	/* 	// 2. Active 상태에서 INITIAL_METERING 를 수행하는 경우. */
-	/* 	if (Metering.type == INITIAL_METERING) { */
-	/* 		// 위 2가지 경우를 모두 만족하기 위해 close 수행. */
-	/* 		MODEM_stop(TRUE, FALSE); */
-	/* 	} else { */
-	/* 		printf_ts( */
-	/* 			"MODEM is running(%d) even afeter metering completed\n", */
-	/* 			state); */
-	/* 		return; */
-	/* 	} */
-	/* } */
+	// int state = MODEM_getState();
+	// if (state != DEVICE_STATUS_IDLE) {
+	// 	// INITIAL_METERING 때 모뎀이 동작 중인 경우
+	// 	// 1. 부팅 후 MODEM_init()을 호출하지 않은 경우
+	// 	// 2. Active 상태에서 INITIAL_METERING 를 수행하는 경우.
+	// 	if (Metering.type == INITIAL_METERING) {
+	// 		// 위 2가지 경우를 모두 만족하기 위해 close 수행.
+	// 		MODEM_stop(TRUE, FALSE);
+	// 	} else {
+	// 		printf_ts(
+	// 			"MODEM is running(%d) even afeter metering completed\n",
+	// 			state);
+	// 		return;
+	// 	}
+	// }
 
-	/* if (conf.isShortInterval) { */
-	/* 	if (Metering.type == PERIODIC_METERING) { */
-	/* 		MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE); */
-	/* 	} else if (Metering.type == INITIAL_METERING) { */
-	/* 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE); */
-	/* 	} */
-	/* } else { */
-	/* 	if (Metering.type == INITIAL_METERING) { */
-	/* 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE); */
-	/* 	} else if (Metering.type == IMMEDIATE_METERING_FOR_REPORT) { */
-	/* 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE); */
-	/* 	} */
-	/* } */
+	// if (conf.isShortInterval) {
+	// 	if (Metering.type == PERIODIC_METERING) {
+	// 		MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE);
+	// 	} else if (Metering.type == INITIAL_METERING) {
+	// 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
+	// 	}
+	// } else {
+	// 	if (Metering.type == INITIAL_METERING) {
+	// 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
+	// 	} else if (Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
+	// 		MODEM_run(MODEM_PROC_EVENT_REPORT, TRUE);
+	// 	}
+	// }
 }
 
 BOOL APP_isMetering()

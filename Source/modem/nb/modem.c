@@ -240,19 +240,18 @@ void MODEM_run(ModemProc_t proc, BOOL isLcdOn)
 		nbCtx.status.error = 0;
 		nbCtx.status.setCfg = 0;
 		nbCtx.status.waitDL = 0;
-
 		ATCMD_release();
-		OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 	} else {
 		NBIOT_open();
 		MODEM_enable();
-		if (nbCtx.status.psmOn) {
-			MODEM_wakeup();
-		} else {
-			MODEM_turnOn();
-		}
-		OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
+		// if (nbCtx.status.psmOn) {
+		// 	MODEM_wakeup();
+		// } else {
+		MODEM_turnOn();
+		// }
 	}
+
+	OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 }
 
 void MODEM_stop(BOOL isVccOff, BOOL isLcdOn)

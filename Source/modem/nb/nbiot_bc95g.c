@@ -258,8 +258,11 @@ static BOOL parseDoHwReset(const char *pHead, const int *len, uint32 *nextDelay)
 
 static BOOL parseBootup(const char *pHead, const int *len, uint32 *nextDelay)
 {
-	*nextDelay = DELAY_NBIOT_BOOTUP;
-	return TRUE;
+	if (strstr(pHead, "REBOOT_CAUSE_")) {
+		*nextDelay = DELAY_NBIOT_BOOTUP;
+		return TRUE;
+	}
+	return FALSE;
 }
 
 static BOOL parseLwm2mBootstrap(const char *pHead, const int *len,
@@ -450,16 +453,20 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 		}
 	}
 
-	nbCtx.status.setCfg = 1;
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-		   ATCMD_QLWEPNS "=1,\"%s\"", nbInfo.epName);
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-		   ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
-	if (!conf.isModemInit) {
-		// Have to set "+QBOOTSTRAPHOLDOFF=0" afeter setting LWM2M parameter
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_QBOOTSTRAPHOLDOFF "=0");
+	if (isSetCfg) {
+		nbCtx.status.setCfg = 1;
+		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
+			      parseOk, ATCMD_QLWEPNS "=1,\"%s\"",
+			      nbInfo.epName);
+		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
+			      parseOk, ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
+		if (!conf.isModemInit) {
+			// Have to set "+QBOOTSTRAPHOLDOFF=0" afeter setting LWM2M parameter
+			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
+				   parseOk, ATCMD_QBOOTSTRAPHOLDOFF "=0");
+		}
 	}
+
 	return TRUE;
 }
 
@@ -499,10 +506,12 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len,
 
 	if (isSetCfg) {
 		nbCtx.status.setCfg = 1;
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_QLWSERVERIP "=BS,%s", addr);
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_QLWSERVERIP "=LWM2M,%s", addr);
+
+		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
+			      parseOk, ATCMD_QLWSERVERIP "=BS,%s", addr);
+		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
+			      parseOk, ATCMD_QLWSERVERIP "=LWM2M,%s", addr);
+
 		return TRUE;
 	}
 
@@ -783,6 +792,7 @@ static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 		} else if (NBMSG_recvReqChgInterval((uchar *)p, len)) {
 			return TRUE;
 		}
+		return TRUE;
 	}
 
 	return FALSE;
@@ -952,9 +962,9 @@ static void bip()
 	if (!nbCtx.status.psmOn) {
 		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseBootup, ATCMD);
 	}
-	ATCMD_push(TIMEOUT_BIP, RETRY_BIP, parseCIMI, ATCMD_CIMI);
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
 		   ATCMD_CPSMS "=0");
+	ATCMD_push(TIMEOUT_BIP, RETRY_BIP, parseCIMI, ATCMD_CIMI);
 }
 
 static void init()
