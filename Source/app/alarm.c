@@ -192,6 +192,12 @@ void ALARM_run()
 {
 	printf_ts("alarm occurred - '%s'\n", ALARM_TYPE_STR(NextAlarm->type));
 
+	if (conf.isShortInterval) {
+		APP_runPeriodicReport();
+		NextAlarm = NULL;
+		return;
+	}
+
 	Date_t date;
 	RTC_read(&date);
 

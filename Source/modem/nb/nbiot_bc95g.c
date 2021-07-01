@@ -460,11 +460,6 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 			      nbInfo.epName);
 		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
 			      parseOk, ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
-		if (!conf.isModemInit) {
-			// Have to set "+QBOOTSTRAPHOLDOFF=0" afeter setting LWM2M parameter
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
-				   parseOk, ATCMD_QBOOTSTRAPHOLDOFF "=0");
-		}
 	}
 
 	return TRUE;
@@ -992,6 +987,8 @@ static void init()
 			   ATCMD_NBAND "=5");
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
 			   ATCMD_NCONFIG "=CELL_RESELECTION,TRUE");
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+			   ATCMD_QBOOTSTRAPHOLDOFF "=0");
 		nbCtx.status.setCfg = 1;
 	}
 }
