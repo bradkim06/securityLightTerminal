@@ -193,12 +193,11 @@ BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser,
 
 	ATCMD_WRITER(atCmd->cmd);
 
-	char buf[LEN_MAX_MODEM_RX];
-	int len;
-	uint32 *nextDelay;
-	*nextDelay = ATCMD_DEFAULT_NEXT_INTERVAL;
-
 	while (retry--) {
+		char buf[LEN_MAX_MODEM_RX];
+		uint32 *nextDelay = NULL;
+		*nextDelay = ATCMD_DEFAULT_NEXT_INTERVAL;
+
 		MISC_delayMs(100);
 		memset(buf, 0, LEN_MAX_MODEM_RX);
 		int len = ATCMD_READER(buf);
@@ -213,6 +212,8 @@ BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser,
 
 	free(atCmd->cmd);
 	free(atCmd);
+
+	return TRUE;
 }
 
 BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd,

@@ -128,11 +128,6 @@ typedef struct {
 } NbiotMeterInfo_t;
 
 typedef struct {
-	/* uchar mi; */
-	uchar ri;
-} NbiotMeteringParam_t;
-
-typedef struct {
 	uchar year;
 	uchar mon;
 	uchar day;
@@ -173,26 +168,6 @@ typedef struct {
 } NbiotMeterParams_t;
 
 typedef struct {
-	uchar resetCause;
-	uchar resetCount[2];
-} NbiotReset_t;
-
-typedef struct {
-	uchar protocol; // 1 -  1
-	uchar len; // 1 -  2
-	uchar mtype; // 1 -  3
-	MobileId_t id; // 16 - 19
-	NbiotRadioQuality_t radio; // 10 - 29
-	NbiotDeviceInfo_t term; // 8  - 37
-	NbiotMeterInfo_t meter; // 7  - 44
-	NbiotMeteringParam_t mp; // 2  - 46
-	NbiotTimeStamp_t meterTime; // 6  - 52
-	uchar data[4]; // 4  - 56
-	NbiotReset_t reset; // 3  - 59
-	uchar checksum; // 1  - 60
-} NbiotJoin_t;
-
-typedef struct {
 	uchar protocol; // 1 -  1
 	uchar len; // 1 -  2
 	uchar mtype; // 1 -  3
@@ -216,24 +191,8 @@ typedef struct {
 } NbiotCmdChgServer_t;
 
 typedef struct {
-	char msg[8];
-} NbiotResetReq_t;
-
-typedef struct {
 	char msg[4];
 } NbiotSimpleAck_t;
-
-typedef struct {
-	uchar protocol; // 1 - 1
-	uchar len; // 1 - 2
-	uchar mtype; // 1 - 3
-	uchar imei[8]; // 8 - 11
-	uchar imsi[8]; // 8 - 19
-	NbiotTimeStamp_t time; // 6 - 25
-	uchar isReset; // 1 - 26
-	uchar ri; // 1- 27 Report Interval
-	uchar checksum; // 1  - 28
-} NbiotAckResp_t;
 
 typedef struct {
 	uchar protocol; // 1 -  1
@@ -250,10 +209,7 @@ typedef struct {
 	uchar checksum; // 1  - 68
 } NbiotDataReport_t;
 
-int NBMSG_recvAck(char *p, int len);
-int NBMSG_recvReqChgServer(char *p, int len, char *ip, uint16 *port);
-int NBMSG_recvReqReset(uchar *buf, int len);
-int NBMSG_recvSimpleAck(uchar *buf, int len);
+int NBMSG_recvAckMsg(uchar *buf, int len);
 
 /**
  * @brief Get the Qa Report Message object

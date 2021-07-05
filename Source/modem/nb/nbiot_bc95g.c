@@ -787,122 +787,13 @@ static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 		p += strlen(LWM2M_DOWNLINK);
 		int len = atoi(p);
 		p += 3;
-		if (NBMSG_recvSimpleAck((uchar *)p, len)) {
-			return TRUE;
-		} else if (NBMSG_recvReqReset((uchar *)p, len)) {
+		if (NBMSG_recvAckMsg((uchar *)p, len)) {
 			return TRUE;
 		}
 		return TRUE;
 	}
 
 	return FALSE;
-}
-
-static BOOL parseNSORF(const char *pHead, const int *len, uint32 *nextDelay);
-static BOOL parseNSOST(const char *pHead, const int *len, uint32 *nextDelay);
-
-static BOOL parseNSOST(const char *pHead, const int *len, uint32 *nextDelay)
-{
-	if (strstr(pHead, ATCMD_RESP_DEFAULT)) {
-		nbInfo.udpUlCnt++;
-		nbCtx.status.waitDL = 1;
-	}
-
-#define ATCMD_RESP_NSONMI "+NSONMI:"
-	char *p = NULL;
-	if ((p = strstr(pHead, ATCMD_RESP_NSONMI))) {
-		p = p + strlen(ATCMD_RESP_NSONMI);
-		if (nbCtx.socket == atoi(p)) {
-			if ((p = strstr(p, ","))) {
-				int dlLen = atoi(++p);
-				ATCMD_push(TIMEOUT_UDP_RECV, RETRY_UDP_RECV,
-					   parseNSORF, ATCMD_NSORF "=%d,%d",
-					   nbCtx.socket, dlLen);
-				nbInfo.udpDlCnt++;
-				nbCtx.status.waitDL = 0;
-				return TRUE;
-			}
-		}
-	}
-
-	return FALSE;
-}
-
-static BOOL parseNSORF(const char *pHead, const int *len, uint32 *nextDelay)
-{
-	// 0,211.211.42.30,19001,3,123456,0
-	// socket, ip, portno, len, data, more
-
-	// socket number
-	int socket = atoi(pHead);
-	if (nbCtx.socket != socket) {
-		NBIOT_DBG(
-			"downlink socket mismatched (my : %d, current : %d)\n",
-			nbCtx.socket, socket);
-		return FALSE;
-	}
-
-	char *p = NULL;
-	// skip comma
-	if ((p = strstr(pHead, ",")) == NULL) {
-		return FALSE;
-	}
-	p++;
-	if ((p = strstr(p, ",")) == NULL) {
-		return FALSE;
-	}
-	p++;
-	if ((p = strstr(p, ",")) == NULL) {
-		return FALSE;
-	}
-	p++;
-
-	// rx len, update real DL data length
-	int dlLen = atoi(p);
-
-	// skip fourth comma
-	if ((p = strstr(p, ",")) == NULL) {
-		return FALSE;
-	}
-	p++;
-
-	char dlData[LEN_MAX_DL_DATA];
-	memset(dlData, 0, LEN_MAX_DL_DATA);
-	for (int i = 0; i < dlLen; i++) {
-		dlData[i] = MISC_asciiToBCD(*(p + i * 2 + 0), *(p + i * 2 + 1));
-	}
-
-	if (nbCtx.msgCmd.isOperating) {
-		if (NBMSG_recvAck(dlData, dlLen)) {
-			strncpy(conf.serverIp, nbCtx.msgCmd.newIp,
-				SERVER_IP_STR_LEN);
-			conf.serverPort = nbCtx.msgCmd.newPort;
-			FLASH_saveConfigInfo(&conf);
-		}
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			   ATCMD_NSOCL "=%d", nbCtx.socket);
-		nbCtx.msgCmd.isOperating = FALSE;
-	} else {
-		if (NBMSG_recvReqChgServer(dlData, dlLen, nbCtx.msgCmd.newIp,
-					   &nbCtx.msgCmd.newPort)) {
-			NBIOT_DBG("Server change to '%s:%d'\n",
-				  nbCtx.msgCmd.newIp, nbCtx.msgCmd.newPort);
-			int len;
-			char *data = NBMSG_getMeterReport(TRUE, &len);
-			ATCMD_push(TIMEOUT_UDP_SEND, RETRY_UDP_SEND, parseNSOST,
-				   ATCMD_NSOST "=%d,%s,%d,%d,%s", nbCtx.socket,
-				   nbCtx.msgCmd.newIp, nbCtx.msgCmd.newPort,
-				   len, data);
-			free(data);
-			nbCtx.msgCmd.isOperating = TRUE;
-		} else {
-			NBMSG_recvAck(dlData, dlLen);
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
-				   parseOk, ATCMD_NSOCL "=%d", nbCtx.socket);
-		}
-	}
-
-	return TRUE;
 }
 
 /*
