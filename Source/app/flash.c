@@ -101,7 +101,8 @@ static void readConfig(FlashConfig_t *pInfo)
 	FlashConfig_t info_a;
 	memcpy((uint8 *)&info_a, flash, sizeof(FlashConfig_t));
 
-	uint8 checksum = calChecksum((uint8 *)&info_a, LEN_FLASH_CONFIG);
+	uint8 checksum =
+		calChecksum((uint8 *)&info_a, sizeof(FlashConfig_t) - 1);
 	BOOL a_valid = (checksum == info_a.checksum) ? TRUE : FALSE;
 
 	HAL_ENTER_CRITICAL_SECTION(intState);
@@ -111,7 +112,7 @@ static void readConfig(FlashConfig_t *pInfo)
 
 	FlashConfig_t info_c;
 	memcpy((uint8 *)&info_c, flash, sizeof(FlashConfig_t));
-	checksum = calChecksum((uint8 *)&info_c, LEN_FLASH_CONFIG);
+	checksum = calChecksum((uint8 *)&info_c, sizeof(FlashConfig_t) - 1);
 	BOOL c_valid = (checksum == info_c.checksum) ? TRUE : FALSE;
 
 	if (a_valid == TRUE && c_valid == TRUE) {
@@ -194,7 +195,7 @@ static void readID(FlashId_t *pInfo)
 	FlashId_t info_b;
 	memcpy((uint8 *)&info_b, flash, sizeof(FlashId_t));
 
-	uint8 checksum = calChecksum((uint8 *)&info_b, LEN_FLASH_ID);
+	uint8 checksum = calChecksum((uint8 *)&info_b, sizeof(FlashId_t) - 1);
 	BOOL b_valid = (checksum == info_b.checksum) ? TRUE : FALSE;
 
 	HAL_ENTER_CRITICAL_SECTION(intState);
@@ -205,7 +206,7 @@ static void readID(FlashId_t *pInfo)
 	FlashId_t info_d;
 	memcpy((uint8 *)&info_d, flash, sizeof(FlashId_t));
 
-	checksum = calChecksum((uint8 *)&info_d, LEN_FLASH_ID);
+	checksum = calChecksum((uint8 *)&info_d, sizeof(FlashId_t) - 1);
 	BOOL d_valid = (checksum == info_d.checksum) ? TRUE : FALSE;
 
 	if (b_valid == TRUE && d_valid == TRUE) {
@@ -236,8 +237,10 @@ void FLASH_saveConfigInfo(Config_t *config)
 
 	memcpy(flashID.serialNum, config->serialNum, SERIAL_NUM_LEN);
 	memcpy(flashID.imei, config->imei, 8);
+	memcpy(flashID.imsi, config->imsi, 8);
 
-	flashID.checksum = calChecksum((uint8 *)&flashID, LEN_FLASH_ID);
+	flashID.checksum =
+		calChecksum((uint8 *)&flashID, sizeof(FlashId_t) - 1);
 
 	saveID(&flashID);
 
@@ -264,7 +267,7 @@ void FLASH_saveConfigInfo(Config_t *config)
 	RTC_read(&date);
 
 	flashConfig.checksum =
-		calChecksum((uint8 *)&flashConfig, LEN_FLASH_CONFIG);
+		calChecksum((uint8 *)&flashConfig, sizeof(FlashConfig_t) - 1);
 	saveConfig(&flashConfig);
 }
 
@@ -303,6 +306,7 @@ void FLASH_readConfigInfo(Config_t *config)
 	readID(&flashID);
 
 	memcpy(config->imei, flashID.imei, 8);
+	memcpy(config->imsi, flashID.imsi, 8);
 
 	memcpy(config->serialNum, flashID.serialNum, SERIAL_NUM_LEN);
 

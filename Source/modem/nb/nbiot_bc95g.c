@@ -397,9 +397,11 @@ static BOOL parseCIMI(const char *pHead, const int *len, uint32 *nextDelay)
 			memset(imsi, 0, sizeof(imsi));
 			MODEM_getImsi(imsi);
 			if (memcmp(conf.imsi, imsi, sizeof(imsi)) != 0) {
-				NBIOT_DBG("USIM is changed\n");
 				memcpy(conf.imsi, imsi, 8);
+				conf.isModemInit = 0;
 				nbCtx.cellreg = NBIOT_CELLREG_NOT_REG;
+				FLASH_saveConfigInfo(&conf);
+				NBIOT_DBG("USIM is changed\n");
 			}
 
 			return TRUE;
@@ -950,6 +952,13 @@ static void attach()
 		   ATCMD_CCLK "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNUESTATS,
 		   ATCMD_NUESTATS "=RADIO");
+
+	if (conf.isUsingPF) {
+		if (nbCtx.proc.updateQa) {
+			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
+				   parseNSOCR, ATCMD_NSOCR "=DGRAM,17,560,0");
+		}
+	}
 }
 
 static void detach()
@@ -975,14 +984,6 @@ static void transfer()
 	nbCtx.status.psmOn = 0;
 
 	if (nbCtx.proc.updateQa) {
-		if (conf.isUsingPF) {
-			if (nbCtx.proc.updateQa) {
-				ATCMD_push(TIMEOUT_NBIOT_DEFAULT,
-					   RETRY_NBIOT_DEFAULT, parseNSOCR,
-					   ATCMD_NSOCR "=DGRAM,17,560,0");
-			}
-		}
-
 		int qaMsgLen = 0;
 		char *qaMsg = NBMSG_getQaReport(&qaMsgLen);
 		// No wait response

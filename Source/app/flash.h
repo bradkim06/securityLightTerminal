@@ -11,9 +11,6 @@ extern const uint8 *FlashAddr[];
 //! INFO flash sector length
 #define LEN_INFO_FLASH_SECTOR 128
 
-//! Configuration data length without checksum
-#define LEN_FLASH_CONFIG 31
-
 // NBIOT_DEVICE
 typedef struct {
 	uint8 meterType; // 0
@@ -31,15 +28,13 @@ typedef struct {
 	uint8 fotaInterval; // 24
 	uint8 rtCtrlMode; // 25
 	uint8 isUsingPF; // 26
-	uint8 reserved[5]; // 26 ~ 30
 	uint8 checksum; // 31
 } FlashConfig_t;
 
-#define LEN_FLASH_ID 31
 typedef struct {
 	uint8 serialNum[SERIAL_NUM_LEN]; //  0 ~ 11
 	uint8 imei[8]; // 12 ~ 19
-	uint8 reserved[11]; // 20 ~ 30
+	uint8 imsi[8];
 	uint8 checksum; // 31
 } FlashId_t;
 
