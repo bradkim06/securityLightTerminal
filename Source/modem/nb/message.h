@@ -171,11 +171,8 @@ typedef struct {
 	uchar protocol; // 1 -  1
 	uchar len; // 1 -  2
 	uchar mtype; // 1 -  3
-	MobileId_t id; // 16 - 19
-	NbiotTimeStamp_t currTime; // 6  - 25
-	uchar resetCommand; // 1  - 26
-	uchar mi; // 1  - 27
-	uchar ri; // 1  - 28
+	uchar validParams;
+	NbiotMeterParams_t params;
 	uchar checksum; // 1  - 29
 } NbiotAck_t;
 
@@ -189,10 +186,6 @@ typedef struct {
 	uchar port[2]; // 2  - 31
 	uchar checksum; // 1  - 32
 } NbiotCmdChgServer_t;
-
-typedef struct {
-	char msg[4];
-} NbiotSimpleAck_t;
 
 typedef struct {
 	uchar protocol; // 1 -  1

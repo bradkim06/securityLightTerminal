@@ -400,7 +400,6 @@ static BOOL parseCIMI(const char *pHead, const int *len, uint32 *nextDelay)
 				NBIOT_DBG("USIM is changed\n");
 				memcpy(conf.imsi, imsi, 8);
 				nbCtx.cellreg = NBIOT_CELLREG_NOT_REG;
-				conf.isModemInit = 0;
 			}
 
 			return TRUE;
@@ -455,6 +454,7 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 
 	if (isSetCfg) {
 		nbCtx.status.setCfg = 1;
+		conf.isModemInit = 0;
 		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
 			      parseOk, ATCMD_QLWEPNS "=1,\"%s\"",
 			      nbInfo.epName);
@@ -501,6 +501,7 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len,
 
 	if (isSetCfg) {
 		nbCtx.status.setCfg = 1;
+		conf.isModemInit = 0;
 
 		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
 			      parseOk, ATCMD_QLWSERVERIP "=BS,%s", addr);
@@ -771,6 +772,20 @@ static BOOL parseNSOCR(const char *pHead, const int *len, uint32 *nextDelay)
 	return FALSE;
 }
 
+static uint8 ascii2Hex(char ch)
+{
+	uint8 hex = 0;
+
+	if (ch >= 'A' && ch <= 'F') {
+		hex = (ch - 'A') + 10;
+	} else if (ch >= 'a' & ch <= 'f') {
+		hex = (ch - 'a') + 10;
+	} else if (ch >= '0' & ch <= '9') {
+		hex = ch - '0';
+	}
+	return hex;
+}
+
 static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 {
 	if (strstr(pHead, ATCMD_RESP_DEFAULT)) {
@@ -786,8 +801,34 @@ static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 
 		p += strlen(LWM2M_DOWNLINK);
 		int len = atoi(p);
-		p += 3;
-		if (NBMSG_recvAckMsg((uchar *)p, len)) {
+
+		if (len > LEN_MAX_DL_DATA) {
+			printf_ts(
+				"DL : data is too long (max : %d, current :%d)\n",
+				LEN_MAX_DL_DATA, len);
+			return FALSE;
+		} else if (len == 0) {
+			printf_ts("DL : data empty (current :%d)\n",
+				  LEN_MAX_DL_DATA, len);
+			return FALSE;
+		}
+
+		printf_ts("DL : data len (current :%d)\n", len);
+
+		// skip first comma
+		if ((p = strstr(p, ",")) == NULL) {
+			printf_ts("DL : can't find comma\n");
+			return FALSE;
+		}
+		p++;
+
+		uchar dlData[len];
+		for (int i = 0; i < len; i++) {
+			dlData[i] = ascii2Hex(*(p + i * 2 + 0)) * 0x10 +
+				    ascii2Hex(*(p + i * 2 + 1));
+		}
+
+		if (NBMSG_recvAckMsg(dlData, len)) {
 			return TRUE;
 		}
 		return TRUE;

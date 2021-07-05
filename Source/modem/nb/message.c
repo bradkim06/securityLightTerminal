@@ -297,14 +297,51 @@ static int getCurrentDataMessage(uchar *buf)
 	return len + 3; // 3 = protocol + len + checksum
 }
 
-int NBMSG_recvAckMsg(uchar *buf, int len)
+static BOOL checkValidAck(uchar *buf, int len)
 {
-	NbiotSimpleAck_t *pAck = (NbiotSimpleAck_t *)buf;
-	if (strstr(pAck->msg, "ACK")) {
-		return 1;
+	NbiotAck_t *p = (NbiotAck_t *)buf;
+	printf_ts("len : %d protocol : 0x%02X\n", len, p->protocol);
+	uchar checksum = cal_checksum(&p->mtype, len - 3);
+
+	if (p->checksum != checksum) {
+		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n",
+			  checksum, p->checksum);
+		return FALSE;
 	}
 
-	return 0;
+#define ACK_PROTOCOL 0xC1
+	if (p->protocol != ACK_PROTOCOL) {
+		printf_ts(
+			"protocol version not match need(0x%02X) recv(0x%02X)\n",
+			ACK_PROTOCOL, p->protocol);
+		return FALSE;
+	}
+
+#define ACK_MTYPE 0x50
+	if (p->mtype != ACK_MTYPE) {
+		printf_ts("message type not match need(0x%02X) recv(0x%02X)\n",
+			  ACK_MTYPE, p->mtype);
+		return FALSE;
+	}
+
+#define INVALID_PARAM 0
+	if (p->validParams == INVALID_PARAM) {
+		printf_ts("Not Register Terminal Info In DB\n");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+int NBMSG_recvAckMsg(uchar *buf, int len)
+{
+	if (checkValidAck(buf, len)) {
+		NbiotAck_t *p = (NbiotAck_t *)buf;
+
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 char *NBMSG_getQaReport(int *messageLen)

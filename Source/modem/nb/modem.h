@@ -14,7 +14,7 @@
 // 모뎀 동작에 필요한 데이터 길이
 #define LEN_MAX_MODEM_TX 0x200 // Modem UART Tx max length
 #define LEN_MAX_MODEM_RX 0x500 // Modem UART Rx max length
-#define LEN_MAX_DL_DATA 0x20 // NB-IoT downlink max length
+#define LEN_MAX_DL_DATA 0x500 // NB-IoT downlink max length
 
 // NB-IoT specific data length
 #define LEN_MODEM_IMEI_IMSI 15
