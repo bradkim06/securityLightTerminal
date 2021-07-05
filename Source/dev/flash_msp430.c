@@ -24,7 +24,6 @@
 
 // Function prototypes
 STATIC void initFlash(void);
-STATIC void doneFlash(void);
 
 STATIC BOOL isBusyFlash(uint32 timeoutUsec)
 {
@@ -42,11 +41,6 @@ STATIC void initFlash(void)
 	FCTL2 = FWKEY + FSSEL_1 + FN4 +
 		FN3; // Flash Timing Generator as MCLK/24 -> 333 kHz.
 #endif
-}
-
-STATIC void doneFlash()
-{
-	return;
 }
 
 BOOL MSP430FLASH_erasePage(unsigned char *addr)
@@ -87,8 +81,6 @@ BOOL MSP430FLASH_erasePage(unsigned char *addr)
 	} else {
 		FCTL3 = FWKEY + LOCK; // Set LOCK bit
 	}
-
-	doneFlash();
 
 	return result;
 }
@@ -161,8 +153,6 @@ BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf,
 	} else {
 		FCTL3 = FWKEY + LOCK; // Set LOCK bit
 	}
-
-	doneFlash();
 
 	return result;
 }

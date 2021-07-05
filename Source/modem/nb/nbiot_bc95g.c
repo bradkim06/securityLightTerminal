@@ -950,16 +950,6 @@ static void attach()
 		   ATCMD_CCLK "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNUESTATS,
 		   ATCMD_NUESTATS "=RADIO");
-
-	if (conf.isUsingPF) {
-		if (nbCtx.proc.updateQa) {
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
-				   parseNSOCR, ATCMD_NSOCR "=DGRAM,17,560,0");
-		}
-	} else {
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
-			   parseNSOCR, ATCMD_NSOCR "=DGRAM,17,560,1");
-	}
 }
 
 static void detach()
@@ -985,6 +975,14 @@ static void transfer()
 	nbCtx.status.psmOn = 0;
 
 	if (nbCtx.proc.updateQa) {
+		if (conf.isUsingPF) {
+			if (nbCtx.proc.updateQa) {
+				ATCMD_push(TIMEOUT_NBIOT_DEFAULT,
+					   RETRY_NBIOT_DEFAULT, parseNSOCR,
+					   ATCMD_NSOCR "=DGRAM,17,560,0");
+			}
+		}
+
 		int qaMsgLen = 0;
 		char *qaMsg = NBMSG_getQaReport(&qaMsgLen);
 		// No wait response
