@@ -11,6 +11,21 @@
 #define NBIOT_CMD_CHG_SERVER 0x5A
 #define NBIOT_DATA_REPORT 0x70
 
+// Report Type
+#define INIT_MSG 1
+#define PERIOD_MSG 2
+#define LIGHT_ON_MSG 3
+#define LIGHT_OFF_MSG 4
+#define LIGHT_ON_DONE_MSG 5
+#define LIGHT_OFF_DONE_MSG 6
+#define CHANGE_SETTINGS_MSG 7
+
+// Light on/off Type
+#define AUTO_TYPE 1
+#define WORKER_TYPE 2
+#define SERVER_TYPE 3
+#define FORCE_TYPE 4
+
 #define NBIOT_QA_MSG_VER 1
 #define NBIOT_ERR_MSG_VER 1
 
@@ -136,6 +151,28 @@ typedef struct {
 } NbiotMeterData_t;
 
 typedef struct {
+	uchar rInterval;
+	uchar mode;
+	uchar timeStandard;
+	uchar timeTable;
+	uchar setOnTime[2];
+	uchar setOffTime[2];
+	uchar todayOnTime[2];
+	uchar todayOffTime[2];
+	uchar on_Offset;
+	uchar off_Offset;
+	uchar psmMode;
+	uchar psmOnTime[2];
+	uchar psmOffTime[2];
+	uchar psmOnDay[2];
+	uchar psmOffDay[2];
+	uchar forceMode;
+	uchar forceTime;
+	uchar dimmingMode;
+	uchar dimmingLevel;
+} NbiotMeterParams_t;
+
+typedef struct {
 	uchar resetCause;
 	uchar resetCount[2];
 } NbiotReset_t;
@@ -201,21 +238,22 @@ typedef struct {
 typedef struct {
 	uchar protocol; // 1 -  1
 	uchar len; // 1 -  2
-	uchar mtype; // 1 -  3
-	MobileId_t id; // 16 - 19
-	NbiotRadioQuality_t radio; // 10 - 29
-	NbiotDeviceInfo_t term; // 8  - 37
-	NbiotMeteringParam_t mp; // 1  - 38
-	NbiotTimeStamp_t meterTime; // 6  - 44
-	NbiotMeterData_t data; // 21 --> 65
-	uchar checksum; // 1  - 66
+	uchar msgType; // 1 - 3
+	uchar reportType; // 1 - 4
+	uchar lightReqType; // 1 - 5
+	MobileId_t id; // 16 - 21
+	NbiotRadioQuality_t radio; // 10 - 31
+	NbiotDeviceInfo_t term; // 8  - 39
+	NbiotTimeStamp_t meterTime; // 6  - 46
+	NbiotMeterData_t data; // 21 --> 67
+	NbiotMeterParams_t params;
+	uchar checksum; // 1  - 68
 } NbiotDataReport_t;
 
 int NBMSG_recvAck(char *p, int len);
 int NBMSG_recvReqChgServer(char *p, int len, char *ip, uint16 *port);
 int NBMSG_recvReqReset(uchar *buf, int len);
 int NBMSG_recvSimpleAck(uchar *buf, int len);
-int NBMSG_recvReqChgInterval(uchar *buf, int len);
 
 /**
  * @brief Get the Qa Report Message object

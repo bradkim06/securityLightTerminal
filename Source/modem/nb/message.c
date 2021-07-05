@@ -272,6 +272,13 @@ static int insert_oneData(NbiotMeterData_t *p)
 	// 21 = status(1), volt(4), curr(4), shortCurr(4), power(4), cumPower(4)
 }
 
+static int insert_params(NbiotMeterParams_t *p)
+{
+	memset(p, 0, sizeof(NbiotMeterParams_t));
+	return sizeof(NbiotMeterParams_t);
+	// 27
+}
+
 static int getCurrentDataMessage(uchar *buf)
 {
 	NbiotDataReport_t *p = (NbiotDataReport_t *)buf;
@@ -279,20 +286,20 @@ static int getCurrentDataMessage(uchar *buf)
 	p->protocol = PROTOCOL_VERSION;
 
 	int len = 0;
-	p->mtype = NBIOT_DATA_REPORT;
-	len++;
+	p->msgType = NBIOT_DATA_REPORT;
+	p->reportType = PERIOD_MSG;
+	p->lightReqType = AUTO_TYPE;
+	len += 3;
 
 	len += insert_id(&p->id);
 	len += insert_radioQuality(&p->radio);
 	len += insert_termInfo(&p->term);
-	len += insert_meteringParam(&p->mp);
-	// Join message는 아니지만 즉시검침/보고를 위한 message이므로
-	// Join message와 동일한 방식의 metering time을 얻는다.
 	len += insert_meteringTime(&p->meterTime);
 	len += insert_oneData(&p->data);
+	len += insert_params(&p->params);
 
 	p->len = len;
-	p->checksum = cal_checksum(&p->mtype, len); // 2 - protocol, len
+	p->checksum = cal_checksum(&p->msgType, len); // 2 - protocol, len
 
 	return len + 3; // 3 = protocol + len + checksum
 }
@@ -484,70 +491,6 @@ int NBMSG_recvReqChgServer(char *p, int len, char *ip, uint16 *port)
 	}
 
 	return valid;
-}
-
-int NBMSG_recvReqChgInterval(uchar *buf, int len)
-{
-	if (len <= 0)
-		return 0;
-
-	uchar *data = NULL;
-	if (*buf != PROTOCOL_VERSION) {
-		int rawDataLen = len;
-		data = (uchar *)malloc(rawDataLen);
-		for (int i = 0; i < rawDataLen; i++) {
-			*(data + i) = MISC_asciiToBCD(*(buf + i * 2),
-						      *(buf + 1 + i * 2));
-		}
-	} else {
-		data = buf;
-	}
-
-	NbiotAckResp_t *pIntervalReq = (NbiotAckResp_t *)data;
-	if (pIntervalReq->mtype == NBIOT_ACK_RESP) {
-		/* uchar rChecksum = *(data + pIntervalReq->len + 2); */
-		uchar rChecksum = pIntervalReq->checksum;
-		uchar cChecksum =
-			cal_checksum(&pIntervalReq->mtype, pIntervalReq->len);
-
-		if (rChecksum != cChecksum) {
-			NBMSG_DBG("checksum error (read : %x, calc : %x) \n",
-				  rChecksum, cChecksum);
-			return 0;
-		}
-
-		uchar ri = pIntervalReq->ri;
-
-		// 둘 중 하나가 0이거나, 보고주기보다 검침주기보가 크면 무시
-
-		// 기존 것과 같으면 무시
-		if (ri == conf.reportInterval) {
-			NBMSG_DBG("Report interval is same (%d)\n", ri);
-			return TRUE;
-		} else if (ri == 0) {
-			return TRUE;
-		} else if (24 % ri) {
-			// 검침주기나 보고주기가 24의 약수가 아니면 무시
-			NBMSG_DBG("Report interval can not over 24h (%d)\n",
-				  ri);
-			return 0;
-		}
-
-		conf.reportInterval = ri;
-
-		FLASH_saveConfigInfo(&conf);
-		FLASH_readConfigInfo(&conf);
-
-		NBMSG_DBG("report interval(%d) -- changed\n", ri);
-
-		if (pIntervalReq->isReset) {
-			OSAL_setEvent(APP_getTaskId(), APP_EVENT_REBOOT);
-		}
-
-		return 1;
-	}
-
-	return 0;
 }
 
 int NBMSG_recvReqReset(uchar *buf, int len)

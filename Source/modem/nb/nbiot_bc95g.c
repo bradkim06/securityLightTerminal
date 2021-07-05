@@ -791,8 +791,6 @@ static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 			return TRUE;
 		} else if (NBMSG_recvReqReset((uchar *)p, len)) {
 			return TRUE;
-		} else if (NBMSG_recvReqChgInterval((uchar *)p, len)) {
-			return TRUE;
 		}
 		return TRUE;
 	}
