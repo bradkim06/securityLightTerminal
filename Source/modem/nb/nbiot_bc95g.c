@@ -748,6 +748,13 @@ static BOOL parseNUESTATS(const char *pHead, const int *len, uint32 *nextDelay)
 			return FALSE;
 		}
 
+		printf_ts(
+			"MODEM : CGI(%ld) CID(%d) TX_POWER(%d) RSRP(%d) SNR(%d) RSRQ(%d) RSSI(%d) \n",
+			nbInfo.sigQuality.cgi, nbInfo.sigQuality.cid,
+			nbInfo.sigQuality.txPower, nbInfo.sigQuality.rsrp,
+			nbInfo.sigQuality.snr, nbInfo.sigQuality.rsrq,
+			nbInfo.sigQuality.rssi);
+
 		return TRUE;
 	}
 	return FALSE;
