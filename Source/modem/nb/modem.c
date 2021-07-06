@@ -512,11 +512,12 @@ static void eventFinish()
 {
 	// update & print last context
 	NBIOT_finishProcess();
-	if (modemCtx.currentProc == MODEM_PROC_PERIODIC_REPORT) {
-		if (nbCtx.error == NBIOT_ERROR_NONE) {
-		}
-	}
-	APP_ctrlReportTime();
+	// if (modemCtx.currentProc == MODEM_PROC_PERIODIC_REPORT) {
+	// 	if (nbCtx.error == NBIOT_ERROR_NONE) {
+	// 	}
+	// }
+	// APP_ctrlReportTime();
+	ALARM_schedule();
 }
 
 static void eventSendCmd()

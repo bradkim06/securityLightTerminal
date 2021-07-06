@@ -7,6 +7,7 @@
 typedef enum {
 	// 매 시간 정해진 시간(serial number에 따라 변경)에 발생하는 보고 이벤트
 	RTC_ALARM_REPORT,
+	RTC_ALARM_LIGHT,
 	RTC_ALARM_UNKNOWN, // 미사용 알람
 } RtcAlarmType_t;
 

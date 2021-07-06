@@ -11,7 +11,7 @@
 #include "uart.h"
 
 // 정의된 RTC 타이머 이벤트 개수.
-#define RTC_ALARM_COUNT 1
+#define RTC_ALARM_COUNT 2
 
 #define ALARM_TYPE_STR(x) (((x) == RTC_ALARM_REPORT) ? "report" : "unknown")
 
@@ -194,7 +194,6 @@ void ALARM_run()
 
 	if (conf.isShortInterval) {
 		APP_runPeriodicReport();
-		NextAlarm = NULL;
 		return;
 	}
 
@@ -210,8 +209,6 @@ void ALARM_run()
 	} else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);
 	}
-
-	NextAlarm = NULL;
 }
 
 void ALARM_isr()
