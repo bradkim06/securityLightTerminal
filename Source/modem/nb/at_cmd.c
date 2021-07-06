@@ -160,58 +160,48 @@ BOOL ATCMD_read(uint32 *nextDelay)
 BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser,
 		   const char *cmd, ...)
 {
-	AtCmd_t *atCmd = (AtCmd_t *)malloc(sizeof(AtCmd_t));
-	if (atCmd == NULL) {
-		ATCMD_DBG("fail to malloc AT command structure\n");
-		return FALSE;
-	}
-	memset((void *)atCmd, 0, sizeof(AtCmd_t));
-	atCmd->timeout = timeout;
-	atCmd->retry = retry;
-	atCmd->parser = parser;
+	char buffer[LEN_MAX_MODEM_TX];
 
 	if (cmd != NULL) {
 		va_list arg;
 		va_start(arg, cmd);
-		char buffer[LEN_MAX_MODEM_TX];
 		int cmdLen = vsnprintf(buffer, LEN_MAX_MODEM_TX, cmd, arg);
 		va_end(arg);
+	}
 
-		atCmd->cmd = (char *)malloc(cmdLen + 1);
-		if (atCmd->cmd == NULL) {
-			ATCMD_DBG("fail to malloc AT command\n");
-			return FALSE;
+	ATCMD_WRITER(buffer);
+
+	do {
+		uint32 time = timeout;
+
+		while (time) {
+			MISC_delayMs(50);
+			time -= 50;
+
+			if (checkRxIdle()) {
+				uint32 nextDelay = ATCMD_DEFAULT_NEXT_INTERVAL;
+				char buf[LEN_MAX_MODEM_RX];
+				memset(buf, 0, LEN_MAX_MODEM_RX);
+
+				int len = ATCMD_READER(buf);
+				buf[len - 1] = '\0';
+
+				if (NOTIFY_PARSER != NULL) {
+					NOTIFY_PARSER(buf, &len);
+				}
+
+				if (parser(buf, &len, &nextDelay)) {
+					MISC_delayMs((int)nextDelay);
+					retry = 0;
+					break;
+				}
+			}
 		}
-		memset(atCmd->cmd, 0, cmdLen + 1);
-		memcpy(atCmd->cmd, buffer, cmdLen);
-	}
 
-	if (atCmd->parser == NULL || atCmd->cmd == NULL) {
-		ATCMD_DBG("register fail (parser or command empty)\n");
-		return FALSE;
-	}
-
-	ATCMD_WRITER(atCmd->cmd);
-
-	while (retry--) {
-		char buf[LEN_MAX_MODEM_RX];
-		uint32 *nextDelay = NULL;
-		*nextDelay = ATCMD_DEFAULT_NEXT_INTERVAL;
-
-		MISC_delayMs(100);
-		memset(buf, 0, LEN_MAX_MODEM_RX);
-		int len = ATCMD_READER(buf);
-		buf[len - 1] = '\0';
-
-		if (parser(buf, &len, nextDelay)) {
-			break;
-		} else {
-			ATCMD_WRITER(atCmd->cmd);
+		if (retry > 0) {
+			ATCMD_WRITER(buffer);
 		}
-	}
-
-	free(atCmd->cmd);
-	free(atCmd);
+	} while (retry--);
 
 	return TRUE;
 }

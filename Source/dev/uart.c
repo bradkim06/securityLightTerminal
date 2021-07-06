@@ -710,6 +710,19 @@ __interrupt void USCI_A1_ISR(void)
 	}
 }
 
+BOOL checkRxIdle(void)
+{
+	static int prev = 0xff;
+	UartBuf_t *p = uartA2->rxBuf;
+
+	if (prev != p->wpos) {
+		prev = p->wpos;
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 // UART_2 interrupt - SMT/SKT/NB-IoT Modem
 #pragma vector = USCI_A2_VECTOR
 __interrupt void USCI_A2_ISR(void)

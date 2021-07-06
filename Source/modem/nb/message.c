@@ -300,7 +300,6 @@ static int getCurrentDataMessage(uchar *buf)
 static BOOL checkValidAck(uchar *buf, int len)
 {
 	NbiotAck_t *p = (NbiotAck_t *)buf;
-	printf_ts("len : %d protocol : 0x%02X\n", len, p->protocol);
 	uchar checksum = cal_checksum(&p->mtype, len - 3);
 
 	if (p->checksum != checksum) {

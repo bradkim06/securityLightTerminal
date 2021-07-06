@@ -83,42 +83,42 @@ void MODEM_turnOn()
 
 void MODEM_turnOff()
 {
-	/* if (modemCtx.isPowerOn) { */
-	/* 	MODEM_DBG("power off\n"); */
-	/* 	NBIOT_release(); */
+	if (modemCtx.isPowerOn) {
+		MODEM_DBG("power off\n");
+		NBIOT_release();
 
-	/* #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO) */
-	/* 	// MOSFET work off power (P1.1) */
-	/* 	P1SEL &= ~BM(MODEM_VCC2_P1_PIN); */
-	/* 	P1DIR |= BM(MODEM_VCC2_P1_PIN); */
-	/* 	P1OUT |= BM(MODEM_VCC2_P1_PIN); // make high */
+#if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO)
+		// MOSFET work off power (P1.1)
+		P1SEL &= ~BM(MODEM_VCC2_P1_PIN);
+		P1DIR |= BM(MODEM_VCC2_P1_PIN);
+		P1OUT |= BM(MODEM_VCC2_P1_PIN); // make high
 
-	/* 	MISC_delayMs(10); */
+		MISC_delayMs(10);
 
-	/* 	// LDO work turn off power (P2.0) */
-	/* 	P2SEL &= ~BM(MODEM_VCC1_P2_PIN); */
-	/* 	P2DIR |= BM(MODEM_VCC1_P2_PIN); */
-	/* 	P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low */
+		// LDO work turn off power (P2.0)
+		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+		P2DIR |= BM(MODEM_VCC1_P2_PIN);
+		P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
 
-	/* 	MISC_delayMs(100); */
-	/* #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_LDO_ONLY) */
-	/* 	// LDO work turn off power (P2.0) */
-	/* 	P2SEL &= ~BM(MODEM_VCC1_P2_PIN); */
-	/* 	P2DIR |= BM(MODEM_VCC1_P2_PIN); */
-	/* 	P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low */
+		MISC_delayMs(100);
+#elif (DEVICE_REVISION == DEV_REV_PWRCTRL_LDO_ONLY)
+		// LDO work turn off power (P2.0)
+		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+		P2DIR |= BM(MODEM_VCC1_P2_PIN);
+		P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
 
-	/* 	MISC_delayMs(100); */
-	/* #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY) */
-	/* 	// turn off power (P2.0) */
-	/* 	P2SEL &= ~BM(MODEM_VCC1_P2_PIN); */
-	/* 	P2DIR |= BM(MODEM_VCC1_P2_PIN); */
-	/* 	P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high */
+		MISC_delayMs(100);
+#elif (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY)
+		// turn off power (P2.0)
+		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+		P2DIR |= BM(MODEM_VCC1_P2_PIN);
+		P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
 
-	/* 	MISC_delayMs(10); */
-	/* #endif */
+		MISC_delayMs(10);
+#endif
 
-	/* 	modemCtx.isPowerOn = FALSE; */
-	/* } */
+		modemCtx.isPowerOn = FALSE;
+	}
 }
 
 void MODEM_sleep()

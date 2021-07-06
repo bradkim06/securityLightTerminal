@@ -251,7 +251,7 @@ static BOOL parseQaReportFinish(const char *pHead, const int *len,
 static BOOL parseDoHwReset(const char *pHead, const int *len, uint32 *nextDelay)
 {
 	*nextDelay = DELAY_NBIOT_BOOTUP;
-	/* MODEM_turnOff(); */
+	MODEM_turnOff();
 	MODEM_turnOn();
 	return TRUE;
 }
@@ -952,13 +952,6 @@ static void attach()
 		   ATCMD_CCLK "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNUESTATS,
 		   ATCMD_NUESTATS "=RADIO");
-
-	if (conf.isUsingPF) {
-		if (nbCtx.proc.updateQa) {
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
-				   parseNSOCR, ATCMD_NSOCR "=DGRAM,17,560,0");
-		}
-	}
 }
 
 static void detach()
@@ -982,8 +975,17 @@ static void transfer()
 
 	// PSM on 상태인 경우 데이터 전송을 위해 강제 off설정
 	nbCtx.status.psmOn = 0;
+	nbCtx.proc.updateQa = 0;
 
 	if (nbCtx.proc.updateQa) {
+		if (conf.isUsingPF) {
+			if (nbCtx.proc.updateQa) {
+				ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT,
+					      RETRY_NBIOT_DEFAULT, parseNSOCR,
+					      ATCMD_NSOCR "=DGRAM,17,560,0");
+			}
+		}
+
 		int qaMsgLen = 0;
 		char *qaMsg = NBMSG_getQaReport(&qaMsgLen);
 		// No wait response

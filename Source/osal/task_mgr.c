@@ -60,10 +60,10 @@ void TASKMGR_run(void)
 		P2OUT ^= HW_WDT_PIN;
 
 		// TEST CODE
-		if (TIMER_getMsecDiff(ms) > 600000) {
-			ms = TIMER_getMsec();
-			Relay_Status(RELAY_TOGGLE);
-		}
+		// if (TIMER_getMsecDiff(ms) > 10000) {
+		// 	ms = TIMER_getMsec();
+		// 	Relay_Status(RELAY_TOGGLE);
+		// }
 
 		if (++idx >= TasksTotalCounts) {
 			idx = 0;

@@ -134,4 +134,5 @@ void PRINT_stop();
 void PRINT_resume();
 void PRINT_hexBuffer(uint8 *p, int len);
 void PRINT_string(char *p, int len);
+BOOL checkRxIdle(void);
 #endif

@@ -131,6 +131,9 @@ void MISC_delayMs(uint32 timeout)
 			NOP();
 			NOP();
 		} while (--i);
+
+		WDTCTL = WDTPW | WDTCNTCL; // Clear watchdog timer
+		WDTCTL = WDT_ARST_16SEC; // Start watchdog timer(16 sec)
 	} while (--timeout);
 } // MISC_delayMs
 
