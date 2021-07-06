@@ -248,7 +248,6 @@ void FLASH_saveConfigInfo(Config_t *config)
 	FlashConfig_t flashConfig;
 
 	flashConfig.meterType = config->meterType;
-	flashConfig.rtCtrlMode = config->rtCtrlMode;
 	flashConfig.reportInterval = config->reportInterval;
 	MISC_ipToHexArray(config->serverIp, flashConfig.serverIp);
 	memcpy(flashConfig.serverPort, &config->serverPort, 2);
@@ -295,7 +294,6 @@ void FLASH_readConfigInfo(Config_t *config)
 	config->serviceCode[4] = 0;
 	config->isModemInit = flashConfig.isModemInit;
 	config->isUsingPF = flashConfig.isUsingPF;
-	config->rtCtrlMode = flashConfig.rtCtrlMode;
 	config->isShortInterval = flashConfig.isShortInterval;
 	config->debugPrint = flashConfig.debugPrint;
 
@@ -322,8 +320,16 @@ void FLASH_readConfigInfo(Config_t *config)
 		15; // 같은 '분'에 보고하는 단말기들간에 시간을 15초 단위로 4개로 나눔
 	serialBase %= nSpread;
 
-	config->reportHour = (config->isUsingPF == TRUE) ? 0 : serialBase / 50;
+	config->reportHour = serialBase / 50;
 	config->reportMin = (serialBase % 50) + 5;
+
+	config->isUsingPF = TRUE;
+	config->meterType = E_METER;
+	config->lightOnHour = 18;
+	config->lightOnMin = 44;
+	config->lightOffHour = 6;
+	config->lightOffMin = 32;
+	config->debugPrint = TRUE;
 }
 
 void FLASH_updateResetCount(Config_t *config)

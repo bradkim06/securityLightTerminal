@@ -36,7 +36,6 @@ uint8 APP_getTaskId();
 void APP_init(uint8 taskId);
 /* Comment APP_prepareToSleep */
 /* void APP_prepareToSleep(); */
-void APP_ctrlReportTime();
 
 void APP_runPeriodicReport();
 BOOL APP_isMetering();

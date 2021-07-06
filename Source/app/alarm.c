@@ -11,9 +11,14 @@
 #include "uart.h"
 
 // 정의된 RTC 타이머 이벤트 개수.
-#define RTC_ALARM_COUNT 2
+#define RTC_ALARM_COUNT 3
 
-#define ALARM_TYPE_STR(x) (((x) == RTC_ALARM_REPORT) ? "report" : "unknown")
+#define ALARM_TYPE_STR(x)                                                      \
+	(((x) == RTC_ALARM_LIGHT_ON) ?                                         \
+		 "light on" :                                                  \
+		 ((x) == RTC_ALARM_LIGHT_OFF) ?                                \
+		 "light off" :                                                 \
+		 ((x) == RTC_ALARM_REPORT) ? "report" : "unknown")
 
 static int TimeSyncFlag = 0;
 static Date_t TimeSyncDate;
@@ -46,8 +51,17 @@ void ALARM_init()
 	} while (0);
 
 	RTC_set(&date);
-	AlarmList[0].type = RTC_ALARM_REPORT;
-	AlarmList[0].minute = conf.reportMin;
+	if (conf.isShortInterval) {
+		AlarmList[0].type = RTC_ALARM_REPORT;
+		AlarmList[0].minute = conf.reportMin;
+	} else {
+		AlarmList[0].type = RTC_ALARM_LIGHT_ON;
+		AlarmList[0].minute = conf.lightOnMin;
+		AlarmList[1].type = RTC_ALARM_LIGHT_OFF;
+		AlarmList[1].minute = conf.lightOffMin;
+		AlarmList[2].type = RTC_ALARM_REPORT;
+		AlarmList[2].minute = conf.reportMin;
+	}
 
 	TimeSyncFlag = 0;
 	memset(&TimeSyncDate, 0, sizeof(Date_t));
@@ -95,9 +109,10 @@ void shortScheduler()
 	// 분단위 검침 시 Alarm list[0]만 사용하며, minute을 기반으로 고정된 시간에
 	// 수행하도록 schduling한다. ex) AlarmList[0].minute = 8, interval = 3 >>
 	// alarm set = 8, 11, 14, 17, ..., 59 int ri   = conf.reportInterval;
-	int ri = conf.rtCtrlInterval;
+	int ri = conf.reportInterval;
 	int hour = date.hour;
-	int min = date.min + ri - ((60 + date.min - AlarmList[0].minute) % ri);
+	// int min = date.min + ri - ((60 + date.min - AlarmList[0].minute) % ri);
+	int min = date.min + ri;
 	if (min >= 60) {
 		min -= 60;
 		if (++hour >= 24) {
@@ -117,20 +132,43 @@ void normalScheduler()
 	Date_t date;
 	RTC_read(&date);
 
-	// 시간 동기화에 의한 알람 중복 등록을 피하기 위해 이전 알람 이벤트에 의한
-	// 순차 등록으로 수정. 단, 시간 동기화 후 발생 오차에 의한 문제를 방지하기
-	// 위해 아래와 같은 기준으로 알람을 설정.
+	// 시간 동기화에 의한 알람 중복 등록을 피하기 위해 이전 알람 이벤트에 의한 순차 등록으로 수정.
+	// 단, 시간 동기화 후 발생 오차에 의한 문제를 방지하기 위해 아래와 같은 기준으로 알람을 설정.
 	// 1. 알람 발생 후 완료까지 시간 5분.
 	// 2. 알람 동작 완료 후 Idle 시간 5분.
 	// 3. 시간 오차를 고려하여 실제 알람 시간의 +-1분 오차를 고려.
 
 	int diff, lastDiff = 60;
+	int isLight = 0;
 	RtcAlarm_t *pNext = NULL;
 	for (int idx = 0; idx < RTC_ALARM_COUNT; idx++) {
+		int hourdiff;
+
+		if (idx == RTC_ALARM_LIGHT_ON) {
+			hourdiff = conf.lightOnHour - date.hour;
+			printf_ts("[%s - %02d:%02d:00]\n",
+				  ALARM_TYPE_STR(AlarmList[idx].type),
+				  conf.lightOnHour, conf.lightOnMin);
+			if (hourdiff <= 1 && hourdiff >= -1) {
+				isLight = 1;
+			} else {
+				continue;
+			}
+		} else if (idx == RTC_ALARM_LIGHT_OFF) {
+			hourdiff = conf.lightOffHour - date.hour;
+			printf_ts("[%s - %02d:%02d:00]\n",
+				  ALARM_TYPE_STR(AlarmList[idx].type),
+				  conf.lightOffHour, conf.lightOffMin);
+			if (hourdiff <= 1 && hourdiff >= -1) {
+				isLight = 1;
+			} else {
+				continue;
+			}
+		}
+
 		diff = AlarmList[idx].minute - date.min;
 		if (diff <= 0) {
-			// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기
-			// 위해 1시간을 더한다.
+			// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기 위해 1시간을 더한다.
 			diff += 60;
 		}
 
@@ -138,14 +176,16 @@ void normalScheduler()
 			  ALARM_TYPE_STR(AlarmList[idx].type),
 			  AlarmList[idx].minute, diff);
 
-		// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로
-		// 제외한다.
+		// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
 		if (diff > 1) {
 			if (diff <= lastDiff) {
 				pNext = &AlarmList[idx];
 				lastDiff = diff;
-
 				printf("change\n");
+
+				if (isLight) {
+					break;
+				}
 			} else {
 				printf("skip\n");
 			}
@@ -159,7 +199,7 @@ void normalScheduler()
 		NextAlarm = pNext;
 	} else {
 		printf_ts("set next alarm - set fail, set first alarm \n");
-		NextAlarm = &AlarmList[0];
+		NextAlarm = &AlarmList[RTC_ALARM_REPORT];
 	}
 
 	int hour = NextAlarm->minute <= date.min ? ((date.hour + 1) % 24) :
@@ -203,11 +243,30 @@ void ALARM_run()
 	RtcAlarmType_t alarmType = NextAlarm->type;
 	if (alarmType == RTC_ALARM_REPORT) {
 		if (MISC_checkInterval(date.hour, conf.reportHour,
-				       conf.rtCtrlInterval)) {
+				       conf.reportInterval)) {
 			APP_runPeriodicReport();
+		} else {
+			ALARM_schedule();
+		}
+	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
+		if (conf.lightOnHour == date.hour) {
+			printf_ts("light on run\n");
+			ALARM_schedule();
+		} else {
+			printf_ts("not light on hour\n");
+			ALARM_schedule();
+		}
+	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
+		if (conf.lightOnHour == date.hour) {
+			printf_ts("light off run\n");
+			ALARM_schedule();
+		} else {
+			printf_ts("not light off hour\n");
+			ALARM_schedule();
 		}
 	} else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);
+		ALARM_schedule();
 	}
 }
 

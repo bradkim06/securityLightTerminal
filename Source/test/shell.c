@@ -549,15 +549,6 @@ void SHELL_run()
 			TEST_pnbctx();
 			break;
 
-		case CMDN_RI_CTRL:
-			if (nCmdArgs >= 1) {
-				int flag = SHELL_decimal(cmdArgs[0]);
-				TEST_riCtrlMode(flag);
-			} else {
-				TEST_riCtrlMode(0xFF);
-			}
-			break;
-
 		case CMDN_RELAY:
 			if (nCmdArgs >= 1) {
 				int flag = SHELL_decimal(cmdArgs[0]);

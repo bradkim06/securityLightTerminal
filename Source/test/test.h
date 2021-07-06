@@ -20,7 +20,6 @@ void TEST_readSerialNum();
 void TEST_writeSerialNum(char *serialNum);
 void TEST_config();
 void TEST_meteringParamer(int ri);
-void TEST_riCtrlMode(int flag);
 void TEST_setMeterType(int type);
 void TEST_shortInterval(int flag);
 void TEST_debugPrint(int flag);

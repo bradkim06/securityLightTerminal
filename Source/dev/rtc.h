@@ -4,7 +4,7 @@
 #include "alarm.h"
 #include "var_type.h"
 
-#define YEAR_MIN 2017
+#define YEAR_MIN 2021
 #define YEAR_MAX 2100
 
 struct Time {

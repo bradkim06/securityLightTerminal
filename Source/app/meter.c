@@ -99,6 +99,8 @@ void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit)
 
 void Relay_Status(int on)
 {
+	static char prevStatus = RELAY_OFF;
+
 	switch (on) {
 	case RELAY_ON:
 		P3OUT |= RELAY_PIN;
@@ -114,6 +116,10 @@ void Relay_Status(int on)
 		break;
 	}
 
+	if (prevStatus != on) {
+		printf_ts("light status change\n");
+		APP_runPeriodicReport();
+	}
 #define RELAY_STATUS_STR(x)                                                    \
 	(((x) == RELAY_OFF) ? "OFF" :                                          \
 			      ((x) == RELAY_NO_CHANGE) ?                       \

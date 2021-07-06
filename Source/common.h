@@ -91,9 +91,6 @@ struct Config {
 	uint8 imsi[8];
 	BOOL isModemInit;
 	BOOL isUsingPF;
-	uint8 rtCtrlMode; // 0 : no ctrl, 1 : ctrl
-	uint8 rtCtrlThreshold;
-	uint8 rtCtrlInterval;
 	uint8 isShortInterval;
 	uint8 reportInterval;
 	uint8 reportHour;
@@ -102,6 +99,10 @@ struct Config {
 	uint16 resetCount;
 	uint8 debugPrint;
 	uint8 termModel;
+	uint8 lightOnHour;
+	uint8 lightOnMin;
+	uint8 lightOffHour;
+	uint8 lightOffMin;
 };
 
 extern struct Config conf;

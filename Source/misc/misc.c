@@ -339,6 +339,7 @@ int MISC_calcHourDiff(Date_t *prev, Date_t *next)
 BOOL MISC_checkInterval(int h, int basetime, int interval)
 {
 	int hour = h + 24 - basetime;
+
 	return ((hour % interval) == 0) ? TRUE : FALSE;
 }
 

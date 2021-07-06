@@ -399,19 +399,6 @@ void TEST_gpioRead(int port)
 	       *portAddress);
 }
 
-void TEST_riCtrlMode(int flag)
-{
-	if (flag != 0xff) {
-		FLASH_readConfigInfo(&conf);
-		conf.rtCtrlMode = flag ? 1 : 0;
-		conf.rtCtrlThreshold = 0;
-		conf.rtCtrlInterval = conf.reportInterval;
-		FLASH_saveConfigInfo(&conf);
-	}
-
-	printf("report control %s\n", conf.rtCtrlMode ? "on" : "off");
-}
-
 void TEST_shortInterval(int flag)
 {
 	if (flag != 0xff) {

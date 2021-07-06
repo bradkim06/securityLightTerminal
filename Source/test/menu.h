@@ -28,7 +28,6 @@ typedef struct {
 #define CMDN_PWRTC 18
 #define CMDN_PNFC 19
 #define CMDN_RNFC 20
-#define CMDN_RI_CTRL 21
 #define CMDN_PRNBID 22
 #define CMDN_PWSERVER 23
 #define CMDN_PRSERVER 24
@@ -167,12 +166,6 @@ const ShellCommandSet_t CmdSet[] = {
 		"Factory reset of NFC Tag",
 	},
 	{
-		CMDN_RI_CTRL,
-		"rictrl",
-		"rictrl FLAG(0,1)",
-		"On/Off report interval",
-	},
-	{
 		CMDN_PRNBID,
 		"prnbid",
 		"prnbid",
@@ -217,13 +210,13 @@ const ShellCommandSet_t CmdSet[] = {
 	{
 		CMDN_GPIO_WRITE,
 		"wgpio",
-		"wgpio port pin status(off[0], on[1]),"
+		"wgpio port pin status(off[0], on[1])",
 		"wgpio status control off(0), on(1)",
 	},
 	{
 		CMDN_GPIO_READ,
 		"rgpio",
-		"rgpio port"
+		"rgpio port",
 		"rgpio port",
 	},
 };

@@ -86,7 +86,6 @@ void APP_showConfig(Config_t *p)
 		printf(" [ Report Min ] %d (%d sec)\n", p->reportMin,
 		       p->reportSec);
 	}
-	printf(" [ RI Control ] %s \n", (p->rtCtrlMode > 0) ? "On" : "Off");
 	printf(" [ Meter Type ] %s\n", METER_getMeterName(p->meterType));
 	uint8 batt = BATT_getLastVoltage();
 	printf(" [ Battery    ] %d.%dV\n", batt / 10, batt % 10);
@@ -197,58 +196,6 @@ __interrupt void UNMI_ISR(void)
 	}
 }
 
-void APP_ctrlReportTime()
-{
-#define RT_CTRL_MAX_THRESHOLD 3 // 최종 반영 횟수
-#define RT_CTRL_DEC_SIG_QUAL 80 // 보고주기 감소 기준 값
-#define RT_CTRL_INC_SIG_QUAL 110 // 보고주기 증가 기준 값
-
-	if (!conf.rtCtrlMode) {
-		printf_ts("report time [control:off] \n");
-		return;
-	}
-
-	BOOL isIncreased =
-		(conf.rtCtrlInterval > conf.reportInterval) ? TRUE : FALSE;
-	int error = MODEM_getResult();
-	switch (error) {
-	case ERROR_CODE_NONE: {
-		int sigQual = MODEM_getAbsRsrp();
-		if (sigQual <= RT_CTRL_DEC_SIG_QUAL) {
-			conf.rtCtrlThreshold =
-				(isIncreased) ? (conf.rtCtrlThreshold + 1) : 0;
-		} else if (sigQual >= RT_CTRL_INC_SIG_QUAL) {
-			conf.rtCtrlThreshold =
-				(isIncreased) ? 0 : (conf.rtCtrlThreshold + 1);
-		} else {
-			conf.rtCtrlThreshold = 0;
-		}
-	} break;
-	case ERROR_CODE_COMM: {
-		conf.rtCtrlThreshold =
-			(isIncreased) ? 0 : (conf.rtCtrlThreshold + 1);
-	} break;
-
-	default:
-		// conf.rtCtrlThreshold 값 유지.
-		break;
-	}
-
-	if (conf.rtCtrlThreshold >= RT_CTRL_MAX_THRESHOLD) {
-		conf.rtCtrlThreshold = 0;
-		if (isIncreased) {
-			conf.rtCtrlInterval = conf.reportInterval;
-		} else {
-			conf.rtCtrlInterval = conf.reportInterval * 2;
-			if (conf.rtCtrlInterval > 24)
-				conf.rtCtrlInterval = 24;
-		}
-	}
-	printf_ts("report time [control:on interval:%d Threshold:%d/%d] \n",
-		  conf.rtCtrlInterval, conf.rtCtrlThreshold,
-		  RT_CTRL_MAX_THRESHOLD);
-}
-
 /* Comment APP_prepareToSleep */
 void APP_prepareToSleep()
 {
@@ -284,10 +231,6 @@ void APP_init(uint8 taskId)
 	PRINT_enable();
 
 	FLASH_readConfigInfo(&conf);
-	conf.rtCtrlInterval = conf.reportInterval;
-	conf.rtCtrlThreshold = 0;
-	conf.isUsingPF = TRUE;
-	conf.meterType = E_METER;
 
 	BATT_init();
 	NFC_init();
@@ -296,15 +239,6 @@ void APP_init(uint8 taskId)
 	FLASH_updateResetCount(&conf);
 	APP_showConfig(&conf);
 	METER_enable(E_METER);
-
-	// TEST
-	conf.debugPrint = 1;
-	// if (conf.debugPrint == 0) {
-	// 	printf("\n--console disabled--\n");
-	// 	MISC_delayMs(2000);
-	// 	PRINT_stop();
-	// 	PRINT_disable();
-	// }
 
 	MISC_delayMs(500);
 
