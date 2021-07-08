@@ -28,6 +28,7 @@ typedef struct {
 #define CMDN_PWRTC 18
 #define CMDN_PNFC 19
 #define CMDN_RNFC 20
+#define CMDN_SUNRISE 21
 #define CMDN_PRNBID 22
 #define CMDN_PWSERVER 23
 #define CMDN_PRSERVER 24
@@ -164,6 +165,12 @@ const ShellCommandSet_t CmdSet[] = {
 		"pfrnfc",
 		"pfrnfc",
 		"Factory reset of NFC Tag",
+	},
+	{
+		CMDN_SUNRISE,
+		"sunrise",
+		"sunrise",
+		"calculating Sunrise, Sunset",
 	},
 	{
 		CMDN_PRNBID,

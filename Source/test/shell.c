@@ -473,8 +473,7 @@ void SHELL_run()
 			break;
 
 		case CMDN_PNFC:
-			// TEST_checkNFC();
-			calcSunrise();
+			TEST_checkNFC();
 			break;
 
 		case CMDN_RNFC:
@@ -566,6 +565,10 @@ void SHELL_run()
 			} else {
 				printf("command usage: %s\n", shellCmd->usage);
 			}
+			break;
+
+		case CMDN_SUNRISE:
+			calcSunrise();
 			break;
 
 		default:

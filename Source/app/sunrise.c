@@ -1,22 +1,18 @@
 // C program calculating the sunrise and sunset for
 // the current date and a fixed location(latitude,longitude)
 // Note, twilight calculation gives insufficient accuracy of results
-// Jarmo Lammi 1999 - 2001
-// Last update July 21st, 2001
 
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include "rtc.h"
+#include "sunrise.h"
 
-double pi = 3.14159;
-double degs;
+const double pi = 3.14159;
+
 double rads;
-
-double L, g, daylen;
-double SunDia = 0.53; // Sunradius degrees
-
-double AirRefr = 34.0 / 60.0; // athmospheric refraction degrees //
+double L, g;
 
 //   Get the days to J2000
 //   h is UT in decimal hours
@@ -46,9 +42,13 @@ double FNrange(double x)
 //
 double f0(double lat, double declin)
 {
+	// const double SunDia = 0.53; // Sunradius degrees
+	// const double AirRefr = 34.0 / 60.0; // athmospheric refraction degrees //
 	double fo, dfo;
+#define SUNDIA 0.53
+#define AirRefr 34.0 / 60.0
 	// Correction: different sign at S HS
-	dfo = rads * (0.5 * SunDia + AirRefr);
+	dfo = rads * (0.5 * SUNDIA + AirRefr);
 	if (lat < 0.0)
 		dfo = -dfo;
 	fo = tan(declin + dfo) * tan(lat * rads);
@@ -70,7 +70,7 @@ double f1(double lat, double declin)
 	fi = tan(declin + df1) * tan(lat * rads);
 	if (fi > 0.99999)
 		fi = 1.0; // to avoid overflow //
-	fi = asin(fi) + pi / 2.0 + 0.055;
+	fi = asin(fi) + pi / 2.0 + 0.053;
 	return fi;
 };
 
@@ -101,53 +101,57 @@ void showhrmn(double dhr)
 	printf("%0d:%0d\n", hr, mn);
 };
 
-void calcSunrise(void)
+void gethrmn(double dhr, sunriseTime_t *p)
 {
-	double y, m, day, h, latit, longit;
+	int hr, mn;
+	hr = (int)dhr;
+	mn = (dhr - (double)hr) * 60;
+
+	p->hour = hr;
+	p->min = mn;
+};
+
+void calcSunrise()
+{
+	int y = 2021;
+	int m = 7;
+	int day = 8;
+
+	if (y < 2021 || y > 2100) {
+		printf("wrong year %d", y);
+		return;
+	}
+
+	if (m > 12 || m < 1) {
+		printf("wrong month %d", m);
+		return;
+	}
+
+	if (day > 31 || m < 1) {
+		printf("wrong day %d", day);
+		return;
+	}
+
+	double h, latit, longit;
 	float inlat, inlon, intz;
 	double tzone, d, lambda;
 	double obliq, alpha, delta, LL, equation, ha, hb, twx;
-	double twam, altmax, noont, settm, riset, twpm;
-	time_t sekunnit;
+	double twam, noont, settm, riset, twpm;
+
 	struct tm *p;
 
-	degs = 180.0 / pi;
 	rads = pi / 180.0;
 	//  get the date and time from the user
 	// read system date and extract the year
 
-	/** First get time **/
-	time(&sekunnit);
-
-	/** Next get localtime **/
-
-	p = localtime(&sekunnit);
-
-	y = p->tm_year;
-	// this is Y2K compliant method
-	y += 1900;
-	m = p->tm_mon + 1;
-
-	// day = p->tm_mday;
-	day = 8;
-
-	h = 12;
-
-	printf("year %4d month %2d day %d\n", (int)y, (int)m, (int)day);
 	// 초광산단서로 7
 	// inlat = 37.529215;
 	// inlon = 127.169043;
 	// 대전시청
 	inlat = 36.35061;
 	inlon = 127.38477;
-	printf("latitude %f\n", inlat);
-	// scanf("%f", &inlat);
-	printf("longitude %f\n", inlon);
-	// scanf("%f", &inlon);
 #define KST_ZONE 9
 	intz = KST_ZONE;
-	printf("timezone\n");
-	// scanf("%f", &intz);
 	latit = (double)inlat;
 	longit = (double)inlon;
 	tzone = (double)intz;
@@ -155,6 +159,7 @@ void calcSunrise(void)
 	// testing
 	// m=6; day=10;
 
+	h = 12;
 	d = FNday(y, m, day, h);
 
 	//   Use FNsun to find the ecliptic longitude of the
@@ -182,67 +187,36 @@ void calcSunrise(void)
 	hb = f1(latit, delta);
 	twx = hb - ha; // length of twilight in radians
 	twx = 12.0 * twx / pi; // length of twilight in hours
-	printf("ha= %.2f   hb= %.2f \n", ha, hb);
-	// Conversion of angle to hours and minutes //
-	daylen = degs * ha / 7.5;
-	if (daylen < 0.0001) {
-		daylen = 0.0;
-	}
-	// arctic winter     //
-
 	riset = 12.0 - 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0;
 	settm = 12.0 + 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0;
-	// riset = 12.0 - 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0 - 0.03;
-	// settm = 12.0 + 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0 + 0.03;
 	noont = riset + 12.0 * ha / pi;
-	altmax = 90.0 + delta * degs - latit;
-	// Correction for S HS suggested by David Smith
-	// to express altitude as degrees from the N horizon
-	if (latit < delta * degs)
-		altmax = 180.0 - altmax;
 
 	twam = riset - twx; // morning twilight begin
 	twpm = settm + twx; // evening twilight end
-	// twam = riset - twx - 0.185; // morning twilight begin
-	// twpm = settm + twx + 0.185; // evening twilight end
 
 	if (riset > 24.0)
 		riset -= 24.0;
 	if (settm > 24.0)
 		settm -= 24.0;
 
-	puts("\n Sunrise and set");
-	puts("===============");
+	printf("\n Sunrise and set\n");
+	printf("=============================================\n");
 
-	printf("  year  : %d \n", (int)y);
-	printf("  month : %d \n", (int)m);
+	printf("  year  : %d", (int)y);
+	printf("  month : %d", (int)m);
 	printf("  day   : %d \n\n", (int)day);
-	printf("Days since Y2K :  %d \n", (int)d);
 
+	sunriseTime_t rise, set, twrise, twset;
+
+	gethrmn(riset, &rise);
+	gethrmn(settm, &set);
+	gethrmn(twam, &twrise);
+	gethrmn(twpm, &twset);
 	printf("Latitude :  %3.1f, longitude: %3.1f, timezone: %3.1f \n", (float)latit,
 	       (float)longit, (float)tzone);
-	printf("Declination   :  %.2f \n", delta * degs);
-	printf("Daylength     : ");
-	showhrmn(daylen);
-	puts(" hours \n");
-	printf("Civil twilight: ");
-	showhrmn(twam);
-	puts("");
-	printf("Sunrise       : ");
-	showhrmn(riset);
-	puts("");
-
-	printf("Sun altitude ");
-	// Amendment by D. Smith
-	printf(" %.2f degr", altmax);
-	printf(latit >= 0.0 ? " South" : " North");
-	printf(" at noontime ");
-	showhrmn(noont);
-	puts("");
-	printf("Sunset        : ");
-	showhrmn(settm);
-	puts("");
-	printf("Civil twilight: ");
-	showhrmn(twpm);
-	puts("\n");
+	printf("Sunrise       : %0d:%0d\n", rise.hour, rise.min);
+	printf("Civil twilight: %0d:%0d\n", twrise.hour, twrise.min);
+	printf("Sunset        : %0d:%0d\n", set.hour, set.min);
+	printf("Civil twilight: %0d:%0d\n", twset.hour, twset.min);
+	printf("=============================================\n");
 }
