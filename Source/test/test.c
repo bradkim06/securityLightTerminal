@@ -246,7 +246,7 @@ void TEST_readSerialNum()
 	for (int i = 0; i < SERIAL_NUM_LEN; i++) {
 		printf("%c", conf.serialNum[i]);
 	}
-	printf(" %s\n", APP_getFwVer(conf.isUsingPF));
+	printf(" %s\n", APP_getFwVer());
 }
 
 void TEST_writeSerialNum(char *serialNum)
@@ -327,7 +327,7 @@ TEST_RMETER_FINISH:
 
 void TEST_readFwVersion()
 {
-	printf("tver %s\n", APP_getFwVer(conf.isUsingPF));
+	printf("tver %s\n", APP_getFwVer());
 }
 
 void TEST_relayMode(int flag)
@@ -436,7 +436,7 @@ void TEST_prsn()
 	memcpy(serial, conf.serialNum, SERIAL_NUM_LEN);
 	serial[SERIAL_NUM_LEN] = '\0';
 
-	printf("trsn %s %s %d\n", serial, APP_getFwVer(conf.isUsingPF), conf.reportInterval);
+	printf("trsn %s %s %d\n", serial, APP_getFwVer(), conf.reportInterval);
 }
 
 void TEST_resetNFC()

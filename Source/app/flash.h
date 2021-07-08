@@ -26,7 +26,6 @@ typedef struct {
 	uint8 fotaIp[4];
 	uint8 fotaPort[2];
 	uint8 fotaInterval;
-	uint8 isUsingPF;
 	uint8 checksum;
 } FlashConfig_t;
 

@@ -213,7 +213,7 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 
 	/* memcpy(p->serverPort, &conf.serverPort, 2); */
 	/* p->batt = BATT_getLastVoltage() & 0xff; */
-	/* memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN); */
+	/* memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN); */
 	/* p->reportInterval = conf.reportInterval; */
 
 	/* readRtcV1(p->year); */
@@ -310,7 +310,7 @@ void sendFwVerReport()
 	p->mtype = FW_VER_REPORT;
 	p->mversion = NFC_PROTOCOL_VER_1;
 
-	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
+	memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN);
 
 	send(msg, sizeof(NfcFwVerReport_t));
 }
@@ -325,7 +325,7 @@ void sendDeviceInfo()
 	p->mtype = DEVICE_INFO_REPORT;
 	p->mversion = NFC_PROTOCOL_VER_1;
 
-	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
+	memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN);
 	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
 	p->deviceCode = getMyDeviceCode();
 
@@ -570,7 +570,7 @@ void sendMeterBypassError()
 	p->mversion = 0;
 
 	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
-	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
+	memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN);
 
 	p->result = 1; // SN mismatch
 
@@ -615,7 +615,7 @@ void NFCAPP_meterBypassResp(uint8 *body, int bodyLen)
 	p->mversion = 0;
 
 	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
-	memcpy(p->fwVer, APP_getFwVer(conf.isUsingPF), FIRMWARE_VER_LEN);
+	memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN);
 
 	if (bodyLen >= 35) {
 		bodyLen = 35;

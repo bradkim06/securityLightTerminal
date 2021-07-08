@@ -559,21 +559,12 @@ static void eventTimeoutCmd()
 		OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD, timeout);
 	} else {
 		int maxRetry;
-		if (conf.isUsingPF) {
-			maxRetry = (nbCtx.currentStep == NBIOT_STEP_BIP) ?
-					   MODEM_BIP_RETRY :
-					   (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) ?
-					   MODEM_ATTACH_RETRY :
-					   (nbCtx.currentStep == NBIOT_STEP_TRANSFER) ?
-					   MODEM_ONEM2M_RETRY :
-					   0;
-		} else {
-			maxRetry = (nbCtx.currentStep == NBIOT_STEP_BIP) ?
-					   MODEM_BIP_RETRY :
-					   (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) ?
-					   MODEM_ATTACH_RETRY :
-					   0;
-		}
+		maxRetry =
+			(nbCtx.currentStep == NBIOT_STEP_BIP) ?
+				MODEM_BIP_RETRY :
+				(nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) ?
+				MODEM_ATTACH_RETRY :
+				(nbCtx.currentStep == NBIOT_STEP_TRANSFER) ? MODEM_ONEM2M_RETRY : 0;
 		MODEM_DBG("current retry step count (%d/%d)\n", modemCtx.retry, maxRetry);
 		if (modemCtx.retry < maxRetry) {
 			BOOL isHwReset = (modemCtx.retry == (maxRetry - 1)) ? TRUE : FALSE;

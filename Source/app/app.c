@@ -51,16 +51,11 @@ void APP_showConfig(Config_t *p)
 	printf("         NB-IoT Terminal\n");
 	printf("===========================================\n");
 	printf(" [ Model      ] %s \n", TERM_MODEL_STRING(p->termModel));
-	printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__, APP_getFwVer(p->isUsingPF));
+	printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__, APP_getFwVer());
 	printf(" [ S/N        ] %s\n", serial);
 	printf(" [ IMEI       ] %02x-%02x%02x%02x-%02x%02x%02x-%x\n", p->imei[0], p->imei[1],
 	       p->imei[2], p->imei[3], p->imei[4], p->imei[5], p->imei[6], p->imei[7] / 0x10);
-	if (p->isUsingPF) {
-		printf(" [ Server     ] %s : %d, %s\n", p->serverIp, p->serverPort, p->serviceCode);
-	} else {
-		printf(" [ Server     ] %s : %d, %s\n", p->serverIp, p->serverPort, p->serviceCode);
-		printf(" [ FOTA       ] %s : %d, %dday\n", p->fotaIp, p->fotaPort, p->fotaInterval);
-	}
+	printf(" [ Server     ] %s : %d, %s\n", p->serverIp, p->serverPort, p->serviceCode);
 	if (p->isShortInterval) {
 		printf(" [ RI         ] %d (minutes)\n", p->reportInterval);
 		printf(" [ Base Min   ] %d min\n", p->reportMin);
@@ -94,7 +89,7 @@ uint8 APP_getTaskId()
 	return AppTaskId;
 }
 
-char *APP_getFwVer(BOOL isUsingPlatform)
+char *APP_getFwVer()
 {
 #if NBIOT_DEVICE
 	return FIRMWARE_VER_NBIOT_ONEM2M;

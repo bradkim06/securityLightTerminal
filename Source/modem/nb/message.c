@@ -58,7 +58,7 @@ static int insert_termInfo(NbiotDeviceInfo_t *p)
 
 	// f/w version
 	char fw_ver[0x10] = "";
-	strcpy(fw_ver, APP_getFwVer(conf.isUsingPF));
+	strcpy(fw_ver, APP_getFwVer());
 	fw_ver[0] = '0';
 
 	p->fwVer[0] = MISC_asciiToBCD(fw_ver[0], fw_ver[1]);
@@ -236,7 +236,7 @@ static int getQaDataMessage(uchar *buf)
 
 	// Set firmware version
 	p->fwVer[0] = FIRMWARE_VER_LEN;
-	memcpy(&p->fwVer[1], APP_getFwVer(conf.isUsingPF), p->fwVer[0]);
+	memcpy(&p->fwVer[1], APP_getFwVer(), p->fwVer[0]);
 
 	// Set TX power (1byte 음수/양수 설정, 1byte BCD)
 	int txPower = MODEM_getTxPower();

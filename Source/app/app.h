@@ -31,7 +31,7 @@ typedef enum {
 } MeteringType_t;
 
 // Function proto-type
-char *APP_getFwVer(BOOL isUsingPlatform);
+char *APP_getFwVer();
 uint8 APP_getTaskId();
 void APP_init(uint8 taskId);
 /* Comment APP_prepareToSleep */

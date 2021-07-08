@@ -88,7 +88,6 @@ struct Config {
 	uint8 imei[8];
 	uint8 imsi[8];
 	BOOL isModemInit;
-	BOOL isUsingPF;
 	uint8 isShortInterval;
 	uint8 reportInterval;
 	uint8 reportHour;

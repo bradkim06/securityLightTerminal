@@ -459,11 +459,7 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len, uint32 *nextDela
 	BOOL isSetCfg = FALSE;
 	char addr[22];
 
-	if (conf.isUsingPF) {
-		snprintf(addr, sizeof(addr), "%s,%d", conf.serverIp, conf.serverPort);
-	} else {
-		snprintf(addr, sizeof(addr), "%s,%d", conf.fotaIp, conf.fotaPort);
-	}
+	snprintf(addr, sizeof(addr), "%s,%d", conf.serverIp, conf.serverPort);
 
 	char *p = NULL;
 	if ((p = strstr(pHead, ATCMD_RESP_QLWSERVERIP))) {
@@ -821,7 +817,7 @@ static void idle()
 {
 	// platform 연동 시 FOTA 요청을 받은 이후 FOTA모드로만 동작하므로
 	// 매번 FOTA 요청 여부를 매번 확인한다. (FOTA 요청받은 후 데이터 통신 X)
-	nbCtx.proc.runFota = (conf.isUsingPF) ? 1 : 0;
+	nbCtx.proc.runFota = 1;
 	nbCtx.proc.updateQa = 0;
 	nbCtx.proc.updateReg = 0;
 
@@ -837,13 +833,10 @@ static void idle()
 			nbCtx.proc.updateQa = 1;
 		}
 
-		if (conf.isUsingPF) {
-			if (MISC_calcHourDiff(&nbInfo.lastCertifyTime, &now) >=
-			    NBIOT_ONEM2M_REG_INTERVAL) {
-				// MODEM PSM이 아닌 경우 update register를 수행하지 않는다. (초기 인증
-				// 재 수행)
-				nbCtx.proc.updateReg = (nbCtx.status.psmOn) ? 1 : 0;
-			}
+		if (MISC_calcHourDiff(&nbInfo.lastCertifyTime, &now) >= NBIOT_ONEM2M_REG_INTERVAL) {
+			// MODEM PSM이 아닌 경우 update register를 수행하지 않는다. (초기 인증
+			// 재 수행)
+			nbCtx.proc.updateReg = (nbCtx.status.psmOn) ? 1 : 0;
 		}
 	} else {
 		nbCtx.proc.updateReg = 0;
@@ -936,12 +929,8 @@ static void transfer()
 	nbCtx.proc.updateQa = 0;
 
 	if (nbCtx.proc.updateQa) {
-		if (conf.isUsingPF) {
-			if (nbCtx.proc.updateQa) {
-				ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT,
-					      parseNSOCR, ATCMD_NSOCR "=DGRAM,17,560,0");
-			}
-		}
+		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNSOCR,
+			      ATCMD_NSOCR "=DGRAM,17,560,0");
 
 		int qaMsgLen = 0;
 		char *qaMsg = NBMSG_getQaReport(&qaMsgLen);
@@ -958,26 +947,21 @@ static void transfer()
 			   ATCMD_NSOST "=%d,%s,%ld,%d,%s", nbCtx.socket, ONEM2M_ERR_SERVER_IP,
 			   ONEM2M_ERR_SERVER_PORT, errMsgLen, errMsg);
 		free(errMsg);
-		if (conf.isUsingPF) {
-			// 플랫폼 연동의 경우 UDP 통신이 더 이상 없으므로 socket close를 무조건
-			// 실행.
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-				   ATCMD_NSOCL "=%d", nbCtx.socket);
-		}
+		// 플랫폼 연동의 경우 UDP 통신이 더 이상 없으므로 socket close를 무조건
+		// 실행.
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_NSOCL "=%d",
+			   nbCtx.socket);
 	}
 
-	if (conf.isUsingPF) {
-		if (!nbCtx.lwm2m.bsFinish) {
-			ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseLwm2mBootstrap,
-				   ATCMD);
-		}
-		if (!nbCtx.lwm2m.regFinish || !nbCtx.lwm2m.obsObj16241) {
-			ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseLwm2mRegStart,
-				   ATCMD_QLWSREGIND "=0");
-		}
-		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseQLWULDATA,
-			   ATCMD_QLWULDATA "=0,%d,%s", RegisteredDataLen, RegisteredData);
+	if (!nbCtx.lwm2m.bsFinish) {
+		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseLwm2mBootstrap, ATCMD);
 	}
+	if (!nbCtx.lwm2m.regFinish || !nbCtx.lwm2m.obsObj16241) {
+		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseLwm2mRegStart,
+			   ATCMD_QLWSREGIND "=0");
+	}
+	ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseQLWULDATA, ATCMD_QLWULDATA "=0,%d,%s",
+		   RegisteredDataLen, RegisteredData);
 	// Free original Data afeter Seding Uplink registration is finished
 	free(RegisteredData);
 	RegisteredData = NULL;
@@ -1015,14 +999,9 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseCCLK, ATCMD_CCLK "?");
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNUESTATS,
 			   ATCMD_NUESTATS "=RADIO");
-		if (conf.isUsingPF) {
-			if (nbCtx.proc.updateQa) {
-				ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNSOCR,
-					   ATCMD_NSOCR "=DGRAM,17,560,0");
-			}
-		} else {
+		if (nbCtx.proc.updateQa) {
 			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNSOCR,
-				   ATCMD_NSOCR "=DGRAM,17,560,1");
+				   ATCMD_NSOCR "=DGRAM,17,560,0");
 		}
 	}
 }
@@ -1142,7 +1121,7 @@ static NbIotError_t getErrorCode(AtCmd_t *atCmd)
 			}
 
 			if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
-				if (conf.isUsingPF && !nbCtx.lwm2m.obsObj16241) {
+				if (!nbCtx.lwm2m.obsObj16241) {
 					return NBIOT_ERROR_PF_CERITY_FAIL;
 				}
 			}
