@@ -30,10 +30,8 @@ void ATCMD_release();
 BOOL ATCMD_write(uint32 *timeout);
 BOOL ATCMD_retry(uint32 *timeout);
 BOOL ATCMD_read(uint32 *nextDelay);
-BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd,
-		...);
-BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser,
-		   const char *cmd, ...);
+BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd, ...);
+BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd, ...);
 AtCmd_t *ATCMD_pull();
 
 #endif // __AT_COMMAND_H__

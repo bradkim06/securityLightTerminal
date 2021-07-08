@@ -25,86 +25,86 @@
 #define USCI_A2_PIN (USCI_A2_TX_PIN | USCI_A2_RX_PIN)
 #define USCI_A3_PIN (USCI_A3_TX_PIN | USCI_A3_RX_PIN)
 
-#define USCI_A0_UART_TX_ENABLE()                                               \
-	do {                                                                   \
-		P3SEL |= USCI_A0_TX_PIN;                                       \
+#define USCI_A0_UART_TX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P3SEL |= USCI_A0_TX_PIN;                                                           \
 	} while (0);
-#define USCI_A0_UART_RX_ENABLE()                                               \
-	do {                                                                   \
-		P3SEL |= USCI_A0_RX_PIN;                                       \
+#define USCI_A0_UART_RX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P3SEL |= USCI_A0_RX_PIN;                                                           \
 	} while (0);
-#define USCI_A1_UART_TX_ENABLE()                                               \
-	do {                                                                   \
-		P5SEL |= USCI_A1_TX_PIN;                                       \
+#define USCI_A1_UART_TX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P5SEL |= USCI_A1_TX_PIN;                                                           \
 	} while (0);
-#define USCI_A1_UART_RX_ENABLE()                                               \
-	do {                                                                   \
-		P5SEL |= USCI_A1_RX_PIN;                                       \
+#define USCI_A1_UART_RX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P5SEL |= USCI_A1_RX_PIN;                                                           \
 	} while (0);
-#define USCI_A2_UART_TX_ENABLE()                                               \
-	do {                                                                   \
-		P9SEL |= USCI_A2_TX_PIN;                                       \
+#define USCI_A2_UART_TX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P9SEL |= USCI_A2_TX_PIN;                                                           \
 	} while (0);
-#define USCI_A2_UART_RX_ENABLE()                                               \
-	do {                                                                   \
-		P9SEL |= USCI_A2_RX_PIN;                                       \
+#define USCI_A2_UART_RX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P9SEL |= USCI_A2_RX_PIN;                                                           \
 	} while (0);
-#define USCI_A3_UART_TX_ENABLE()                                               \
-	do {                                                                   \
-		P10SEL |= USCI_A3_TX_PIN;                                      \
+#define USCI_A3_UART_TX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P10SEL |= USCI_A3_TX_PIN;                                                          \
 	} while (0);
-#define USCI_A3_UART_RX_ENABLE()                                               \
-	do {                                                                   \
-		P10SEL |= USCI_A3_RX_PIN;                                      \
+#define USCI_A3_UART_RX_ENABLE()                                                                   \
+	do {                                                                                       \
+		P10SEL |= USCI_A3_RX_PIN;                                                          \
 	} while (0);
 
-#define USCI_A0_GPIO_LOW()                                                     \
-	do {                                                                   \
-		P3SEL &= ~USCI_A0_PIN;                                         \
-		P3DIR |= USCI_A0_PIN;                                          \
-		P3OUT &= ~USCI_A0_PIN;                                         \
+#define USCI_A0_GPIO_LOW()                                                                         \
+	do {                                                                                       \
+		P3SEL &= ~USCI_A0_PIN;                                                             \
+		P3DIR |= USCI_A0_PIN;                                                              \
+		P3OUT &= ~USCI_A0_PIN;                                                             \
 	} while (0);
-#define USCI_A0_GPIO_INPUT()                                                   \
-	do {                                                                   \
-		P3SEL &= ~USCI_A0_PIN;                                         \
-		P3DIR &= ~USCI_A0_PIN;                                         \
-		P3REN &= ~USCI_A0_PIN;                                         \
+#define USCI_A0_GPIO_INPUT()                                                                       \
+	do {                                                                                       \
+		P3SEL &= ~USCI_A0_PIN;                                                             \
+		P3DIR &= ~USCI_A0_PIN;                                                             \
+		P3REN &= ~USCI_A0_PIN;                                                             \
 	} while (0);
-#define USCI_A1_GPIO_LOW()                                                     \
-	do {                                                                   \
-		P5SEL &= ~USCI_A1_PIN;                                         \
-		P5DIR |= USCI_A1_PIN;                                          \
-		P5OUT &= ~USCI_A1_PIN;                                         \
+#define USCI_A1_GPIO_LOW()                                                                         \
+	do {                                                                                       \
+		P5SEL &= ~USCI_A1_PIN;                                                             \
+		P5DIR |= USCI_A1_PIN;                                                              \
+		P5OUT &= ~USCI_A1_PIN;                                                             \
 	} while (0);
-#define USCI_A1_GPIO_INPUT()                                                   \
-	do {                                                                   \
-		P5SEL &= ~USCI_A1_PIN;                                         \
-		P5DIR &= ~USCI_A1_PIN;                                         \
-		P5REN &= ~USCI_A1_PIN;                                         \
+#define USCI_A1_GPIO_INPUT()                                                                       \
+	do {                                                                                       \
+		P5SEL &= ~USCI_A1_PIN;                                                             \
+		P5DIR &= ~USCI_A1_PIN;                                                             \
+		P5REN &= ~USCI_A1_PIN;                                                             \
 	} while (0);
-#define USCI_A2_GPIO_LOW()                                                     \
-	do {                                                                   \
-		P9SEL &= ~USCI_A2_PIN;                                         \
-		P9DIR |= USCI_A2_PIN;                                          \
-		P9OUT &= ~USCI_A2_PIN;                                         \
+#define USCI_A2_GPIO_LOW()                                                                         \
+	do {                                                                                       \
+		P9SEL &= ~USCI_A2_PIN;                                                             \
+		P9DIR |= USCI_A2_PIN;                                                              \
+		P9OUT &= ~USCI_A2_PIN;                                                             \
 	} while (0);
-#define USCI_A2_GPIO_INPUT()                                                   \
-	do {                                                                   \
-		P9SEL &= ~USCI_A2_PIN;                                         \
-		P9DIR &= ~USCI_A2_PIN;                                         \
-		P9REN &= ~USCI_A2_PIN;                                         \
+#define USCI_A2_GPIO_INPUT()                                                                       \
+	do {                                                                                       \
+		P9SEL &= ~USCI_A2_PIN;                                                             \
+		P9DIR &= ~USCI_A2_PIN;                                                             \
+		P9REN &= ~USCI_A2_PIN;                                                             \
 	} while (0);
-#define USCI_A3_GPIO_LOW()                                                     \
-	do {                                                                   \
-		P10SEL &= ~USCI_A3_PIN;                                        \
-		P10DIR |= USCI_A3_PIN;                                         \
-		P10OUT &= ~USCI_A3_PIN;                                        \
+#define USCI_A3_GPIO_LOW()                                                                         \
+	do {                                                                                       \
+		P10SEL &= ~USCI_A3_PIN;                                                            \
+		P10DIR |= USCI_A3_PIN;                                                             \
+		P10OUT &= ~USCI_A3_PIN;                                                            \
 	} while (0);
-#define USCI_A3_GPIO_INPUT()                                                   \
-	do {                                                                   \
-		P10SEL &= ~USCI_A3_PIN;                                        \
-		P10DIR &= ~USCI_A3_PIN;                                        \
-		P10REN &= ~USCI_A3_PIN;                                        \
+#define USCI_A3_GPIO_INPUT()                                                                       \
+	do {                                                                                       \
+		P10SEL &= ~USCI_A3_PIN;                                                            \
+		P10DIR &= ~USCI_A3_PIN;                                                            \
+		P10REN &= ~USCI_A3_PIN;                                                            \
 	} while (0);
 
 typedef struct {
@@ -387,9 +387,8 @@ int printf_ts(const char *format, ...)
 		RTC_read(&date);
 
 		char buf[BUF_SIZE];
-		int len = snprintf(buf, 30, "[%04d-%02d-%02d %02d:%02d:%02d]",
-				   date.year, date.mon, date.day, date.hour,
-				   date.min, date.sec);
+		int len = snprintf(buf, 30, "[%04d-%02d-%02d %02d:%02d:%02d]", date.year, date.mon,
+				   date.day, date.hour, date.min, date.sec);
 
 		va_list arg;
 		va_start(arg, format);
@@ -680,8 +679,7 @@ __interrupt void USCI_A1_ISR(void)
 
 		UartBuf_t *p = uartA1->txBuf;
 		if (p->rpos == p->wpos) {
-			UCA1IE &=
-				~UCTXIE; // txbuf empty --> disable tx interrupt
+			UCA1IE &= ~UCTXIE; // txbuf empty --> disable tx interrupt
 		} else {
 			UCA1TXBUF = p->buf[p->rpos++]; // send the data
 			if (p->rpos >= p->len) {
@@ -735,8 +733,7 @@ __interrupt void USCI_A2_ISR(void)
 
 		UartBuf_t *p = uartA2->txBuf;
 		if (p->rpos == p->wpos) {
-			UCA2IE &=
-				~UCTXIE; // txbuf empty --> disable tx interrupt
+			UCA2IE &= ~UCTXIE; // txbuf empty --> disable tx interrupt
 		} else {
 			UCA2TXBUF = p->buf[p->rpos++]; // send the data
 			if (p->rpos >= p->len) {

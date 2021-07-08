@@ -185,9 +185,8 @@ static char *getMsgName(uint8 msgType)
 	return p;
 }
 
-static void displayMsgHeader(uint32 rxtime, uint8 mtype, uint8 rssi,
-			     uint16 panid, char *src, char *dest, char *next,
-			     uint8 flag, uint8 seq, uint8 ack, uint8 len)
+static void displayMsgHeader(uint32 rxtime, uint8 mtype, uint8 rssi, uint16 panid, char *src,
+			     char *dest, char *next, uint8 flag, uint8 seq, uint8 ack, uint8 len)
 {
 	uint32 hour = 0;
 	uint32 min = 0;
@@ -207,23 +206,20 @@ static void displayMsgHeader(uint32 rxtime, uint8 mtype, uint8 rssi,
 	}
 
 	printf("\n");
-	printf("%s  [%02d:%02d:%02d.%03d]  RSSI: %3d\n", pMsgName, (uint8)hour,
-	       (uint8)min, (uint8)sec, (uint16)ms, rssi);
+	printf("%s  [%02d:%02d:%02d.%03d]  RSSI: %3d\n", pMsgName, (uint8)hour, (uint8)min,
+	       (uint8)sec, (uint16)ms, rssi);
 
-	printf("   Pan: %04x Src: %s Dest: %s Next: %s\n", panid, src, dest,
-	       next);
+	printf("   Pan: %04x Src: %s Dest: %s Next: %s\n", panid, src, dest, next);
 	printf("   Flag: %d Seq: %d Ack: %d Len: %d\n", flag, seq, ack, len);
 }
 
 static void makeString(char *p, uint32 nwkID)
 {
-	sprintf(p, "%d.%d.%d.%d", (uint8)((nwkID >> 24) & 0xff),
-		(uint8)((nwkID >> 16) & 0xff), (uint8)((nwkID >> 8) & 0xff),
-		(uint8)(nwkID & 0xff));
+	sprintf(p, "%d.%d.%d.%d", (uint8)((nwkID >> 24) & 0xff), (uint8)((nwkID >> 16) & 0xff),
+		(uint8)((nwkID >> 8) & 0xff), (uint8)(nwkID & 0xff));
 }
 
-static void displayMessage(uint32 rx_time, uint8 *payload, uint8 rxlen,
-			   uint8 rssi)
+static void displayMessage(uint32 rx_time, uint8 *payload, uint8 rxlen, uint8 rssi)
 {
 	char strNextAddr[0x10] = "";
 	char strDestAddr[0x10] = "";
@@ -245,8 +241,8 @@ static void displayMessage(uint32 rx_time, uint8 *payload, uint8 rxlen,
 	uint8 ack = *(payload + 18);
 	uint8 len = *(payload + 19);
 	uint8 mtype = *(payload + 20);
-	displayMsgHeader(rx_time, mtype, rssi, panid, strSrcAddr, strDestAddr,
-			 strNextAddr, flag, seq, ack, len);
+	displayMsgHeader(rx_time, mtype, rssi, panid, strSrcAddr, strDestAddr, strNextAddr, flag,
+			 seq, ack, len);
 
 	printf("     ");
 	for (int i = 0; i < len; i++) {
@@ -312,12 +308,10 @@ void TEST_readIDs()
 	printf(" PAN ID     : %04X\n", conf.pan_id);
 
 	uint8 *p = (uint8 *)&conf.nwk_addr;
-	printf(" NWK        : %d.%d.%d.%d\n", *(p + 3), *(p + 2), *(p + 1),
-	       *(p + 0));
+	printf(" NWK        : %d.%d.%d.%d\n", *(p + 3), *(p + 2), *(p + 1), *(p + 0));
 
 	p = (uint8 *)&conf.slaveNwk;
-	printf(" Slave NWK  : %d.%d.%d.%d\n", *(p + 3), *(p + 2), *(p + 1),
-	       *(p + 0));
+	printf(" Slave NWK  : %d.%d.%d.%d\n", *(p + 3), *(p + 2), *(p + 1), *(p + 0));
 }
 
 void TEST_writeIDs(char *pPanid, char *pNwkid, int slaveID)
@@ -398,8 +392,8 @@ void TEST_ContinuousTx(int ch, int txLevel, BOOL zigMsg)
 			break;
 		}
 
-		if (c == CHAR_LEFT_ARROW || c == CHAR_RIGHT_ARROW ||
-		    c == CHAR_UP_ARROW || c == CHAR_DOWN_ARROW) {
+		if (c == CHAR_LEFT_ARROW || c == CHAR_RIGHT_ARROW || c == CHAR_UP_ARROW ||
+		    c == CHAR_DOWN_ARROW) {
 			int f_changed = 0;
 			switch (c) {
 			case CHAR_LEFT_ARROW:
@@ -448,8 +442,7 @@ void TEST_ContinuousTx(int ch, int txLevel, BOOL zigMsg)
 			CC1200_preambleEnable();
 			CC1200_startTx();
 
-			printf("ch:%d freqOffset:%d power:%d\n", ch, freqOffset,
-			       power);
+			printf("ch:%d freqOffset:%d power:%d\n", ch, freqOffset, power);
 		}
 	}
 #else
@@ -563,15 +556,13 @@ void TEST_RxData(int ch, BOOL zigMsg)
 		// - 위 이유로 TEST_stop()를 먼저 실행시킬 경우 테스트 함수에서 잘못된 read
 		// pointer를
 		//   참조하게 된다.
-		if (CC1200_testGetReceivedData(&rtime, TestRxBuffer, &len,
-					       &rssi, &crcOK) == TRUE) {
+		if (CC1200_testGetReceivedData(&rtime, TestRxBuffer, &len, &rssi, &crcOK) == TRUE) {
 			if (zigMsg) {
 				int errCnt = 0;
 				uint8 startPattern = TestRxBuffer[20];
 
 				for (int i = 0; i < len - 24; i++) {
-					if (TestRxBuffer[20 + i] !=
-					    startPattern) {
+					if (TestRxBuffer[20 + i] != startPattern) {
 						errCnt++;
 					}
 					startPattern++;
@@ -583,8 +574,8 @@ void TEST_RxData(int ch, BOOL zigMsg)
 					printf("trx OK %2d\n", rxPower);
 				}
 			} else {
-				printf("[%08ld] Data Received [%d bytes] rssi[%3d] crc[%d]",
-				       rtime, len, rssi, crcOK);
+				printf("[%08ld] Data Received [%d bytes] rssi[%3d] crc[%d]", rtime,
+				       len, rssi, crcOK);
 				for (int i = 0; i < len; i++) {
 					if (i % 25 == 0) {
 						printf("\n   ");
@@ -630,13 +621,11 @@ void TEST_RxMsg(int ch)
 		// - 위 이유로 TEST_stop()를 먼저 실행시킬 경우 테스트 함수에서 잘못된 read
 		// pointer를
 		//   참조하게 된다.
-		if (CC1200_testGetReceivedData(&rx_time, TestRxBuffer, &len,
-					       &rssi, &crc) == TRUE) {
+		if (CC1200_testGetReceivedData(&rx_time, TestRxBuffer, &len, &rssi, &crc) == TRUE) {
 			if (crc == FALSE) {
 				printf("CRC Error\n");
 			} else {
-				displayMessage(rx_time, TestRxBuffer, len,
-					       rssi);
+				displayMessage(rx_time, TestRxBuffer, len, rssi);
 			}
 		}
 
@@ -757,8 +746,8 @@ void TEST_checkRxPower(int ch)
 		rxPower = CC1200_getRxPower(rssi);
 
 		printf("RSSI : %3d    [%3d <-> %3d ] ", rssi, maxRssi, minRssi);
-		printf(" \t RxPower : -%3d dBm    [ -%3d  <->  -%3d ] dBm",
-		       rxPower, minPower, maxPower);
+		printf(" \t RxPower : -%3d dBm    [ -%3d  <->  -%3d ] dBm", rxPower, minPower,
+		       maxPower);
 
 		printf("\n");
 

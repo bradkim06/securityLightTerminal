@@ -86,9 +86,7 @@ int SHELL_gets(char *buf)
 {
 	char c;
 	char *s = buf;
-	int hptr = (ShellCmdBuf->wptr > 0) ?
-			   ((ShellCmdBuf->wptr - 1) % MAX_HISTORY) :
-			   0;
+	int hptr = (ShellCmdBuf->wptr > 0) ? ((ShellCmdBuf->wptr - 1) % MAX_HISTORY) : 0;
 	ShellCmdBuffer_t *h = ShellCmdBuf;
 
 	while (1) {
@@ -355,16 +353,13 @@ void SHELL_run()
 		case CMDN_PWRTC:
 			if (nCmdArgs >= 6) {
 				int year = SHELL_decimal(cmdArgs[0]); /* year */
-				int month =
-					SHELL_decimal(cmdArgs[1]); /* month */
+				int month = SHELL_decimal(cmdArgs[1]); /* month */
 				int day = SHELL_decimal(cmdArgs[2]); /* day */
 				int hour = SHELL_decimal(cmdArgs[3]); /* hour */
-				int min =
-					SHELL_decimal(cmdArgs[4]); /* minute */
-				int sec =
-					SHELL_decimal(cmdArgs[5]); /* second */
-				TEST_setRTC((cmdIdx == CMDN_PWRTC) ? 1 : 0,
-					    year, month, day, hour, min, sec);
+				int min = SHELL_decimal(cmdArgs[4]); /* minute */
+				int sec = SHELL_decimal(cmdArgs[5]); /* second */
+				TEST_setRTC((cmdIdx == CMDN_PWRTC) ? 1 : 0, year, month, day, hour,
+					    min, sec);
 			} else {
 				if (nCmdArgs == 0) {
 					TEST_readRTC(0);
@@ -376,8 +371,7 @@ void SHELL_run()
 
 		case CMDN_RFLASH:
 			if (nCmdArgs >= 1) {
-				int sector =
-					SHELL_decimal(cmdArgs[0]); /* sector */
+				int sector = SHELL_decimal(cmdArgs[0]); /* sector */
 				TEST_readFlash(sector);
 			} else {
 				TEST_readFlash(0xFF);
@@ -386,8 +380,7 @@ void SHELL_run()
 
 		case CMDN_EFLASH:
 			if (nCmdArgs >= 1) {
-				int sector =
-					SHELL_decimal(cmdArgs[0]); /* sector */
+				int sector = SHELL_decimal(cmdArgs[0]); /* sector */
 				TEST_eraseFlash(sector);
 			} else {
 				TEST_eraseFlash(0xFF);
@@ -431,8 +424,7 @@ void SHELL_run()
 
 		case CMDN_MT:
 			if (nCmdArgs >= 1) {
-				int type = SHELL_decimal(
-					cmdArgs[0]); /* meter type */
+				int type = SHELL_decimal(cmdArgs[0]); /* meter type */
 				TEST_setMeterType(type);
 			} else {
 				TEST_setMeterType(0xFF);
@@ -459,10 +451,8 @@ void SHELL_run()
 
 		case CMDN_RMETER:
 			if (nCmdArgs >= 2) {
-				int type = SHELL_decimal(
-					cmdArgs[0]); /* meter type */
-				int sec = SHELL_decimal(
-					cmdArgs[1]); /* Time(sec) */
+				int type = SHELL_decimal(cmdArgs[0]); /* meter type */
+				int sec = SHELL_decimal(cmdArgs[1]); /* Time(sec) */
 				TEST_readMeter(type, sec);
 			} else {
 				TEST_readMeter(0xFF, 0xFF);
@@ -513,8 +503,7 @@ void SHELL_run()
 				char ip[LEN_ARG_STRING];
 				char sc[LEN_ARG_STRING];
 				SHELL_string(cmdArgs[0], ip); /* server ip */
-				int port = SHELL_decimal(
-					cmdArgs[1]); /* server port */
+				int port = SHELL_decimal(cmdArgs[1]); /* server port */
 				SHELL_string(cmdArgs[2], sc); /* service code */
 				TEST_pwserver(ip, port, sc);
 			} else {
@@ -529,12 +518,9 @@ void SHELL_run()
 		case CMDN_PWFOTA:
 			if (nCmdArgs >= 3) {
 				char ip[LEN_ARG_STRING];
-				SHELL_string(cmdArgs[0],
-					     ip); /* fota server ip */
-				int port = SHELL_decimal(
-					cmdArgs[1]); /* fota port */
-				int interval = SHELL_decimal(
-					cmdArgs[2]); /* fota interval */
+				SHELL_string(cmdArgs[0], ip); /* fota server ip */
+				int port = SHELL_decimal(cmdArgs[1]); /* fota port */
+				int interval = SHELL_decimal(cmdArgs[2]); /* fota interval */
 				TEST_pwfota(ip, port, interval);
 			} else {
 				goto SHELL_CMD_ERROR;

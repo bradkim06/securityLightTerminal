@@ -79,29 +79,23 @@ void TASKMGR_run(void)
 			halIntState_t intState;
 			event32_t events;
 
-			HAL_ENTER_CRITICAL_SECTION(
-				intState); // Hold off interrupts
+			HAL_ENTER_CRITICAL_SECTION(intState); // Hold off interrupts
 			events = TasksEvents[idx];
 			TasksEvents[idx] = 0; // Clear the Events for this task.
-			HAL_EXIT_CRITICAL_SECTION(
-				intState); // Hold off interrupts
+			HAL_EXIT_CRITICAL_SECTION(intState); // Hold off interrupts
 
 			events = (TasksArray[idx])(idx, events);
 
-			HAL_ENTER_CRITICAL_SECTION(
-				intState); // Hold off interrupts
+			HAL_ENTER_CRITICAL_SECTION(intState); // Hold off interrupts
 			TasksEvents[idx] |=
 				events; // Add back unprocessed events to the current task.
-			HAL_EXIT_CRITICAL_SECTION(
-				intState); // Hold off interrupts
+			HAL_EXIT_CRITICAL_SECTION(intState); // Hold off interrupts
 
 		} else {
 			if (OSAL_isExistEvent() != TRUE) {
 				int taskIdx;
-				for (taskIdx = 0; taskIdx < TasksTotalCounts;
-				     taskIdx++) {
-					if (TasksEvents[taskIdx] !=
-					    0x00000000) {
+				for (taskIdx = 0; taskIdx < TasksTotalCounts; taskIdx++) {
+					if (TasksEvents[taskIdx] != 0x00000000) {
 						break;
 					}
 				}

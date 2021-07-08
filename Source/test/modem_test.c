@@ -30,12 +30,9 @@ struct {
 	BOOL isBipOk;
 	BOOL isBootup;
 	uint32 bootupMsec;
-	char imei[LEN_TEST_NBIOT_IMEI +
-		  1]; // +1 will be set 0. '0' is for string print.
-	char imsi[LEN_TEST_NBIOT_IMSI +
-		  1]; // +1 will be set 0. '0' is for string print.
-	char iccid[LEN_TEST_NBIOT_ICCID +
-		   1]; // +1 will be set 0. '0' is for string print.
+	char imei[LEN_TEST_NBIOT_IMEI + 1]; // +1 will be set 0. '0' is for string print.
+	char imsi[LEN_TEST_NBIOT_IMSI + 1]; // +1 will be set 0. '0' is for string print.
+	char iccid[LEN_TEST_NBIOT_ICCID + 1]; // +1 will be set 0. '0' is for string print.
 } modemTestCtx;
 
 /*
@@ -145,10 +142,8 @@ static void sendToModem(char *p)
 		return;
 	}
 
-	modemTestCtx.isAcked =
-		FALSE; // 이전 AT command에 대한 Ack 수신 Flag 초기화
-	modemTestCtx.isError =
-		FALSE; // 이전 AT command에 대한 Error 수신 Flag 초기화
+	modemTestCtx.isAcked = FALSE; // 이전 AT command에 대한 Ack 수신 Flag 초기화
+	modemTestCtx.isError = FALSE; // 이전 AT command에 대한 Error 수신 Flag 초기화
 	MODEM_write(p);
 }
 
@@ -200,8 +195,7 @@ static void parseNbiotModemResp(char *pStr)
 				modemTestCtx.imei[idx] = *p;
 			} else {
 				// 값이 연속된 15자리 숫자값이 아닌 경우 실패로 간주해야 한다.
-				memset(modemTestCtx.imei, 0x00,
-				       sizeof(modemTestCtx.imei));
+				memset(modemTestCtx.imei, 0x00, sizeof(modemTestCtx.imei));
 				modemTestCtx.imei[0] = 'E';
 				modemTestCtx.imei[1] = 'R';
 				modemTestCtx.imei[2] = 'R';
@@ -236,8 +230,7 @@ static void parseNbiotModemResp(char *pStr)
 				modemTestCtx.iccid[idx] = *p;
 			} else {
 				// 값이 연속된 19자리 숫자값이 아닌 경우 실패로 간주해야 한다.
-				memset(modemTestCtx.iccid, 0x00,
-				       sizeof(modemTestCtx.iccid));
+				memset(modemTestCtx.iccid, 0x00, sizeof(modemTestCtx.iccid));
 				modemTestCtx.iccid[0] = 'E';
 				modemTestCtx.iccid[1] = 'R';
 				modemTestCtx.iccid[2] = 'R';
@@ -332,8 +325,7 @@ void TEST_modemResponse()
 		if (modemTestCtx.isBootup) {
 			// 리셋 후 부팅완료까지 5초가 필요하지만 'REBOOT' 메세지는
 			// 약 4초 후 발생하므로 실제 부팅 완료 까지 추가딜레이가 필요.
-			if (TIMER_getMsecDiff(modemTestCtx.bootupMsec) >=
-			    1000) {
+			if (TIMER_getMsecDiff(modemTestCtx.bootupMsec) >= 1000) {
 				modemTestCtx.isAlive = TRUE;
 #if defined(__MODEM_BC95G__)
 				// BC95G는 BIP 동작 중에도 정상적으로 동작이 가능하므로 BIP체크 생략.
@@ -343,8 +335,7 @@ void TEST_modemResponse()
 				sendToModem("AT+CFUN=0");
 			}
 		}
-		OSAL_startEventTimer(APP_getTaskId(), TEST_EVENT_MODEM_RX,
-				     1000);
+		OSAL_startEventTimer(APP_getTaskId(), TEST_EVENT_MODEM_RX, 1000);
 	} else {
 		parseNbiotModemResp(buf);
 	}
@@ -388,8 +379,7 @@ void TEST_pwserver(char *ip, int port, char *serviceCode)
 void TEST_prserver()
 {
 #if NBIOT_DEVICE
-	printf("trserver %s %d %s\n", conf.serverIp, conf.serverPort,
-	       conf.serviceCode);
+	printf("trserver %s %d %s\n", conf.serverIp, conf.serverPort, conf.serviceCode);
 #else
 	printf("trserver %s %d NOTUSE\n", conf.serverIp, conf.serverPort);
 #endif
@@ -410,8 +400,7 @@ void TEST_pwfota(char *ip, int port, int interval)
 
 void TEST_prfota()
 {
-	printf("trfota %s %d %d\n", conf.fotaIp, conf.fotaPort,
-	       conf.fotaInterval);
+	printf("trfota %s %d %d\n", conf.fotaIp, conf.fotaPort, conf.fotaInterval);
 }
 
 void TEST_prnbid()
@@ -445,22 +434,20 @@ void TEST_prnbid()
 		snprintf(ctnStr, sizeof(ctnStr), "0%s", &modemTestCtx.imsi[5]);
 
 		char cseid[LEN_MODEM_EP_NAME + 1];
-		if (MODEM_makeCseID(conf.serviceCode, ctnStr,
-				    modemTestCtx.iccid, cseid,
+		if (MODEM_makeCseID(conf.serviceCode, ctnStr, modemTestCtx.iccid, cseid,
 				    LEN_MODEM_EP_NAME + 1)) {
-			printf("trnbid %s %s %s %s\n", modemTestCtx.imei,
-			       modemTestCtx.imsi, cseid, modemTestCtx.iccid);
+			printf("trnbid %s %s %s %s\n", modemTestCtx.imei, modemTestCtx.imsi, cseid,
+			       modemTestCtx.iccid);
 		} else {
-			printf("trnbid %s %s ERR %s\n", modemTestCtx.imei,
-			       modemTestCtx.imsi, modemTestCtx.iccid);
+			printf("trnbid %s %s ERR %s\n", modemTestCtx.imei, modemTestCtx.imsi,
+			       modemTestCtx.iccid);
 		}
 #else
-		printf("trnbid %s %s NOTUSE %s\n", modemTestCtx.imei,
-		       modemTestCtx.imsi, modemTestCtx.iccid);
+		printf("trnbid %s %s NOTUSE %s\n", modemTestCtx.imei, modemTestCtx.imsi,
+		       modemTestCtx.iccid);
 #endif
 	} else {
-		printf("trnbid %s %s ERR %s\n",
-		       (isImeiOk) ? modemTestCtx.imei : "ERR",
+		printf("trnbid %s %s ERR %s\n", (isImeiOk) ? modemTestCtx.imei : "ERR",
 		       (isImsiOk) ? modemTestCtx.imsi : "ERR",
 		       (isIccidOk) ? modemTestCtx.iccid : "ERR");
 	}
@@ -468,9 +455,8 @@ void TEST_prnbid()
 	if (isImeiOk) { // IMEI 읽기 성공 시 Flash에 저장.
 		FLASH_readConfigInfo(&conf);
 		for (int i = 0; i < 8; i++) {
-			conf.imei[i] =
-				MISC_asciiToBCD(modemTestCtx.imei[2 * i + 0],
-						modemTestCtx.imei[2 * i + 1]);
+			conf.imei[i] = MISC_asciiToBCD(modemTestCtx.imei[2 * i + 0],
+						       modemTestCtx.imei[2 * i + 1]);
 		}
 		conf.imei[7] &= 0xf0;
 		FLASH_saveConfigInfo(&conf);
@@ -513,17 +499,16 @@ void TEST_pnbctx()
 	}
 
 	// start 848.9MHz continuous Tx
-	sendToModem(
-		"AT+NRDTEST=240,"
-		"030040021302e800E0D44735A02F9932590A000000000000000000000200000000580200"
-		"0058020000580200000000000a00000080"
-		"02000000000000c8000000000000000000000000000000000000000a000000000000000b"
-		"0002000001000017000100000000000000"
-		"000000000000000000000000000000000000000000000000000000000000000000000000"
-		"0000000000000000000000000000000000"
-		"000000000000000000000000000000000000000000000000000000000000000000000000"
-		"0000000000000000000000000000000000"
-		"0000000000000000000000000000000000011900100e000001010000");
+	sendToModem("AT+NRDTEST=240,"
+		    "030040021302e800E0D44735A02F9932590A000000000000000000000200000000580200"
+		    "0058020000580200000000000a00000080"
+		    "02000000000000c8000000000000000000000000000000000000000a000000000000000b"
+		    "0002000001000017000100000000000000"
+		    "000000000000000000000000000000000000000000000000000000000000000000000000"
+		    "0000000000000000000000000000000000"
+		    "000000000000000000000000000000000000000000000000000000000000000000000000"
+		    "0000000000000000000000000000000000"
+		    "0000000000000000000000000000000000011900100e000001010000");
 	result = waitModemAck(2);
 	if (!result) {
 		goto PNBCTX_FINISH;

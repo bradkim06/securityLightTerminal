@@ -6,9 +6,9 @@
 #include "copyrt.h"
 #include "md5.h"
 
-#define ntohl(x)                                                               \
-	((((x)&0x000000ffU) << 24) | (((x)&0x0000ff00U) << 8) |                \
-	 (((x)&0x00ff0000U) >> 8) | (((x)&0xff000000U) >> 24))
+#define ntohl(x)                                                                                   \
+	((((x)&0x000000ffU) << 24) | (((x)&0x0000ff00U) << 8) | (((x)&0x00ff0000U) >> 8) |         \
+	 (((x)&0xff000000U) >> 24))
 
 #define ntohs(x) ((((x)&0x00ffU) << 8) | (((x)&0xff00U) >> 8))
 

@@ -180,22 +180,21 @@ typedef struct {
 	Date_t lastAttachTime;
 } NbIotInfo_t;
 
-#define NBIOT_STEP_STR(x)                                                      \
-	(((x) == NBIOT_STEP_IDLE) ?                                            \
-		 "IDLE" :                                                      \
-		 ((x) == NBIOT_STEP_BIP) ?                                     \
-		 "BIP" :                                                       \
-		 ((x) == NBIOT_STEP_INIT) ?                                    \
-		 "INIT" :                                                      \
-		 ((x) == NBIOT_STEP_ATTACH_NW) ?                               \
-		 "ATTACH" :                                                    \
-		 ((x) == NBIOT_STEP_DETACH_NW) ?                               \
-		 "DETACH" :                                                    \
-		 ((x) == NBIOT_STEP_FOTA) ?                                    \
-		 "FOTA" :                                                      \
-		 ((x) == NBIOT_STEP_TRANSFER) ?                                \
-		 "TRANSFER" :                                                  \
-		 ((x) == NBIOT_STEP_FINISH) ? "FINISH" : "UNKNOWN")
+#define NBIOT_STEP_STR(x)                                                                          \
+	(((x) == NBIOT_STEP_IDLE) ?                                                                \
+		 "IDLE" :                                                                          \
+		 ((x) == NBIOT_STEP_BIP) ?                                                         \
+		 "BIP" :                                                                           \
+		 ((x) == NBIOT_STEP_INIT) ?                                                        \
+		 "INIT" :                                                                          \
+		 ((x) == NBIOT_STEP_ATTACH_NW) ?                                                   \
+		 "ATTACH" :                                                                        \
+		 ((x) == NBIOT_STEP_DETACH_NW) ?                                                   \
+		 "DETACH" :                                                                        \
+		 ((x) == NBIOT_STEP_FOTA) ?                                                        \
+		 "FOTA" :                                                                          \
+		 ((x) == NBIOT_STEP_TRANSFER) ? "TRANSFER" :                                       \
+						((x) == NBIOT_STEP_FINISH) ? "FINISH" : "UNKNOWN")
 
 extern NbIotContext_t nbCtx;
 extern NbIotInfo_t nbInfo;

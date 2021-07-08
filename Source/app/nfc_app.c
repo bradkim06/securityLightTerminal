@@ -25,8 +25,7 @@ typedef struct {
 	union {
 		uint32 dateTime;
 		struct {
-			uint32 year : 6, mon : 4, day : 5, hour : 5, min : 6,
-				sec : 6;
+			uint32 year : 6, mon : 4, day : 5, hour : 5, min : 6, sec : 6;
 		};
 	};
 } NfcDateV2_t;
@@ -167,8 +166,7 @@ static int getModemAccessState()
 		Date_t workTime = MODEM_getLastAccessTime();
 		RTC_read(&now);
 		int32 secDiff = MISC_calcSecDiff(&workTime, &now);
-		if (secDiff < 0 ||
-		    secDiff > 7) { // 모뎀 동작에 대해 Interval을 위해 추가.
+		if (secDiff < 0 || secDiff > 7) { // 모뎀 동작에 대해 Interval을 위해 추가.
 			return ACCESS_STATE_IDLE;
 		} else {
 			return ACCESS_STATE_WAIT_FEW_SEC;
@@ -265,8 +263,7 @@ void sendMeterReport()
 			p->meterState = TERMINAL_FINISH;
 		} else {
 			needNewMetering = 1;
-			p->meterState =
-				TERMINAL_WORKING; // 0: 검침중 1: 검침완료
+			p->meterState = TERMINAL_WORKING; // 0: 검침중 1: 검침완료
 		}
 	}
 
@@ -292,15 +289,13 @@ void sendMeterReport()
 	/* 	p->oneMeter[0].status[1] = tmpUnit->meterStatus; */
 	/* } */
 
-	int msgLen = sizeof(NfcMeterReport_t) -
-		     (3 - p->nMeter) * sizeof(NfcOneMeterReport_t);
+	int msgLen = sizeof(NfcMeterReport_t) - (3 - p->nMeter) * sizeof(NfcOneMeterReport_t);
 	send(msg, msgLen);
 
 	if (needNewMetering) {
 		// 현재 검침중이 아니고 이전 검침으로부터 재검침이 필요한 시간만큼 흘렀으면
 		// 검침 시작
-		OSAL_startEventTimer(APP_getTaskId(),
-				     APP_EVENT_IMMEDIATE_METERING, (uint32)500);
+		OSAL_startEventTimer(APP_getTaskId(), APP_EVENT_IMMEDIATE_METERING, (uint32)500);
 	} else {
 	}
 }
@@ -367,8 +362,7 @@ void sendServerConnectReport(int reqType)
 
 	int accessState = getModemAccessState();
 	p->serverAccessState = accessState;
-	if (accessState == ACCESS_STATE_IN_SETTING ||
-	    accessState == ACCESS_STATE_IN_PROGRESS) {
+	if (accessState == ACCESS_STATE_IN_SETTING || accessState == ACCESS_STATE_IN_PROGRESS) {
 		p->accessStepOrResult = MODEM_getState();
 	} else {
 		p->accessStepOrResult = MODEM_getResult();
@@ -390,10 +384,8 @@ void sendServerConnectReport(int reqType)
 	if (reqType == 1) { // 접속 시작 명령
 		if (accessState == ACCESS_STATE_IDLE) {
 			// 모뎀이 보고 중이면 새로운 보고를 지시하지 않음
-			OSAL_stopEventTimer(APP_getTaskId(),
-					    APP_EVENT_IMMEDIATE_REPORT);
-			OSAL_startEventTimer(APP_getTaskId(),
-					     APP_EVENT_IMMEDIATE_REPORT,
+			OSAL_stopEventTimer(APP_getTaskId(), APP_EVENT_IMMEDIATE_REPORT);
+			OSAL_startEventTimer(APP_getTaskId(), APP_EVENT_IMMEDIATE_REPORT,
 					     (uint32)500);
 			//            printf("server access started\n");
 		} else {
@@ -418,8 +410,7 @@ void sendPulseMeterValueAck()
 	send(msg, sizeof(NfcPulseMeterValueSetAck_t));
 }
 
-void sendBdControlAck(uint8 mversion, uint8 reset, uint8 sleepMode,
-		      uint8 reportMode)
+void sendBdControlAck(uint8 mversion, uint8 reset, uint8 sleepMode, uint8 reportMode)
 {
 	byte msg[64];
 	memset(msg, 0, sizeof(msg));
@@ -593,8 +584,7 @@ void NFCAPP_meterBypassReq()
 	if (p->whatWithSN != IGNORE_SERIAL_NUM) {
 		if (memcmp(conf.serialNum, p->serialNum, SERIAL_NUM_LEN) != 0) {
 			if (p->whatWithSN == CHANGE_SERIAL_NUM) {
-				memcpy(conf.serialNum, p->serialNum,
-				       SERIAL_NUM_LEN);
+				memcpy(conf.serialNum, p->serialNum, SERIAL_NUM_LEN);
 				FLASH_saveConfigInfo(&conf);
 			} else {
 				sendMeterBypassError();

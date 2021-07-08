@@ -51,11 +51,10 @@ static void Decode PROTO_LIST((UINT4 *, unsigned char *, unsigned int));
 static void MD5_memcpy PROTO_LIST((POINTER, POINTER, unsigned int));
 static void MD5_memset PROTO_LIST((POINTER, int, unsigned int));
 
-static unsigned char PADDING[64] = { 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				     0,	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				     0,	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				     0,	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				     0,	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static unsigned char PADDING[64] = { 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				     0,	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				     0,	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				     0,	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 /* F, G, H and I are basic MD5 functions.
  */
@@ -71,29 +70,29 @@ static unsigned char PADDING[64] = { 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 /* FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
  Rotation is separate from addition to prevent recomputation.
  */
-#define FF(a, b, c, d, x, s, ac)                                               \
-	{                                                                      \
-		(a) += F((b), (c), (d)) + (x) + (UINT4)(ac);                   \
-		(a) = ROTATE_LEFT((a), (s));                                   \
-		(a) += (b);                                                    \
+#define FF(a, b, c, d, x, s, ac)                                                                   \
+	{                                                                                          \
+		(a) += F((b), (c), (d)) + (x) + (UINT4)(ac);                                       \
+		(a) = ROTATE_LEFT((a), (s));                                                       \
+		(a) += (b);                                                                        \
 	}
-#define GG(a, b, c, d, x, s, ac)                                               \
-	{                                                                      \
-		(a) += G((b), (c), (d)) + (x) + (UINT4)(ac);                   \
-		(a) = ROTATE_LEFT((a), (s));                                   \
-		(a) += (b);                                                    \
+#define GG(a, b, c, d, x, s, ac)                                                                   \
+	{                                                                                          \
+		(a) += G((b), (c), (d)) + (x) + (UINT4)(ac);                                       \
+		(a) = ROTATE_LEFT((a), (s));                                                       \
+		(a) += (b);                                                                        \
 	}
-#define HH(a, b, c, d, x, s, ac)                                               \
-	{                                                                      \
-		(a) += H((b), (c), (d)) + (x) + (UINT4)(ac);                   \
-		(a) = ROTATE_LEFT((a), (s));                                   \
-		(a) += (b);                                                    \
+#define HH(a, b, c, d, x, s, ac)                                                                   \
+	{                                                                                          \
+		(a) += H((b), (c), (d)) + (x) + (UINT4)(ac);                                       \
+		(a) = ROTATE_LEFT((a), (s));                                                       \
+		(a) += (b);                                                                        \
 	}
-#define II(a, b, c, d, x, s, ac)                                               \
-	{                                                                      \
-		(a) += I((b), (c), (d)) + (x) + (UINT4)(ac);                   \
-		(a) = ROTATE_LEFT((a), (s));                                   \
-		(a) += (b);                                                    \
+#define II(a, b, c, d, x, s, ac)                                                                   \
+	{                                                                                          \
+		(a) += I((b), (c), (d)) + (x) + (UINT4)(ac);                                       \
+		(a) = ROTATE_LEFT((a), (s));                                                       \
+		(a) += (b);                                                                        \
 	}
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context.
@@ -123,8 +122,7 @@ unsigned int inputLen; /* length of input block */
 	index = (unsigned int)((context->count[0] >> 3) & 0x3F);
 
 	/* Update number of bits */
-	if ((context->count[0] += ((UINT4)inputLen << 3)) <
-	    ((UINT4)inputLen << 3))
+	if ((context->count[0] += ((UINT4)inputLen << 3)) < ((UINT4)inputLen << 3))
 		context->count[1]++;
 	context->count[1] += ((UINT4)inputLen >> 29);
 
@@ -133,8 +131,7 @@ unsigned int inputLen; /* length of input block */
 	/* Transform as many times as possible.
    */
 	if (inputLen >= partLen) {
-		MD5_memcpy((POINTER)&context->buffer[index], (POINTER)input,
-			   partLen);
+		MD5_memcpy((POINTER)&context->buffer[index], (POINTER)input, partLen);
 		MD5Transform(context->state, context->buffer);
 
 		for (i = partLen; i + 63 < inputLen; i += 64)
@@ -145,8 +142,7 @@ unsigned int inputLen; /* length of input block */
 		i = 0;
 
 	/* Buffer remaining input */
-	MD5_memcpy((POINTER)&context->buffer[index], (POINTER)&input[i],
-		   inputLen - i);
+	MD5_memcpy((POINTER)&context->buffer[index], (POINTER)&input[i], inputLen - i);
 }
 
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
@@ -296,8 +292,7 @@ unsigned int len;
 
 	for (i = 0, j = 0; j < len; i++, j += 4)
 		output[i] = ((UINT4)input[j]) | (((UINT4)input[j + 1]) << 8) |
-			    (((UINT4)input[j + 2]) << 16) |
-			    (((UINT4)input[j + 3]) << 24);
+			    (((UINT4)input[j + 2]) << 16) | (((UINT4)input[j + 3]) << 24);
 }
 
 /* Note: Replace "for loop" with standard memcpy if possible.

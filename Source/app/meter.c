@@ -27,8 +27,7 @@ MeteringData_t LastMetering;
 //주기 검침 데이터 저장 영역
 MeterStoredData_t StoredMeterData;
 
-static void insertDateToData(Date_t *pDate, MeterUnitData_t *pData,
-			     BOOL isIgnoreSec)
+static void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
 {
 	// Data의 year는 RTC의 year에서 2000을 빼서 사용
 	pData->year = pDate->year - 2000;
@@ -40,8 +39,7 @@ static void insertDateToData(Date_t *pDate, MeterUnitData_t *pData,
 	pData->isTimeSync = ALARM_isTimeSync();
 }
 
-static void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate,
-			     BOOL isIgnoreSec)
+static void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec)
 {
 	// RTC의 year는 Data의 year에서 2000을 더해야 함.
 	pDate->year = pData->year + 2000;
@@ -120,14 +118,13 @@ void Relay_Status(int on)
 		printf_ts("light status change\n");
 		APP_runPeriodicReport();
 	}
-#define RELAY_STATUS_STR(x)                                                    \
-	(((x) == RELAY_OFF) ? "OFF" :                                          \
-			      ((x) == RELAY_NO_CHANGE) ?                       \
-			      "NO CHANGE" :                                    \
-			      ((x) == RELAY_ON) ?                              \
-			      "ON" :                                           \
-			      ((x) == RELAY_TOGGLE) ? "TOGGLE" : "UNKNOWN")
+#define RELAY_STATUS_STR(x)                                                                        \
+	(((x) == RELAY_OFF) ?                                                                      \
+		 "OFF" :                                                                           \
+		 ((x) == RELAY_NO_CHANGE) ?                                                        \
+		 "NO CHANGE" :                                                                     \
+		 ((x) == RELAY_ON) ? "ON" : ((x) == RELAY_TOGGLE) ? "TOGGLE" : "UNKNOWN")
 
-	printf_ts("Relay Status : %s[Command], %s[Status]\n",
-		  RELAY_STATUS_STR(on), RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
+	printf_ts("Relay Status : %s[Command], %s[Status]\n", RELAY_STATUS_STR(on),
+		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
 }

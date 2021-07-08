@@ -17,19 +17,19 @@
 #include "test.h"
 
 #if defined(DEBUG)
-#define MODEM_DBG(...)                                                         \
-	do {                                                                   \
-		if (TEST_isTestMode() == FALSE) {                              \
-			printf_ts("[MODEM] ");                                 \
-			printf(__VA_ARGS__);                                   \
-		}                                                              \
+#define MODEM_DBG(...)                                                                             \
+	do {                                                                                       \
+		if (TEST_isTestMode() == FALSE) {                                                  \
+			printf_ts("[MODEM] ");                                                     \
+			printf(__VA_ARGS__);                                                       \
+		}                                                                                  \
 	} while (0);
 #else
-#define MODEM_DBG(...)                                                         \
-	do {                                                                   \
-		if (TEST_isTestMode() == FALSE) {                              \
-			printf_ts(__VA_ARGS__);                                \
-		}                                                              \
+#define MODEM_DBG(...)                                                                             \
+	do {                                                                                       \
+		if (TEST_isTestMode() == FALSE) {                                                  \
+			printf_ts(__VA_ARGS__);                                                    \
+		}                                                                                  \
 	} while (0);
 #endif
 
@@ -223,8 +223,7 @@ void MODEM_run(ModemProc_t proc, BOOL isLcdOn)
 {
 	// 무선통신 간의 접속간격이 필요한 경우도 있으므로 getState()를 사용.
 	if (MODEM_getState() != DEVICE_STATUS_IDLE) {
-		MODEM_DBG("Modem is running, step (%s)\n",
-			  NBIOT_STEP_STR(nbCtx.nextStep));
+		MODEM_DBG("Modem is running, step (%s)\n", NBIOT_STEP_STR(nbCtx.nextStep));
 		return;
 	}
 	modemCtx.isStop = FALSE;
@@ -297,8 +296,7 @@ void MODEM_stop(BOOL isVccOff, BOOL isLcdOn)
 static void str2BcdForImeiAndImsi(uchar *pBCD, char *pString)
 {
 	for (int i = 0; i < 7; i++) {
-		*(pBCD + i) = MISC_asciiToBCD(*(pString + i * 2 + 0),
-					      *(pString + i * 2 + 1));
+		*(pBCD + i) = MISC_asciiToBCD(*(pString + i * 2 + 0), *(pString + i * 2 + 1));
 	}
 
 	*(pBCD + 7) = MISC_asciiToBCD(*(pString + 14), 'F');
@@ -439,8 +437,8 @@ Date_t MODEM_getLastAccessTime()
 	return nbInfo.lastAccessTime;
 }
 
-BOOL MODEM_makeCseID(const char *sc, const char *ctnStr, const char *iccidStr,
-		     char *buffer, int bufLen)
+BOOL MODEM_makeCseID(const char *sc, const char *ctnStr, const char *iccidStr, char *buffer,
+		     int bufLen)
 {
 #define LEN_SHORT_UUID 10
 #define LEN_UUID_PARAM (LEN_MODEM_CTN + LEN_MODEM_ICCID)
@@ -457,9 +455,8 @@ BOOL MODEM_makeCseID(const char *sc, const char *ctnStr, const char *iccidStr,
 	// Make UUID
 	uuid_t u;
 	uuid_create_md5_from_name(&u, uuidParam, LEN_UUID_PARAM);
-	snprintf(uuid, LEN_MODEM_UUID + 1, "%8.8lx-%4.4x-%4.4x-%2.2x%2.2x-",
-		 u.time_low, u.time_mid, u.time_hi_and_version,
-		 u.clock_seq_hi_and_reserved, u.clock_seq_low);
+	snprintf(uuid, LEN_MODEM_UUID + 1, "%8.8lx-%4.4x-%4.4x-%2.2x%2.2x-", u.time_low, u.time_mid,
+		 u.time_hi_and_version, u.clock_seq_hi_and_reserved, u.clock_seq_low);
 	for (uint8 i = 0; i < 6; i++) {
 		snprintf(uuid, LEN_MODEM_UUID + 1, "%s%2.2x", uuid, u.node[i]);
 	}
@@ -471,8 +468,7 @@ BOOL MODEM_makeCseID(const char *sc, const char *ctnStr, const char *iccidStr,
 
 	// Make Endpoint Name
 	char *epName = (char *)malloc(LEN_MODEM_EP_NAME + 1);
-	snprintf(epName, LEN_MODEM_EP_NAME + 1, "ASN_CSE-D-%s-%s", shortUuid,
-		 sc);
+	snprintf(epName, LEN_MODEM_EP_NAME + 1, "ASN_CSE-D-%s-%s", shortUuid, sc);
 
 	if (buffer != NULL && bufLen > 0) {
 		memcpy(buffer, epName, bufLen);
@@ -525,12 +521,10 @@ static void eventSendCmd()
 	uint32 timeout = 0;
 	if (ATCMD_write(&timeout)) {
 		nbCtx.status.error = 0;
-		OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD,
-				     timeout);
+		OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD, timeout);
 	} else {
 		if (nbCtx.currentStep != nbCtx.nextStep) {
-			MODEM_DBG("next step (%s)\n",
-				  NBIOT_STEP_STR(nbCtx.nextStep));
+			MODEM_DBG("next step (%s)\n", NBIOT_STEP_STR(nbCtx.nextStep));
 			nbCtx.currentStep = nbCtx.nextStep;
 			modemCtx.retry = 0;
 
@@ -551,11 +545,9 @@ static void eventRecvResp()
 	if (ATCMD_read(&nextDelay)) {
 		OSAL_stopEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD);
 		if (nbCtx.error != NBIOT_ERROR_NONE) {
-			OSAL_startEventTimer(modemCtx.taskId,
-					     MODEM_EVENT_FIN_PROC, nextDelay);
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_FIN_PROC, nextDelay);
 		} else {
-			OSAL_startEventTimer(modemCtx.taskId,
-					     MODEM_EVENT_SEND_ATCMD, nextDelay);
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, nextDelay);
 		}
 	}
 }
@@ -564,42 +556,32 @@ static void eventTimeoutCmd()
 {
 	uint32 timeout = 0;
 	if (ATCMD_retry(&timeout)) {
-		OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD,
-				     timeout);
+		OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD, timeout);
 	} else {
 		int maxRetry;
 		if (conf.isUsingPF) {
 			maxRetry = (nbCtx.currentStep == NBIOT_STEP_BIP) ?
 					   MODEM_BIP_RETRY :
-					   (nbCtx.currentStep ==
-					    NBIOT_STEP_ATTACH_NW) ?
+					   (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) ?
 					   MODEM_ATTACH_RETRY :
-					   (nbCtx.currentStep ==
-					    NBIOT_STEP_TRANSFER) ?
+					   (nbCtx.currentStep == NBIOT_STEP_TRANSFER) ?
 					   MODEM_ONEM2M_RETRY :
 					   0;
 		} else {
 			maxRetry = (nbCtx.currentStep == NBIOT_STEP_BIP) ?
 					   MODEM_BIP_RETRY :
-					   (nbCtx.currentStep ==
-					    NBIOT_STEP_ATTACH_NW) ?
+					   (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) ?
 					   MODEM_ATTACH_RETRY :
 					   0;
 		}
-		MODEM_DBG("current retry step count (%d/%d)\n", modemCtx.retry,
-			  maxRetry);
+		MODEM_DBG("current retry step count (%d/%d)\n", modemCtx.retry, maxRetry);
 		if (modemCtx.retry < maxRetry) {
-			BOOL isHwReset = (modemCtx.retry == (maxRetry - 1)) ?
-						 TRUE :
-						 FALSE;
+			BOOL isHwReset = (modemCtx.retry == (maxRetry - 1)) ? TRUE : FALSE;
 			BOOL isNeedAttach =
-				(nbCtx.currentStep == NBIOT_STEP_TRANSFER) ?
-					TRUE :
-					FALSE;
+				(nbCtx.currentStep == NBIOT_STEP_TRANSFER) ? TRUE : FALSE;
 			NBIOT_retryProcess(isNeedAttach, isHwReset);
 
-			nbCtx.nextStep =
-				nbCtx.currentStep; // Set retry step to NEXT STEP
+			nbCtx.nextStep = nbCtx.currentStep; // Set retry step to NEXT STEP
 			modemCtx.retry++;
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
 		} else {

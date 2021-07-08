@@ -16,10 +16,9 @@ typedef struct {
 
 /* uuid_create_md5_from_name -- create a version 3 (MD5) UUID using a
    "name" from a "name space" */
-void uuid_create_md5_from_name(
-	uuid_t *uuid, /* resulting UUID */
-	void *name, /* the name from which to generate a UUID */
-	int namelen /* the length of the name */
+void uuid_create_md5_from_name(uuid_t *uuid, /* resulting UUID */
+			       void *name, /* the name from which to generate a UUID */
+			       int namelen /* the length of the name */
 );
 
 #endif

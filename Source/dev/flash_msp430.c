@@ -19,8 +19,7 @@
 /**
  * @brief sector(=128B) write timeout in Flash memory
  */
-#define FLASH_SECTOR_PROGRAM_USEC                                              \
-	(uint32)(FLASH_BYTE_PROGRAM_USEC * FLASH_SECTOR_LENGTH)
+#define FLASH_SECTOR_PROGRAM_USEC (uint32)(FLASH_BYTE_PROGRAM_USEC * FLASH_SECTOR_LENGTH)
 
 // Function prototypes
 STATIC void initFlash(void);
@@ -38,8 +37,7 @@ STATIC BOOL isBusyFlash(uint32 timeoutUsec)
 STATIC void initFlash(void)
 {
 #if defined FCTL2
-	FCTL2 = FWKEY + FSSEL_1 + FN4 +
-		FN3; // Flash Timing Generator as MCLK/24 -> 333 kHz.
+	FCTL2 = FWKEY + FSSEL_1 + FN4 + FN3; // Flash Timing Generator as MCLK/24 -> 333 kHz.
 #endif
 }
 
@@ -55,8 +53,7 @@ BOOL MSP430FLASH_erasePage(unsigned char *addr)
 
 	if (addr == (unsigned char *)FLASH_SEGA_ADDR) {
 		if (FCTL3 & LOCKA) // Test LOCKA
-			FCTL3 = FWKEY +
-				LOCKA; // Clear Lock, unlock SegmentA bits
+			FCTL3 = FWKEY + LOCKA; // Clear Lock, unlock SegmentA bits
 		else
 			FCTL3 = FWKEY; // Set LOCK bit
 	} else {
@@ -76,8 +73,7 @@ BOOL MSP430FLASH_erasePage(unsigned char *addr)
 		if (FCTL3 & LOCKA) // Test LOCKA
 			FCTL3 = FWKEY + LOCK; // Set LOCK bit
 		else
-			FCTL3 = FWKEY + LOCK +
-				LOCKA; // Set LOCK, lock SegmentA bit
+			FCTL3 = FWKEY + LOCK + LOCKA; // Set LOCK, lock SegmentA bit
 	} else {
 		FCTL3 = FWKEY + LOCK; // Set LOCK bit
 	}
@@ -85,19 +81,16 @@ BOOL MSP430FLASH_erasePage(unsigned char *addr)
 	return result;
 }
 
-BOOL MSP430FLASH_read(unsigned char *addr, unsigned char *value,
-		      unsigned short len)
+BOOL MSP430FLASH_read(unsigned char *addr, unsigned char *value, unsigned short len)
 {
-	unsigned char *flashPtr =
-		(unsigned char *)addr; // Initialize Flash pointer
+	unsigned char *flashPtr = (unsigned char *)addr; // Initialize Flash pointer
 	for (unsigned int i = 0; i < len; i++) {
 		*(value + i) = *(flashPtr + i); // Write value to flash
 	}
 	return TRUE;
 }
 
-BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf,
-		       unsigned short len)
+BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf, unsigned short len)
 {
 	initFlash();
 
@@ -108,8 +101,7 @@ BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf,
 
 	if (addr == (unsigned char *)FLASH_SEGA_ADDR) {
 		if (FCTL3 & LOCKA) // Test LOCKA
-			FCTL3 = FWKEY +
-				LOCKA; // Clear Lock, unlock SegmentA bits
+			FCTL3 = FWKEY + LOCKA; // Clear Lock, unlock SegmentA bits
 		else
 			FCTL3 = FWKEY; // Set LOCK bit
 	} else {
@@ -148,8 +140,7 @@ BOOL MSP430FLASH_write(unsigned char *addr, unsigned char *buf,
 		if (FCTL3 & LOCKA) // Test LOCKA
 			FCTL3 = FWKEY + LOCK; // Set LOCK bit
 		else
-			FCTL3 = FWKEY + LOCK +
-				LOCKA; // Set LOCK, lock SegmentA bit
+			FCTL3 = FWKEY + LOCK + LOCKA; // Set LOCK, lock SegmentA bit
 	} else {
 		FCTL3 = FWKEY + LOCK; // Set LOCK bit
 	}

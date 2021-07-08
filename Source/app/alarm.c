@@ -13,12 +13,11 @@
 // 정의된 RTC 타이머 이벤트 개수.
 #define RTC_ALARM_COUNT 3
 
-#define ALARM_TYPE_STR(x)                                                      \
-	(((x) == RTC_ALARM_LIGHT_ON) ?                                         \
-		 "light on" :                                                  \
-		 ((x) == RTC_ALARM_LIGHT_OFF) ?                                \
-		 "light off" :                                                 \
-		 ((x) == RTC_ALARM_REPORT) ? "report" : "unknown")
+#define ALARM_TYPE_STR(x)                                                                          \
+	(((x) == RTC_ALARM_LIGHT_ON) ?                                                             \
+		 "light on" :                                                                      \
+		 ((x) == RTC_ALARM_LIGHT_OFF) ? "light off" :                                      \
+						((x) == RTC_ALARM_REPORT) ? "report" : "unknown")
 
 static int TimeSyncFlag = 0;
 static Date_t TimeSyncDate;
@@ -146,8 +145,7 @@ void normalScheduler()
 
 		if (idx == RTC_ALARM_LIGHT_ON) {
 			hourdiff = conf.lightOnHour - date.hour;
-			printf_ts("[%s - %02d:%02d:00]\n",
-				  ALARM_TYPE_STR(AlarmList[idx].type),
+			printf_ts("[%s - %02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type),
 				  conf.lightOnHour, conf.lightOnMin);
 			if (hourdiff <= 1 && hourdiff >= -1) {
 				isLight = 1;
@@ -156,8 +154,7 @@ void normalScheduler()
 			}
 		} else if (idx == RTC_ALARM_LIGHT_OFF) {
 			hourdiff = conf.lightOffHour - date.hour;
-			printf_ts("[%s - %02d:%02d:00]\n",
-				  ALARM_TYPE_STR(AlarmList[idx].type),
+			printf_ts("[%s - %02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type),
 				  conf.lightOffHour, conf.lightOffMin);
 			if (hourdiff <= 1 && hourdiff >= -1) {
 				isLight = 1;
@@ -173,8 +170,7 @@ void normalScheduler()
 		}
 
 		printf_ts("set next alarm [%10s:%02dm diff=%02dm] - ",
-			  ALARM_TYPE_STR(AlarmList[idx].type),
-			  AlarmList[idx].minute, diff);
+			  ALARM_TYPE_STR(AlarmList[idx].type), AlarmList[idx].minute, diff);
 
 		// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
 		if (diff > 1) {
@@ -202,8 +198,7 @@ void normalScheduler()
 		NextAlarm = &AlarmList[RTC_ALARM_REPORT];
 	}
 
-	int hour = NextAlarm->minute <= date.min ? ((date.hour + 1) % 24) :
-						   date.hour;
+	int hour = NextAlarm->minute <= date.min ? ((date.hour + 1) % 24) : date.hour;
 	int min = NextAlarm->minute;
 	RTC_alarm(0xFF, hour, min);
 
@@ -242,8 +237,7 @@ void ALARM_run()
 
 	RtcAlarmType_t alarmType = NextAlarm->type;
 	if (alarmType == RTC_ALARM_REPORT) {
-		if (MISC_checkInterval(date.hour, conf.reportHour,
-				       conf.reportInterval)) {
+		if (MISC_checkInterval(date.hour, conf.reportHour, conf.reportInterval)) {
 			APP_runPeriodicReport();
 		} else {
 			ALARM_schedule();

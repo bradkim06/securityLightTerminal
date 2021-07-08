@@ -30,8 +30,7 @@ static inline OsalEventTimer_t *findEventTimer(byte taskId, event32_t event)
 	return (findTimer);
 }
 
-static inline OsalEventTimer_t *addEventTimer(byte taskId, event32_t event,
-					      uint16 timeout)
+static inline OsalEventTimer_t *addEventTimer(byte taskId, event32_t event, uint16 timeout)
 {
 	OsalEventTimer_t *findTimer = findEventTimer(taskId, event);
 	if (findTimer) { // aleady added, update timer timeout.
@@ -39,8 +38,7 @@ static inline OsalEventTimer_t *addEventTimer(byte taskId, event32_t event,
 		return (findTimer);
 	} else {
 		// Look for an existing timer first
-		OsalEventTimer_t *newTimer =
-			(OsalEventTimer_t *)malloc(sizeof(OsalEventTimer_t));
+		OsalEventTimer_t *newTimer = (OsalEventTimer_t *)malloc(sizeof(OsalEventTimer_t));
 		if (newTimer) {
 			// Fill in new timer
 			newTimer->taskId = taskId;
@@ -205,8 +203,7 @@ void OSAL_eventHandler()
 
 			// When timeout, execute the task
 			if (srchTimer->timeout == 0) {
-				OSAL_setEvent(srchTimer->taskId,
-					      srchTimer->event);
+				OSAL_setEvent(srchTimer->taskId, srchTimer->event);
 
 				OsalEventTimer_t *rmTimer = srchTimer;
 				srchTimer = srchTimer->next;

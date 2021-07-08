@@ -95,11 +95,7 @@ typedef enum {
 	UART_BAUDRATE_115200 = 9
 } UartBaudrate_t;
 
-typedef enum {
-	UART_PARITY_NONE = 0,
-	UART_PARITY_ODD = 1,
-	UART_PARITY_EVEN = 2
-} UartParity_t;
+typedef enum { UART_PARITY_NONE = 0, UART_PARITY_ODD = 1, UART_PARITY_EVEN = 2 } UartParity_t;
 
 typedef enum { UART_STOPBIT_ONE = 0, UART_STOPBIT_TWO = 1 } UartStopbit_t;
 

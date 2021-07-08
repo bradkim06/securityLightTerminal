@@ -51,20 +51,15 @@ void APP_showConfig(Config_t *p)
 	printf("         NB-IoT Terminal\n");
 	printf("===========================================\n");
 	printf(" [ Model      ] %s \n", TERM_MODEL_STRING(p->termModel));
-	printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__,
-	       APP_getFwVer(p->isUsingPF));
+	printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__, APP_getFwVer(p->isUsingPF));
 	printf(" [ S/N        ] %s\n", serial);
-	printf(" [ IMEI       ] %02x-%02x%02x%02x-%02x%02x%02x-%x\n",
-	       p->imei[0], p->imei[1], p->imei[2], p->imei[3], p->imei[4],
-	       p->imei[5], p->imei[6], p->imei[7] / 0x10);
+	printf(" [ IMEI       ] %02x-%02x%02x%02x-%02x%02x%02x-%x\n", p->imei[0], p->imei[1],
+	       p->imei[2], p->imei[3], p->imei[4], p->imei[5], p->imei[6], p->imei[7] / 0x10);
 	if (p->isUsingPF) {
-		printf(" [ Server     ] %s : %d, %s\n", p->serverIp,
-		       p->serverPort, p->serviceCode);
+		printf(" [ Server     ] %s : %d, %s\n", p->serverIp, p->serverPort, p->serviceCode);
 	} else {
-		printf(" [ Server     ] %s : %d, %s\n", p->serverIp,
-		       p->serverPort, p->serviceCode);
-		printf(" [ FOTA       ] %s : %d, %dday\n", p->fotaIp,
-		       p->fotaPort, p->fotaInterval);
+		printf(" [ Server     ] %s : %d, %s\n", p->serverIp, p->serverPort, p->serviceCode);
+		printf(" [ FOTA       ] %s : %d, %dday\n", p->fotaIp, p->fotaPort, p->fotaInterval);
 	}
 	if (p->isShortInterval) {
 		printf(" [ RI         ] %d (minutes)\n", p->reportInterval);
@@ -76,15 +71,13 @@ void APP_showConfig(Config_t *p)
 			printf("Every Hour\n");
 		} else {
 			for (int h = 0; h < 24; h++) {
-				if (MISC_checkInterval(h, p->reportHour,
-						       p->reportInterval)) {
+				if (MISC_checkInterval(h, p->reportHour, p->reportInterval)) {
 					printf("%d, ", h);
 				}
 			}
 			printf("\n");
 		}
-		printf(" [ Report Min ] %d (%d sec)\n", p->reportMin,
-		       p->reportSec);
+		printf(" [ Report Min ] %d (%d sec)\n", p->reportMin, p->reportSec);
 	}
 	printf(" [ Meter Type ] %s\n", METER_getMeterName(p->meterType));
 	uint8 batt = BATT_getLastVoltage();
@@ -117,22 +110,18 @@ char *APP_getFwVer(BOOL isUsingPlatform)
 void APP_meterRxIsr()
 {
 	if (TEST_isTestMode()) {
-		OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_METER_RX,
-				     (uint32)200);
+		OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_METER_RX, (uint32)200);
 	} else {
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_RX,
-				     (uint32)200);
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_RX, (uint32)200);
 	}
 }
 
 void APP_modemRxIsr()
 {
 	if (TEST_isTestMode()) {
-		OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_MODEM_RX,
-				     (uint32)200);
+		OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_MODEM_RX, (uint32)200);
 	} else {
-		OSAL_startEventTimer(MODEM_getTaskId(), MODEM_EVENT_RECV_ATCMD,
-				     (uint32)200);
+		OSAL_startEventTimer(MODEM_getTaskId(), MODEM_EVENT_RECV_ATCMD, (uint32)200);
 	}
 }
 
@@ -143,8 +132,7 @@ __interrupt void Port_1(void)
 	if (P1IFG & BM(NFC_TAG_P1_PIN)) {
 		P1IFG &= ~BM(NFC_TAG_P1_PIN);
 		NFC_tagDetect();
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT,
-				     (uint32)700);
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)700);
 		WAKEUP_DEVICE();
 
 		NFCAPP_clearAsyncCmd();
@@ -153,8 +141,7 @@ __interrupt void Port_1(void)
 	if (P1IFG & BM(NFC_FD_P1_PIN)) {
 		P1IFG &= ~BM(NFC_FD_P1_PIN);
 		NFC_recvMessage();
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT,
-				     (uint32)700);
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)700);
 	}
 }
 
@@ -165,12 +152,9 @@ __interrupt void Port_2(void)
 	if (P2IFG & BM(REED_SENSOR_P2_PIN)) {
 		P2IFG &= ~BM(REED_SENSOR_P2_PIN); // P1.2 IFG cleared
 		if (TEST_isTestMode()) {
-			OSAL_startEventTimer(TEST_getTaskId(),
-					     TEST_EVENT_SENSOR_REED,
-					     (uint32)10);
+			OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_SENSOR_REED, (uint32)10);
 		} else {
-			OSAL_startEventTimer(AppTaskId, APP_EVENT_SENSOR_REED,
-					     (uint32)500);
+			OSAL_startEventTimer(AppTaskId, APP_EVENT_SENSOR_REED, (uint32)500);
 		}
 		WAKEUP_DEVICE();
 	}
@@ -312,8 +296,7 @@ void APP_runMetering(MeteringType_t meteringType)
 
 	// INITIAL_METERING 과 PERIODIC_METERING은 무조건 처리하나 즉시 검침은 확인
 	// 필요
-	if (meteringType == IMMEDIATE_METERING ||
-	    meteringType == IMMEDIATE_METERING_FOR_REPORT) {
+	if (meteringType == IMMEDIATE_METERING || meteringType == IMMEDIATE_METERING_FOR_REPORT) {
 		if (METER_needNewMetering(10) ==
 		    0) // 즉시 검침의 경우에는 10초 이하이면 재 검침하지 않음.
 		{
@@ -343,8 +326,7 @@ void APP_runPeriodicReport()
 		MODEM_run(MODEM_PROC_PERIODIC_REPORT, FALSE);
 		printf_ts("modem run\n");
 	} else {
-		printf_ts("Modem is running(%d) when reporting period\n",
-			  state);
+		printf_ts("Modem is running(%d) when reporting period\n", state);
 	}
 }
 
@@ -358,8 +340,7 @@ static void meteringTimeout()
 			// 약간의 시간 gap을 준 뒤 재검침 시도
 			MISC_delayMs(200);
 			METER_sendRequest(Metering.meterType);
-			OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT,
-					     (uint32)1500);
+			OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1500);
 		} else {
 			Metering.inProcess = 0;
 			Metering.success = 0;
@@ -413,8 +394,7 @@ static void meteringRecvResponse()
 			    Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
 				if (Metering.meterType != conf.meterType) {
 					printf("meter type changed (%02x --> %02X)\n",
-					       conf.meterType,
-					       Metering.meterType);
+					       conf.meterType, Metering.meterType);
 
 					conf.meterType = Metering.meterType;
 					FLASH_saveConfigInfo(&conf);

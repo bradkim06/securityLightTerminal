@@ -9,19 +9,19 @@
 #include "test.h"
 
 #if defined(DEBUG)
-#define ATCMD_DBG(...)                                                         \
-	do {                                                                   \
-		if (TEST_isTestMode() == FALSE) {                              \
-			printf_ts("[ATCMD] ");                                 \
-			printf(__VA_ARGS__);                                   \
-		}                                                              \
+#define ATCMD_DBG(...)                                                                             \
+	do {                                                                                       \
+		if (TEST_isTestMode() == FALSE) {                                                  \
+			printf_ts("[ATCMD] ");                                                     \
+			printf(__VA_ARGS__);                                                       \
+		}                                                                                  \
 	} while (0);
 #else
-#define ATCMD_DBG(...)                                                         \
-	do {                                                                   \
-		if (TEST_isTestMode() == FALSE) {                              \
-			printf_ts(__VA_ARGS__);                                \
-		}                                                              \
+#define ATCMD_DBG(...)                                                                             \
+	do {                                                                                       \
+		if (TEST_isTestMode() == FALSE) {                                                  \
+			printf_ts(__VA_ARGS__);                                                    \
+		}                                                                                  \
 	} while (0);
 #endif
 
@@ -157,8 +157,7 @@ BOOL ATCMD_read(uint32 *nextDelay)
 	return FALSE;
 }
 
-BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser,
-		   const char *cmd, ...)
+BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd, ...)
 {
 	char buffer[LEN_MAX_MODEM_TX];
 
@@ -206,8 +205,7 @@ BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser,
 	return TRUE;
 }
 
-BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd,
-		...)
+BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd, ...)
 {
 	if (CommandQueue == NULL) {
 		ATCMD_DBG("queue is not malloc in push\n");
@@ -253,8 +251,7 @@ BOOL ATCMD_push(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd,
 	if (QUEUE_push(CommandQueue, (void *)atCmd)) {
 		return TRUE;
 	} else {
-		ATCMD_DBG("fail register command (queue : %d)\n",
-			  CommandQueue->size);
+		ATCMD_DBG("fail register command (queue : %d)\n", CommandQueue->size);
 		return FALSE;
 	}
 }

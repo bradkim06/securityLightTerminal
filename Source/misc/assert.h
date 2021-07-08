@@ -15,13 +15,9 @@ extern "C" {
 #define __FILENAME__ (strrchr(__FILE__, '\\') + 1) // windows style
 //# define __FILENAME__  (strrchr(__FILE__, '/') + 1)   // unix style
 
-#define ASSERT(__e)                                                            \
-	((__e) ? (void)0 :                                                     \
-		 __assert_func(__FILENAME__, __LINE__, __ASSERT_FUNC, #__e))
-#define ASSERT_PRINT(__e, str)                                                 \
-	((__e) ? (void)0 :                                                     \
-		 __assert_print_func(__FILENAME__, __LINE__, __ASSERT_FUNC,    \
-				     #__e, str))
+#define ASSERT(__e) ((__e) ? (void)0 : __assert_func(__FILENAME__, __LINE__, __ASSERT_FUNC, #__e))
+#define ASSERT_PRINT(__e, str)                                                                     \
+	((__e) ? (void)0 : __assert_print_func(__FILENAME__, __LINE__, __ASSERT_FUNC, #__e, str))
 
 #ifndef __ASSERT_FUNC
 /* Use g++'s demangled names in C++.  */
@@ -39,17 +35,15 @@ extern "C" {
 #endif /* !__ASSERT_FUNC */
 #endif /* !NDEBUG */
 
-static inline void __assert_func(const char *file, int line, const char *func,
-				 const char *expr)
+static inline void __assert_func(const char *file, int line, const char *func, const char *expr)
 {
 	printf("ASSERT:%s:%d:%s:(%s)\n", file, line, func, expr);
 	while (1)
 		;
 }
 
-static inline void __assert_print_func(const char *file, int line,
-				       const char *func, const char *expr,
-				       char *str)
+static inline void __assert_print_func(const char *file, int line, const char *func,
+				       const char *expr, char *str)
 {
 	printf("ASSERT:%s:%d:%s:(%s):%s\n", file, line, func, expr, str);
 	while (1)

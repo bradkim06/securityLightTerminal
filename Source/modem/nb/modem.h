@@ -85,8 +85,8 @@ uint32 MODEM_getCgi();
 int MODEM_getState();
 int MODEM_getResult();
 Date_t MODEM_getLastAccessTime();
-BOOL MODEM_makeCseID(const char *sc, const char *ctnStr, const char *iccidStr,
-		     char *buffer, int bufLen);
+BOOL MODEM_makeCseID(const char *sc, const char *ctnStr, const char *iccidStr, char *buffer,
+		     int bufLen);
 uchar *MODEM_getErrorLog(uint8 idx);
 int MODEM_getTaskId();
 ModemProc_t MODEM_getCurrentProc();

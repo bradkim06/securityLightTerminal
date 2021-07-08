@@ -34,16 +34,15 @@
 #define TERM_MODEL_HAT_435W 5 // 보조중계기
 
 #define TERM_MODEL_STRING_LEN 8
-#define TERM_MODEL_STRING(x)                                                   \
-	((x) == TERM_MODEL_HAT_114W ?                                          \
-		 "HAT-114W" :                                                  \
-		 (x) == TERM_MODEL_HAT_124W ?                                  \
-		 "HAT-124W" :                                                  \
-		 (x) == TERM_MODEL_HTM_115W ?                                  \
-		 "HTM-115W" :                                                  \
-		 (x) == TERM_MODEL_HAT_314W ?                                  \
-		 "HAT-314W" :                                                  \
-		 (x) == TERM_MODEL_HAT_435W ? "HAT-435W" : "UNKNOWN")
+#define TERM_MODEL_STRING(x)                                                                       \
+	((x) == TERM_MODEL_HAT_114W ?                                                              \
+		 "HAT-114W" :                                                                      \
+		 (x) == TERM_MODEL_HAT_124W ?                                                      \
+		 "HAT-124W" :                                                                      \
+		 (x) == TERM_MODEL_HTM_115W ?                                                      \
+		 "HTM-115W" :                                                                      \
+		 (x) == TERM_MODEL_HAT_314W ? "HAT-314W" :                                         \
+					      (x) == TERM_MODEL_HAT_435W ? "HAT-435W" : "UNKNOWN")
 
 #define TERM_HAS_LCD(x) ((x) == TERM_MODEL_HAT_114W)
 #define SMART_WATER_METER(x) ((x) == TERM_MODEL_HTM_115W)
@@ -61,8 +60,7 @@
 #define DEVICE_STATUS_UNKNOWN 99
 
 // Network access state
-#define ACCESS_STATE_IDLE                                                      \
-	0 // 접속 절차를 진행하고 있지 않음 - 새 절차 개시 가능
+#define ACCESS_STATE_IDLE 0 // 접속 절차를 진행하고 있지 않음 - 새 절차 개시 가능
 #define ACCESS_STATE_IN_PROGRESS 1 // 접속 절차 진행 중
 #define ACCESS_STATE_WAIT_FEW_SEC 2 // 통신과 통신간의 일정 시간 대기하는 상태.
 #define ACCESS_STATE_IN_SETTING 3 // 모뎀 재설정 진행 중

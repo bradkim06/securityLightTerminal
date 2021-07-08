@@ -14,19 +14,19 @@
 #include "uart.h"
 
 #if defined(DEBUG)
-#define NBMSG_DBG(...)                                                         \
-	do {                                                                   \
-		if (TEST_isTestMode() == FALSE) {                              \
-			printf_ts("[NBMSG] ");                                 \
-			printf(__VA_ARGS__);                                   \
-		}                                                              \
+#define NBMSG_DBG(...)                                                                             \
+	do {                                                                                       \
+		if (TEST_isTestMode() == FALSE) {                                                  \
+			printf_ts("[NBMSG] ");                                                     \
+			printf(__VA_ARGS__);                                                       \
+		}                                                                                  \
 	} while (0);
 #else
-#define NBMSG_DBG(...)                                                         \
-	do {                                                                   \
-		if (TEST_isTestMode() == FALSE) {                              \
-			printf_ts(__VA_ARGS__);                                \
-		}                                                              \
+#define NBMSG_DBG(...)                                                                             \
+	do {                                                                                       \
+		if (TEST_isTestMode() == FALSE) {                                                  \
+			printf_ts(__VA_ARGS__);                                                    \
+		}                                                                                  \
 	} while (0);
 #endif
 
@@ -52,9 +52,8 @@ static int insert_id(MobileId_t *p)
 static int insert_termInfo(NbiotDeviceInfo_t *p)
 {
 	for (int i = 0; i < SERIAL_NUM_LEN / 2; i++) {
-		p->termSerial[i] =
-			MISC_asciiToBCD(conf.serialNum[2 + i * 2 + 0],
-					conf.serialNum[2 + i * 2 + 1]);
+		p->termSerial[i] = MISC_asciiToBCD(conf.serialNum[2 + i * 2 + 0],
+						   conf.serialNum[2 + i * 2 + 1]);
 	}
 
 	// f/w version
@@ -127,8 +126,7 @@ static int insert_meteringTime(NbiotTimeStamp_t *p)
 	return sizeof(NbiotTimeStamp_t);
 }
 
-static int getErrorDataMessage(uchar *buf, int pfUlCnt, int pfDlCnt,
-			       int udpUlCnt, int udpDlCnt)
+static int getErrorDataMessage(uchar *buf, int pfUlCnt, int pfDlCnt, int udpUlCnt, int udpDlCnt)
 {
 	uint16 temp16 = 0;
 	uint32 temp32 = 0;
@@ -184,8 +182,8 @@ static int getErrorDataMessage(uchar *buf, int pfUlCnt, int pfDlCnt,
 		}
 	}
 
-	int dataLen = sizeof(NbiotErrorReportToLg_t) +
-		      (logCnt * LEN_NBIOT_ERR_E_LOG) + 1; // +1 is EoF
+	int dataLen =
+		sizeof(NbiotErrorReportToLg_t) + (logCnt * LEN_NBIOT_ERR_E_LOG) + 1; // +1 is EoF
 	uchar *pLog = buf + sizeof(NbiotErrorReportToLg_t);
 	if (logCnt > 0) {
 		temp16 = SWAP16(logCnt * LEN_NBIOT_ERR_E_LOG);
@@ -256,8 +254,7 @@ static int insert_oneData(NbiotMeterData_t *p)
 	p->status = pUnitData->meterStatus;
 	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
 	memcpy(&p->curr, &pUnitData->curr, sizeof(pUnitData->curr));
-	memcpy(&p->shortCurr, &pUnitData->shortCurr,
-	       sizeof(pUnitData->shortCurr));
+	memcpy(&p->shortCurr, &pUnitData->shortCurr, sizeof(pUnitData->shortCurr));
 	memcpy(&p->power, &pUnitData->power, sizeof(pUnitData->power));
 	memcpy(&p->cumPower, &pUnitData->cumPower, sizeof(pUnitData->cumPower));
 
@@ -303,23 +300,21 @@ static BOOL checkValidAck(uchar *buf, int len)
 	uchar checksum = cal_checksum(&p->mtype, len - 3);
 
 	if (p->checksum != checksum) {
-		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n",
-			  checksum, p->checksum);
+		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
 		return FALSE;
 	}
 
 #define ACK_PROTOCOL 0xC1
 	if (p->protocol != ACK_PROTOCOL) {
-		printf_ts(
-			"protocol version not match need(0x%02X) recv(0x%02X)\n",
-			ACK_PROTOCOL, p->protocol);
+		printf_ts("protocol version not match need(0x%02X) recv(0x%02X)\n", ACK_PROTOCOL,
+			  p->protocol);
 		return FALSE;
 	}
 
 #define ACK_MTYPE 0x50
 	if (p->mtype != ACK_MTYPE) {
-		printf_ts("message type not match need(0x%02X) recv(0x%02X)\n",
-			  ACK_MTYPE, p->mtype);
+		printf_ts("message type not match need(0x%02X) recv(0x%02X)\n", ACK_MTYPE,
+			  p->mtype);
 		return FALSE;
 	}
 
@@ -366,11 +361,11 @@ char *NBMSG_getQaReport(int *messageLen)
 char *NBMSG_getErrorReport(int *messageLen)
 {
 	// Uplink/Downlink information + error log data
-	int len = sizeof(NbiotErrorReportToLg_t) +
-		  (NUM_OF_NBIOT_ERROR_LOG * LEN_NBIOT_ERROR_LOG) + 1;
+	int len =
+		sizeof(NbiotErrorReportToLg_t) + (NUM_OF_NBIOT_ERROR_LOG * LEN_NBIOT_ERROR_LOG) + 1;
 	uchar *raw = (uchar *)malloc(len);
-	len = getErrorDataMessage(raw, nbInfo.pfUlCnt, nbInfo.pfDlCnt,
-				  nbInfo.udpUlCnt, nbInfo.udpDlCnt);
+	len = getErrorDataMessage(raw, nbInfo.pfUlCnt, nbInfo.pfDlCnt, nbInfo.udpUlCnt,
+				  nbInfo.udpDlCnt);
 
 	// Hex data를 ASCII로 변환하여 저장할 버퍼의 길이이므로
 	// 본래 데이터 길이의 x2에 '\0'를 위한 +1로 정의.

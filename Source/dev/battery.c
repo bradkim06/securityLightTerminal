@@ -38,14 +38,12 @@ static uint16 readBatteryADC(void)
 
 		// ADC12CTL0 = ADC12ON+ADC12SHT0_1+ADC12REFON+ADC12REF2_5V;         // Turn
 		// on and set up ADC12
-		ADC12CTL0 = ADC12ON + ADC12SHT0_1 +
-			    ADC12REFON; // Turn on and set up ADC12
+		ADC12CTL0 = ADC12ON + ADC12SHT0_1 + ADC12REFON; // Turn on and set up ADC12
 		REFCTL0 = REFON; // Ref volt = 1.5V
 
 		ADC12CTL1 = ADC12SHP; // Use sampling timer
 
-		ADC12MCTL0 = ADC12SREF_1 +
-			     ADC12INCH_0; // Input A0 port,범위 1.5V - 0V
+		ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_0; // Input A0 port,범위 1.5V - 0V
 
 		for (i = 0; i < 100; i++)
 			; // Delay to allow Ref to settle

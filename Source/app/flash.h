@@ -87,8 +87,7 @@ typedef struct {
  *  때문에 Return 데이터 중 1st 혹은 2nd 데이터 중 하나가 기간내 데이터가 아닐
  * 수 있으므로 실제 범위에 벗어나는 부분 데이터는 상위 layer에서 무시해야 한다.
  */
-FlashMeterData_t *FLASH_readPeriodData(Date_t *fromDate, Date_t *toDate,
-				       int *totalNumOfDatas);
+FlashMeterData_t *FLASH_readPeriodData(Date_t *fromDate, Date_t *toDate, int *totalNumOfDatas);
 
 /**************************************************
  * Flash R/W/E interface for Configuration data

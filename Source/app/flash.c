@@ -9,10 +9,8 @@
 #include "osal.h"
 #include "rtc.h"
 
-const uint8 *FlashAddr[NUM_FLASH_SECTOR] = { (uint8 *)FLASH_SEGA_ADDR,
-					     (uint8 *)FLASH_SEGB_ADDR,
-					     (uint8 *)FLASH_SEGC_ADDR,
-					     (uint8 *)FLASH_SEGD_ADDR };
+const uint8 *FlashAddr[NUM_FLASH_SECTOR] = { (uint8 *)FLASH_SEGA_ADDR, (uint8 *)FLASH_SEGB_ADDR,
+					     (uint8 *)FLASH_SEGC_ADDR, (uint8 *)FLASH_SEGD_ADDR };
 
 static uint8 calChecksum(uint8 *p, int len)
 {
@@ -52,24 +50,20 @@ static void saveConfig(FlashConfig_t *pInfo)
 	HAL_ENTER_CRITICAL_SECTION(intState);
 
 	BOOL result = FALSE;
-	MSP430FLASH_read((uint8 *)FLASH_SEGA_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGA_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	memcpy(flash, (uint8 *)pInfo, sizeof(FlashConfig_t));
 
 	if (MSP430FLASH_erasePage((uint8 *)FLASH_SEGA_ADDR)) {
-		if (MSP430FLASH_write((uint8 *)FLASH_SEGA_ADDR, flash,
-				      LEN_INFO_FLASH_SECTOR)) {
+		if (MSP430FLASH_write((uint8 *)FLASH_SEGA_ADDR, flash, LEN_INFO_FLASH_SECTOR)) {
 			result = TRUE;
 		}
 	}
 
-	MSP430FLASH_read((uint8 *)FLASH_SEGC_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGC_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	memcpy(flash, (uint8 *)pInfo, sizeof(FlashConfig_t));
 
 	if (MSP430FLASH_erasePage((uint8 *)FLASH_SEGC_ADDR)) {
-		if (MSP430FLASH_write((uint8 *)FLASH_SEGC_ADDR, flash,
-				      LEN_INFO_FLASH_SECTOR)) {
+		if (MSP430FLASH_write((uint8 *)FLASH_SEGC_ADDR, flash, LEN_INFO_FLASH_SECTOR)) {
 			result = TRUE;
 		}
 	}
@@ -94,20 +88,17 @@ static void readConfig(FlashConfig_t *pInfo)
 	halIntState_t intState;
 
 	HAL_ENTER_CRITICAL_SECTION(intState);
-	MSP430FLASH_read((uint8 *)FLASH_SEGA_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGA_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	HAL_EXIT_CRITICAL_SECTION(intState);
 
 	FlashConfig_t info_a;
 	memcpy((uint8 *)&info_a, flash, sizeof(FlashConfig_t));
 
-	uint8 checksum =
-		calChecksum((uint8 *)&info_a, sizeof(FlashConfig_t) - 1);
+	uint8 checksum = calChecksum((uint8 *)&info_a, sizeof(FlashConfig_t) - 1);
 	BOOL a_valid = (checksum == info_a.checksum) ? TRUE : FALSE;
 
 	HAL_ENTER_CRITICAL_SECTION(intState);
-	MSP430FLASH_read((uint8 *)FLASH_SEGC_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGC_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	HAL_EXIT_CRITICAL_SECTION(intState);
 
 	FlashConfig_t info_c;
@@ -150,23 +141,19 @@ static void saveID(FlashId_t *pInfo)
 	HAL_ENTER_CRITICAL_SECTION(intState);
 
 	BOOL result = FALSE;
-	MSP430FLASH_read((uint8 *)FLASH_SEGB_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGB_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	memcpy(flash, (uint8 *)pInfo, sizeof(FlashId_t));
 
 	if (MSP430FLASH_erasePage((uint8 *)FLASH_SEGB_ADDR)) {
-		if (MSP430FLASH_write((uint8 *)FLASH_SEGB_ADDR, flash,
-				      LEN_INFO_FLASH_SECTOR)) {
+		if (MSP430FLASH_write((uint8 *)FLASH_SEGB_ADDR, flash, LEN_INFO_FLASH_SECTOR)) {
 			result = TRUE;
 		}
 	}
 
-	MSP430FLASH_read((uint8 *)FLASH_SEGD_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGD_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	memcpy(flash, (uint8 *)pInfo, sizeof(FlashId_t));
 	if (MSP430FLASH_erasePage((uint8 *)FLASH_SEGD_ADDR)) {
-		if (MSP430FLASH_write((uint8 *)FLASH_SEGD_ADDR, flash,
-				      LEN_INFO_FLASH_SECTOR)) {
+		if (MSP430FLASH_write((uint8 *)FLASH_SEGD_ADDR, flash, LEN_INFO_FLASH_SECTOR)) {
 			result = TRUE;
 		}
 	}
@@ -188,8 +175,7 @@ static void readID(FlashId_t *pInfo)
 	halIntState_t intState;
 
 	HAL_ENTER_CRITICAL_SECTION(intState);
-	MSP430FLASH_read((uint8 *)FLASH_SEGB_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGB_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	HAL_EXIT_CRITICAL_SECTION(intState);
 
 	FlashId_t info_b;
@@ -199,8 +185,7 @@ static void readID(FlashId_t *pInfo)
 	BOOL b_valid = (checksum == info_b.checksum) ? TRUE : FALSE;
 
 	HAL_ENTER_CRITICAL_SECTION(intState);
-	MSP430FLASH_read((uint8 *)FLASH_SEGD_ADDR, flash,
-			 LEN_INFO_FLASH_SECTOR);
+	MSP430FLASH_read((uint8 *)FLASH_SEGD_ADDR, flash, LEN_INFO_FLASH_SECTOR);
 	HAL_EXIT_CRITICAL_SECTION(intState);
 
 	FlashId_t info_d;
@@ -239,8 +224,7 @@ void FLASH_saveConfigInfo(Config_t *config)
 	memcpy(flashID.imei, config->imei, 8);
 	memcpy(flashID.imsi, config->imsi, 8);
 
-	flashID.checksum =
-		calChecksum((uint8 *)&flashID, sizeof(FlashId_t) - 1);
+	flashID.checksum = calChecksum((uint8 *)&flashID, sizeof(FlashId_t) - 1);
 
 	saveID(&flashID);
 
@@ -265,8 +249,7 @@ void FLASH_saveConfigInfo(Config_t *config)
 	Date_t date;
 	RTC_read(&date);
 
-	flashConfig.checksum =
-		calChecksum((uint8 *)&flashConfig, sizeof(FlashConfig_t) - 1);
+	flashConfig.checksum = calChecksum((uint8 *)&flashConfig, sizeof(FlashConfig_t) - 1);
 	saveConfig(&flashConfig);
 }
 
@@ -281,13 +264,11 @@ void FLASH_readConfigInfo(Config_t *config)
 	config->meterType = flashConfig.meterType;
 	config->reportInterval = flashConfig.reportInterval;
 
-	sprintf(config->serverIp, "%d.%d.%d.%d", flashConfig.serverIp[0],
-		flashConfig.serverIp[1], flashConfig.serverIp[2],
-		flashConfig.serverIp[3]);
+	sprintf(config->serverIp, "%d.%d.%d.%d", flashConfig.serverIp[0], flashConfig.serverIp[1],
+		flashConfig.serverIp[2], flashConfig.serverIp[3]);
 	memcpy(&config->serverPort, flashConfig.serverPort, 2);
-	sprintf(config->fotaIp, "%d.%d.%d.%d", flashConfig.fotaIp[0],
-		flashConfig.fotaIp[1], flashConfig.fotaIp[2],
-		flashConfig.fotaIp[3]);
+	sprintf(config->fotaIp, "%d.%d.%d.%d", flashConfig.fotaIp[0], flashConfig.fotaIp[1],
+		flashConfig.fotaIp[2], flashConfig.fotaIp[3]);
 	memcpy(&config->fotaPort, flashConfig.fotaPort, 2);
 	config->fotaInterval = flashConfig.fotaInterval;
 	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
@@ -315,9 +296,8 @@ void FLASH_readConfigInfo(Config_t *config)
 
 	int nSpread = config->reportInterval * 50;
 
-	config->reportSec =
-		((serialBase / nSpread) % 4) *
-		15; // 같은 '분'에 보고하는 단말기들간에 시간을 15초 단위로 4개로 나눔
+	config->reportSec = ((serialBase / nSpread) % 4) *
+			    15; // 같은 '분'에 보고하는 단말기들간에 시간을 15초 단위로 4개로 나눔
 	serialBase %= nSpread;
 
 	config->reportHour = serialBase / 50;

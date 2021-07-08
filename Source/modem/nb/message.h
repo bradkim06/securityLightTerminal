@@ -62,11 +62,9 @@
 #define NBIOT_UE_TYPE_MODE_NPF_FIXED 3
 #define NBIOT_UE_TYPE_MODE_NPF_MOVED 4
 
-#define NBIOT_ERR_CURRENT_UE_TYPE                                              \
-	((NBIOT_UE_TYPE_MODE_NPF_FIXED << 4) | NBIOT_UE_TYPE_WORK_MIXED)
+#define NBIOT_ERR_CURRENT_UE_TYPE ((NBIOT_UE_TYPE_MODE_NPF_FIXED << 4) | NBIOT_UE_TYPE_WORK_MIXED)
 
-#define LEN_MAX_NBIOT_DATA                                                     \
-	160 // 최대 156 bytes, 계산 편이성 상 160(=0xA0)로 설정.
+#define LEN_MAX_NBIOT_DATA 160 // 최대 156 bytes, 계산 편이성 상 160(=0xA0)로 설정.
 #define LEN_NBIOT_ACK_DATA 26
 #define LEN_NBIOT_CMD_CHG_SERVER_DATA 29
 

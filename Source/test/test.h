@@ -12,8 +12,7 @@ BOOL TEST_checkTestMode();
 BOOL TEST_isTestMode();
 uint8 TEST_getTaskId();
 void TEST_readRTC(int fromJig);
-void TEST_setRTC(int fromJig, int year, int mon, int day, int hour, int min,
-		 int sec);
+void TEST_setRTC(int fromJig, int year, int mon, int day, int hour, int min, int sec);
 void TEST_readFlash(int sector);
 void TEST_eraseFlash(int sector);
 void TEST_readSerialNum();

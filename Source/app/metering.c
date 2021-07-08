@@ -13,25 +13,25 @@
 #include "rtc.h"
 #include "uart.h"
 
-#define METER_INTERRUPT_HIGH()                                                 \
-	do {                                                                   \
-		P10SEL &= ~0x10, P10DIR |= 0x10, P10OUT |= 0x10;               \
+#define METER_INTERRUPT_HIGH()                                                                     \
+	do {                                                                                       \
+		P10SEL &= ~0x10, P10DIR |= 0x10, P10OUT |= 0x10;                                   \
 	} while (0);
-#define METER_INTERRUPT_LOW()                                                  \
-	do {                                                                   \
-		P10SEL &= ~0x10;                                               \
-		P10DIR |= 0x10;                                                \
-		P10OUT &= ~0x10;                                               \
+#define METER_INTERRUPT_LOW()                                                                      \
+	do {                                                                                       \
+		P10SEL &= ~0x10;                                                                   \
+		P10DIR |= 0x10;                                                                    \
+		P10OUT &= ~0x10;                                                                   \
 	} while (0);
-#define METER_RXD_PULL_DOWN()                                                  \
-	do {                                                                   \
-		P10REN |= 0x20;                                                \
-		P10OUT &= ~0x20;                                               \
+#define METER_RXD_PULL_DOWN()                                                                      \
+	do {                                                                                       \
+		P10REN |= 0x20;                                                                    \
+		P10OUT &= ~0x20;                                                                   \
 	} while (0);
-#define METER_RXD_PULL_UP()                                                    \
-	do {                                                                   \
-		P10REN |= 0x20;                                                \
-		P10OUT |= 0x20;                                                \
+#define METER_RXD_PULL_UP()                                                                        \
+	do {                                                                                       \
+		P10REN |= 0x20;                                                                    \
+		P10OUT |= 0x20;                                                                    \
 	} while (0);
 
 static uint8 std_checksum(uint8 *from, int size)
@@ -79,11 +79,9 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 	printf("[ meterStatus   ] : 0x%02X \n", pUnit->meterStatus);
 	printf("[ voltage       ] : %lumV 0x%lX\n", pUnit->volt, pUnit->volt);
 	printf("[ current       ] : %lumV 0x%lX\n", pUnit->curr, pUnit->curr);
-	printf("[ short current ] : %lumV 0x%lX\n", pUnit->shortCurr,
-	       pUnit->shortCurr);
+	printf("[ short current ] : %lumV 0x%lX\n", pUnit->shortCurr, pUnit->shortCurr);
 	printf("[ power         ] : %lumV 0x%lX\n", pUnit->power, pUnit->power);
-	printf("[ cum Power     ] : %lumV 0x%lX\n", pUnit->cumPower,
-	       pUnit->cumPower);
+	printf("[ cum Power     ] : %lumV 0x%lX\n", pUnit->cumPower, pUnit->cumPower);
 	printf("==================================================\n");
 
 	return SUCCESS;
@@ -96,8 +94,7 @@ static BOOL send_meteringEV(void)
 
 	pMsg->stx = TERMINAL_STX;
 	pMsg->msgType = REQ_READ_METER;
-	pMsg->checkSum =
-		std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t));
+	pMsg->checkSum = std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t));
 	pMsg->etx = TERMINAL_ETX;
 
 	UART_send(UART_A0, &msg, sizeof(evMeterReq_t), FALSE);

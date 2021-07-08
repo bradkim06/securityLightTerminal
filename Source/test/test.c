@@ -78,8 +78,7 @@ static BOOL saveTerminalConfig(const char *sn, const int ri)
 
 	do {
 		if (strlen(sn) != SERIAL_NUM_LEN) {
-			printf("length of s/n should be %d bytes\n",
-			       SERIAL_NUM_LEN);
+			printf("length of s/n should be %d bytes\n", SERIAL_NUM_LEN);
 			break;
 		}
 		if (ri <= 0 || ri > 24 || (24 % ri) != 0) {
@@ -139,8 +138,7 @@ void TEST_meteringParamer(int ri)
 
 	FLASH_saveConfigInfo(&conf);
 
-	printf("reportInterval:%d, reportHour:%d\n", conf.reportInterval,
-	       conf.reportHour);
+	printf("reportInterval:%d, reportHour:%d\n", conf.reportInterval, conf.reportHour);
 }
 
 void TEST_readRTC(int fromJig)
@@ -149,16 +147,15 @@ void TEST_readRTC(int fromJig)
 
 	RTC_read(&date);
 	if (fromJig) {
-		printf("trrtc %04d-%02d-%02d %02d:%02d:%02d\n", date.year,
-		       date.mon, date.day, date.hour, date.min, date.sec);
+		printf("trrtc %04d-%02d-%02d %02d:%02d:%02d\n", date.year, date.mon, date.day,
+		       date.hour, date.min, date.sec);
 	} else {
-		printf("%04d-%02d-%02d %02d:%02d:%02d\n", date.year, date.mon,
-		       date.day, date.hour, date.min, date.sec);
+		printf("%04d-%02d-%02d %02d:%02d:%02d\n", date.year, date.mon, date.day, date.hour,
+		       date.min, date.sec);
 	}
 }
 
-void TEST_setRTC(int fromJig, int year, int mon, int day, int hour, int min,
-		 int sec)
+void TEST_setRTC(int fromJig, int year, int mon, int day, int hour, int min, int sec)
 {
 	Date_t date;
 
@@ -194,8 +191,7 @@ void TEST_readFlash(int sector)
 
 	for (int i = start; i < end; i++) {
 		HAL_ENTER_CRITICAL_SECTION(intState);
-		MSP430FLASH_read((uint8 *)FlashAddr[i], flash,
-				 LEN_INFO_FLASH_SECTOR);
+		MSP430FLASH_read((uint8 *)FlashAddr[i], flash, LEN_INFO_FLASH_SECTOR);
 		HAL_EXIT_CRITICAL_SECTION(intState);
 
 		printf("\n======== Flash Memory - Sector[%d] =======\n", i);
@@ -292,8 +288,8 @@ void TEST_readMeter(int type, int sec)
 
 	int nLoop = 0;
 	while (++nLoop) {
-		printf("Meter Send Req Count : %d Result : %d set Time : %d\n",
-		       nLoop, METER_sendRequest(meterType), sec);
+		printf("Meter Send Req Count : %d Result : %d set Time : %d\n", nLoop,
+		       METER_sendRequest(meterType), sec);
 
 		IsMeterTesting = TRUE;
 		uint32 ms = TIMER_getMsec();
@@ -386,8 +382,7 @@ void TEST_gpioWrite(int port, int pin, int status)
 		*portAddress &= ~BM(pin);
 	}
 
-	printf("P%dOUT address : 0x%02X, status : 0x%02X\n", port, portAddress,
-	       *portAddress);
+	printf("P%dOUT address : 0x%02X, status : 0x%02X\n", port, portAddress, *portAddress);
 }
 
 void TEST_gpioRead(int port)
@@ -395,8 +390,7 @@ void TEST_gpioRead(int port)
 #define INPUT 1
 	volatile unsigned char *portAddress = gpioPortSelect(port, INPUT);
 
-	printf("P%dIN address : 0x%02X, status : 0x%02X\n", port, portAddress,
-	       *portAddress);
+	printf("P%dIN address : 0x%02X, status : 0x%02X\n", port, portAddress, *portAddress);
 }
 
 void TEST_shortInterval(int flag)
@@ -442,8 +436,7 @@ void TEST_prsn()
 	memcpy(serial, conf.serialNum, SERIAL_NUM_LEN);
 	serial[SERIAL_NUM_LEN] = '\0';
 
-	printf("trsn %s %s %d\n", serial, APP_getFwVer(conf.isUsingPF),
-	       conf.reportInterval);
+	printf("trsn %s %s %d\n", serial, APP_getFwVer(conf.isUsingPF), conf.reportInterval);
 }
 
 void TEST_resetNFC()
@@ -457,8 +450,7 @@ void TEST_resetNFC()
 	P1DIR |= BM(NFC_TAG_P1_PIN);
 	P1OUT |= BM(NFC_TAG_P1_PIN);
 
-	MISC_delayMs(
-		1000); // 생산공정에서 모뎀 BIP완료 메세지 대기를 위한 딜레이
+	MISC_delayMs(1000); // 생산공정에서 모뎀 BIP완료 메세지 대기를 위한 딜레이
 	if (NFC_factoryResetTag() == TRUE) {
 		printf("tnfc OK\n");
 	} else {
