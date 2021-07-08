@@ -9,6 +9,7 @@
 #include "common.h"
 #include "flash.h"
 #include "misc.h"
+#include "sunrise.h"
 
 #define PREV_KEY 0x5B /* "[" key */
 #define NEXT_KEY 0x5D /* "]" key */
@@ -472,7 +473,8 @@ void SHELL_run()
 			break;
 
 		case CMDN_PNFC:
-			TEST_checkNFC();
+			// TEST_checkNFC();
+			calcSunrise();
 			break;
 
 		case CMDN_RNFC:

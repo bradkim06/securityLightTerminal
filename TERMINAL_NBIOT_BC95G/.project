@@ -146,6 +146,16 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Source/app/nfc_app.h</locationURI>
 		</link>
 		<link>
+			<name>Source/app/sunrise.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Source/app/sunrise.c</locationURI>
+		</link>
+		<link>
+			<name>Source/app/sunrise.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Source/app/sunrise.h</locationURI>
+		</link>
+		<link>
 			<name>Source/dev/battery.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Source/dev/battery.c</locationURI>
