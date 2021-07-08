@@ -54,7 +54,7 @@ double f0(double lat, double declin)
 	fo = tan(declin + dfo) * tan(lat * rads);
 	if (fo > 0.99999)
 		fo = 1.0; // to avoid overflow //
-	fo = asin(fo) + pi / 2.0;
+	fo = asin(fo) + pi / 2.0 + 0.01;
 	return fo;
 };
 
@@ -70,7 +70,7 @@ double f1(double lat, double declin)
 	fi = tan(declin + df1) * tan(lat * rads);
 	if (fi > 0.99999)
 		fi = 1.0; // to avoid overflow //
-	fi = asin(fi) + pi / 2.0;
+	fi = asin(fi) + pi / 2.0 + 0.055;
 	return fi;
 };
 
@@ -128,8 +128,8 @@ void calcSunrise(void)
 	y += 1900;
 	m = p->tm_mon + 1;
 
-	day = p->tm_mday;
-	// day = 8;
+	// day = p->tm_mday;
+	day = 8;
 
 	h = 12;
 
@@ -144,7 +144,8 @@ void calcSunrise(void)
 	// scanf("%f", &inlat);
 	printf("longitude %f\n", inlon);
 	// scanf("%f", &inlon);
-	intz = 9;
+#define KST_ZONE 9
+	intz = KST_ZONE;
 	printf("timezone\n");
 	// scanf("%f", &intz);
 	latit = (double)inlat;
@@ -191,6 +192,8 @@ void calcSunrise(void)
 
 	riset = 12.0 - 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0;
 	settm = 12.0 + 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0;
+	// riset = 12.0 - 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0 - 0.03;
+	// settm = 12.0 + 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0 + 0.03;
 	noont = riset + 12.0 * ha / pi;
 	altmax = 90.0 + delta * degs - latit;
 	// Correction for S HS suggested by David Smith
@@ -198,8 +201,10 @@ void calcSunrise(void)
 	if (latit < delta * degs)
 		altmax = 180.0 - altmax;
 
-	twam = riset - twx - 0.184; // morning twilight begin
-	twpm = settm + twx + 0.184; // evening twilight end
+	twam = riset - twx; // morning twilight begin
+	twpm = settm + twx; // evening twilight end
+	// twam = riset - twx - 0.185; // morning twilight begin
+	// twpm = settm + twx + 0.185; // evening twilight end
 
 	if (riset > 24.0)
 		riset -= 24.0;
