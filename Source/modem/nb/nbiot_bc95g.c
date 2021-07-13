@@ -455,7 +455,6 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 static BOOL parseQLWSERVERIP(const char *pHead, const int *len, uint32 *nextDelay)
 {
 #define ATCMD_RESP_QLWSERVERIP "+QLWSERVERIP:BS,"
-
 	BOOL isSetCfg = FALSE;
 	char addr[22];
 

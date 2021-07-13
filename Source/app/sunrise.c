@@ -8,6 +8,7 @@
 #include <time.h>
 #include "rtc.h"
 #include "sunrise.h"
+#include "common.h"
 
 const double pi = 3.14159;
 
@@ -18,7 +19,7 @@ double L, g;
 //   h is UT in decimal hours
 //   FNday only works between 1901 to 2099 - see Meeus chapter 7
 
-double FNday(int y, int m, int d, float h)
+static double FNday(int y, int m, int d, float h)
 {
 	long int luku = -7 * (y + (m + 9) / 12) / 4 + 275 * m / 9 + d;
 	// type casting necessary on PC DOS and TClite to avoid overflow
@@ -29,7 +30,7 @@ double FNday(int y, int m, int d, float h)
 //   the function below returns an angle in the range
 //   0 to 2*pi
 
-double FNrange(double x)
+static double FNrange(double x)
 {
 	double b = 0.5 * x / pi;
 	double a = 2.0 * pi * (b - (long)(b));
@@ -40,7 +41,7 @@ double FNrange(double x)
 
 // Calculating the hourangle
 //
-double f0(double lat, double declin)
+static double f0(double lat, double declin)
 {
 	// const double SunDia = 0.53; // Sunradius degrees
 	// const double AirRefr = 34.0 / 60.0; // athmospheric refraction degrees //
@@ -55,12 +56,13 @@ double f0(double lat, double declin)
 	if (fo > 0.99999)
 		fo = 1.0; // to avoid overflow //
 	fo = asin(fo) + pi / 2.0 + 0.01;
+	// fo = asin(fo) + pi / 2.0;
 	return fo;
 };
 
 // Calculating the hourangle for twilight times
 //
-double f1(double lat, double declin)
+static double f1(double lat, double declin)
 {
 	double fi, df1;
 	// Correction: different sign at S HS
@@ -76,7 +78,7 @@ double f1(double lat, double declin)
 
 //   Find the ecliptic longitude of the Sun
 
-double FNsun(double d)
+static double FNsun(double d)
 {
 	//   mean longitude of the Sun
 
@@ -92,7 +94,7 @@ double FNsun(double d)
 };
 
 // Display decimal hours in hours and minutes
-void showhrmn(double dhr)
+static void showhrmn(double dhr)
 {
 	int hr, mn;
 	hr = (int)dhr;
@@ -101,7 +103,7 @@ void showhrmn(double dhr)
 	printf("%0d:%0d\n", hr, mn);
 };
 
-void gethrmn(double dhr, sunriseTime_t *p)
+static void gethrmn(double dhr, sunriseTime_t *p)
 {
 	int hr, mn;
 	hr = (int)dhr;
@@ -111,11 +113,11 @@ void gethrmn(double dhr, sunriseTime_t *p)
 	p->min = mn;
 };
 
-void calcSunrise()
+void calcSunrise(Date_t *date)
 {
-	int y = 2021;
-	int m = 7;
-	int day = 8;
+	int y = date->year;
+	int m = date->mon;
+	int day = date->day;
 
 	if (y < 2021 || y > 2100) {
 		printf("wrong year %d", y);
@@ -212,6 +214,7 @@ void calcSunrise()
 	gethrmn(settm, &set);
 	gethrmn(twam, &twrise);
 	gethrmn(twpm, &twset);
+
 	printf("Latitude :  %3.1f, longitude: %3.1f, timezone: %3.1f \n", (float)latit,
 	       (float)longit, (float)tzone);
 	printf("Sunrise       : %0d:%0d\n", rise.hour, rise.min);
@@ -219,4 +222,23 @@ void calcSunrise()
 	printf("Sunset        : %0d:%0d\n", set.hour, set.min);
 	printf("Civil twilight: %0d:%0d\n", twset.hour, twset.min);
 	printf("=============================================\n");
+
+	conf.lightOnHour = (uint8)rise.hour;
+	conf.lightOnMin = (uint8)rise.min;
+	conf.lightOffHour = (uint8)set.hour;
+	conf.lightOffMin = (uint8)set.min;
+}
+
+BOOL updateSunTime(Date_t *date)
+{
+	static uint8 prevDay = 0;
+	BOOL retVal = FALSE;
+
+	if (prevDay != date->day) {
+		prevDay = date->day;
+		calcSunrise(date);
+		retVal = TRUE;
+	}
+
+	return retVal;
 }

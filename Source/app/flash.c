@@ -271,7 +271,6 @@ void FLASH_readConfigInfo(Config_t *config)
 	memcpy(&config->fotaPort, flashConfig.fotaPort, 2);
 	config->fotaInterval = flashConfig.fotaInterval;
 	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
-	config->serviceCode[4] = 0;
 	config->isModemInit = flashConfig.isModemInit;
 	config->isShortInterval = flashConfig.isShortInterval;
 	config->debugPrint = flashConfig.debugPrint;
@@ -302,10 +301,6 @@ void FLASH_readConfigInfo(Config_t *config)
 	config->reportMin = (serialBase % 50) + 5;
 
 	config->meterType = E_METER;
-	config->lightOnHour = 18;
-	config->lightOnMin = 44;
-	config->lightOffHour = 6;
-	config->lightOffMin = 32;
 	config->debugPrint = TRUE;
 }
 

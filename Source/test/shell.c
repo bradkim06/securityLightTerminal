@@ -568,7 +568,8 @@ void SHELL_run()
 			break;
 
 		case CMDN_SUNRISE:
-			calcSunrise();
+			Date_t date;
+			calcSunrise(&date);
 			break;
 
 		default:

@@ -6,5 +6,6 @@ typedef struct {
 	int min;
 } sunriseTime_t;
 
-void calcSunrise(void);
+void calcSunrise(Date_t *date);
+BOOL updateSunTime(Date_t *date);
 #endif

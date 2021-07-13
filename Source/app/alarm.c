@@ -9,6 +9,7 @@
 
 #include "rtc.h"
 #include "uart.h"
+#include "sunrise.h"
 
 // 정의된 RTC 타이머 이벤트 개수.
 #define RTC_ALARM_COUNT 3
@@ -131,6 +132,10 @@ void normalScheduler()
 	Date_t date;
 	RTC_read(&date);
 
+	if (TimeSyncFlag) {
+		updateSunTime(&date);
+	}
+
 	// 시간 동기화에 의한 알람 중복 등록을 피하기 위해 이전 알람 이벤트에 의한 순차 등록으로 수정.
 	// 단, 시간 동기화 후 발생 오차에 의한 문제를 방지하기 위해 아래와 같은 기준으로 알람을 설정.
 	// 1. 알람 발생 후 완료까지 시간 5분.
@@ -143,23 +148,27 @@ void normalScheduler()
 	for (int idx = 0; idx < RTC_ALARM_COUNT; idx++) {
 		int hourdiff;
 
-		if (idx == RTC_ALARM_LIGHT_ON) {
-			hourdiff = conf.lightOnHour - date.hour;
-			printf_ts("[%s - %02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type),
-				  conf.lightOnHour, conf.lightOnMin);
-			if (hourdiff <= 1 && hourdiff >= -1) {
-				isLight = 1;
-			} else {
-				continue;
-			}
-		} else if (idx == RTC_ALARM_LIGHT_OFF) {
-			hourdiff = conf.lightOffHour - date.hour;
-			printf_ts("[%s - %02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type),
-				  conf.lightOffHour, conf.lightOffMin);
-			if (hourdiff <= 1 && hourdiff >= -1) {
-				isLight = 1;
-			} else {
-				continue;
+		if (TimeSyncFlag) {
+			if (idx == RTC_ALARM_LIGHT_ON) {
+				hourdiff = conf.lightOnHour - date.hour;
+				printf_ts("[%s - %02d:%02d:00]\n",
+					  ALARM_TYPE_STR(AlarmList[idx].type), conf.lightOnHour,
+					  conf.lightOnMin);
+				if (hourdiff <= 1 && hourdiff >= -1) {
+					isLight = 1;
+				} else {
+					continue;
+				}
+			} else if (idx == RTC_ALARM_LIGHT_OFF) {
+				hourdiff = conf.lightOffHour - date.hour;
+				printf_ts("[%s - %02d:%02d:00]\n",
+					  ALARM_TYPE_STR(AlarmList[idx].type), conf.lightOffHour,
+					  conf.lightOffMin);
+				if (hourdiff <= 1 && hourdiff >= -1) {
+					isLight = 1;
+				} else {
+					continue;
+				}
 			}
 		}
 
@@ -240,28 +249,33 @@ void ALARM_run()
 		if (MISC_checkInterval(date.hour, conf.reportHour, conf.reportInterval)) {
 			APP_runPeriodicReport();
 		} else {
-			ALARM_schedule();
+			printf_ts("not report hour ");
+			for (int h = 0; h < 24; h++) {
+				if (MISC_checkInterval(h, conf.reportHour, conf.reportInterval)) {
+					printf("%d, ", h);
+				}
+			}
+			printf("\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
 		if (conf.lightOnHour == date.hour) {
 			printf_ts("light on run\n");
-			ALARM_schedule();
+			Relay_Status(RELAY_ON);
 		} else {
 			printf_ts("not light on hour\n");
-			ALARM_schedule();
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
 		if (conf.lightOnHour == date.hour) {
 			printf_ts("light off run\n");
-			ALARM_schedule();
+			Relay_Status(RELAY_OFF);
 		} else {
 			printf_ts("not light off hour\n");
-			ALARM_schedule();
 		}
 	} else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);
-		ALARM_schedule();
 	}
+
+	ALARM_schedule();
 }
 
 void ALARM_isr()
