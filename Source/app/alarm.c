@@ -56,9 +56,9 @@ void ALARM_init()
 		AlarmList[0].minute = conf.reportMin;
 	} else {
 		AlarmList[0].type = RTC_ALARM_LIGHT_ON;
-		AlarmList[0].minute = conf.lightOnMin;
+		AlarmList[0].minute = conf.light.onTime[MINUTE];
 		AlarmList[1].type = RTC_ALARM_LIGHT_OFF;
-		AlarmList[1].minute = conf.lightOffMin;
+		AlarmList[1].minute = conf.light.offTime[MINUTE];
 		AlarmList[2].type = RTC_ALARM_REPORT;
 		AlarmList[2].minute = conf.reportMin;
 	}
@@ -150,20 +150,20 @@ void normalScheduler()
 
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
-				hourdiff = conf.lightOnHour - date.hour;
+				hourdiff = conf.light.onTime[HOUR] - date.hour;
 				printf_ts("[%s - %02d:%02d:00]\n",
-					  ALARM_TYPE_STR(AlarmList[idx].type), conf.lightOnHour,
-					  conf.lightOnMin);
+					  ALARM_TYPE_STR(AlarmList[idx].type),
+					  conf.light.onTime[HOUR], conf.light.onTime[MINUTE]);
 				if (hourdiff <= 1 && hourdiff >= -1) {
 					isLight = 1;
 				} else {
 					continue;
 				}
 			} else if (idx == RTC_ALARM_LIGHT_OFF) {
-				hourdiff = conf.lightOffHour - date.hour;
+				hourdiff = conf.light.offTime[HOUR] - date.hour;
 				printf_ts("[%s - %02d:%02d:00]\n",
-					  ALARM_TYPE_STR(AlarmList[idx].type), conf.lightOffHour,
-					  conf.lightOffMin);
+					  ALARM_TYPE_STR(AlarmList[idx].type),
+					  conf.light.offTime[HOUR], conf.light.offTime[MINUTE]);
 				if (hourdiff <= 1 && hourdiff >= -1) {
 					isLight = 1;
 				} else {
@@ -258,14 +258,14 @@ void ALARM_run()
 			printf("\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
-		if (conf.lightOnHour == date.hour) {
+		if (conf.light.onTime[HOUR] == date.hour) {
 			printf_ts("light on run\n");
 			Relay_Status(RELAY_ON);
 		} else {
 			printf_ts("not light on hour\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
-		if (conf.lightOnHour == date.hour) {
+		if (conf.light.offTime[HOUR] == date.hour) {
 			printf_ts("light off run\n");
 			Relay_Status(RELAY_OFF);
 		} else {

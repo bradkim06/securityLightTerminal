@@ -75,6 +75,43 @@
 #define SERIAL_NUM_LEN 12
 #define SERVER_IP_STR_LEN 16 // string 길이이므로 \0 처리 길이까지 포함 시킴.
 
+// Light Termianl Mode
+#define INTERNAL 1
+#define SETTING 2
+
+// Light Time Base
+#define SUNRISE 0
+#define CIVIL 1
+
+// PSM Mode
+#define PSM_NOT_USING 0
+#define PSM_RELIGHT 1
+#define PSM_NOT_RELIGHT 2
+
+// Time
+#define HOUR 0
+#define MINUTE 1
+
+#define MONTH 0
+#define DAY 1
+
+typedef struct {
+	uint8 mode;
+	uint8 timeBase;
+	uint8 region;
+	uint8 onTime[2];
+	uint8 offTime[2];
+	uint8 onOffset;
+	uint8 offOffset;
+	uint8 psm;
+	uint8 psmOnTime[2]; // Hour, Min
+	uint8 psmOffTime[2]; // Hour, Min
+	uint8 psmOnDay[2]; // Month, Day
+	uint8 psmOffDay[2]; // Month, Day
+	uint8 dimmingMode;
+	uint8 dimmingLv;
+} light_t;
+
 struct Config {
 	uint8 serialNum[SERIAL_NUM_LEN + 1];
 	uint8 meterType;
@@ -96,10 +133,7 @@ struct Config {
 	uint16 resetCount;
 	uint8 debugPrint;
 	uint8 termModel;
-	uint8 lightOnHour;
-	uint8 lightOnMin;
-	uint8 lightOffHour;
-	uint8 lightOffMin;
+	light_t light;
 };
 
 extern struct Config conf;

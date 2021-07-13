@@ -204,9 +204,9 @@ void calcSunrise(Date_t *date)
 	printf("\n Sunrise and set\n");
 	printf("=============================================\n");
 
-	printf("  year  : %d", (int)y);
+	printf("[ year  : %d", (int)y);
 	printf("  month : %d", (int)m);
-	printf("  day   : %d \n\n", (int)day);
+	printf("  day   : %d ]\n\n", (int)day);
 
 	sunriseTime_t rise, set, twrise, twset;
 
@@ -223,10 +223,10 @@ void calcSunrise(Date_t *date)
 	printf("Civil twilight: %0d:%0d\n", twset.hour, twset.min);
 	printf("=============================================\n");
 
-	conf.lightOnHour = (uint8)rise.hour;
-	conf.lightOnMin = (uint8)rise.min;
-	conf.lightOffHour = (uint8)set.hour;
-	conf.lightOffMin = (uint8)set.min;
+	conf.light.onTime[HOUR] = (uint8)rise.hour;
+	conf.light.onTime[MINUTE] = (uint8)rise.min;
+	conf.light.offTime[HOUR] = (uint8)set.hour;
+	conf.light.offTime[MINUTE] = (uint8)set.min;
 }
 
 BOOL updateSunTime(Date_t *date)
