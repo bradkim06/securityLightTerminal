@@ -270,20 +270,20 @@ static int insert_oneData(NbiotMeterData_t *p)
 static int insert_params(NbiotMeterParams_t *p)
 {
 	p->rInterval = conf.reportInterval;
-	p->mode = conf.light.mode;
-	p->timeBase = conf.light.timeBase;
-	p->timeTable = conf.light.region;
-	memcpy(&p->setOnTime, &conf.light.setOnTime, sizeof(p->setOnTime));
-	memcpy(&p->setOffTime, &conf.light.setOffTime, sizeof(p->setOffTime));
-	p->onOfs = conf.light.onOfs;
-	p->offOfs = conf.light.offOfs;
-	p->psmMode = conf.light.psm;
-	memcpy(&p->psmOnTime, &conf.light.psmOnTime, sizeof(p->psmOnTime));
-	memcpy(&p->psmOffTime, &conf.light.psmOffTime, sizeof(p->psmOffTime));
-	memcpy(&p->psmOnDay, &conf.light.psmOnDay, sizeof(p->psmOnDay));
-	memcpy(&p->psmOffDay, &conf.light.psmOffDay, sizeof(p->psmOffDay));
-	p->dimmingMode = conf.light.dimmingMode;
-	p->dimmingLv = conf.light.dimmingLv;
+	p->mode = light.mode;
+	p->timeBase = light.timeBase;
+	p->timeTable = light.region;
+	memcpy(&p->setOnTime, &light.setOnTime, sizeof(p->setOnTime));
+	memcpy(&p->setOffTime, &light.setOffTime, sizeof(p->setOffTime));
+	p->onOfs = light.onOfs;
+	p->offOfs = light.offOfs;
+	p->psmMode = light.psm;
+	memcpy(&p->psmOnTime, &light.psmOnTime, sizeof(p->psmOnTime));
+	memcpy(&p->psmOffTime, &light.psmOffTime, sizeof(p->psmOffTime));
+	memcpy(&p->psmOnDay, &light.psmOnDay, sizeof(p->psmOnDay));
+	memcpy(&p->psmOffDay, &light.psmOffDay, sizeof(p->psmOffDay));
+	p->dimmingMode = light.dimmingMode;
+	p->dimmingLv = light.dimmingLv;
 
 	return sizeof(NbiotMeterParams_t);
 	// 27

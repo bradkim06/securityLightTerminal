@@ -99,16 +99,7 @@ static double FNsun(double d)
 	return FNrange(L + 1.915 * rads * sin(g) + .02 * rads * sin(2 * g));
 };
 
-// Display decimal hours in hours and minutes
-static void showhrmn(double dhr)
-{
-	int hr, mn;
-	hr = (int)dhr;
-	mn = (dhr - (double)hr) * 60;
-
-	printf("%0d:%0d\n", hr, mn);
-};
-
+// decimal hours to hours and minutes
 static void gethrmn(double dhr, sunriseTime_t *p)
 {
 	int hr, mn;
@@ -144,9 +135,7 @@ void calcSunrise(Date_t *date)
 	float inlat, inlon, intz;
 	double tzone, d, lambda;
 	double obliq, alpha, delta, LL, equation, ha, hb, twx;
-	double twam, noont, settm, riset, twpm;
-
-	struct tm *p;
+	double twam, settm, riset, twpm;
 
 	rads = pi / 180.0;
 	//  get the date and time from the user
@@ -197,7 +186,6 @@ void calcSunrise(Date_t *date)
 	twx = 12.0 * twx / pi; // length of twilight in hours
 	riset = 12.0 - 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0;
 	settm = 12.0 + 12.0 * ha / pi + tzone - longit / 15.0 + equation / 60.0;
-	noont = riset + 12.0 * ha / pi;
 
 	twam = riset - twx; // morning twilight begin
 	twpm = settm + twx; // evening twilight end
@@ -220,24 +208,22 @@ void calcSunrise(Date_t *date)
 
 	printf("[ Latitude       ] : %3.1f\n", (float)latit);
 	printf("[ longitude      ] : %3.1f\n", (float)longit);
-	printf("[ TimeBase       ] : %s\n", LMODE_TYPE_STR(conf.light.timeBase));
+	printf("[ TimeBase       ] : %s\n", LMODE_TYPE_STR(light.timeBase));
 
-	if (conf.light.timeBase == SUNRISE) {
-		conf.light.onTime[HOUR] = (uint8)rise.hour;
-		conf.light.onTime[MINUTE] = (uint8)rise.min;
-		conf.light.offTime[HOUR] = (uint8)set.hour;
-		conf.light.offTime[MINUTE] = (uint8)set.min;
-	} else if (conf.light.timeBase == CIVIL) {
-		conf.light.onTime[HOUR] = (uint8)twrise.hour;
-		conf.light.onTime[MINUTE] = (uint8)twrise.min;
-		conf.light.offTime[HOUR] = (uint8)twset.hour;
-		conf.light.offTime[MINUTE] = (uint8)twset.min;
+	if (light.timeBase == SUNRISE) {
+		light.onTime[HOUR] = (uint8)rise.hour;
+		light.onTime[MINUTE] = (uint8)rise.min;
+		light.offTime[HOUR] = (uint8)set.hour;
+		light.offTime[MINUTE] = (uint8)set.min;
+	} else if (light.timeBase == CIVIL) {
+		light.onTime[HOUR] = (uint8)twrise.hour;
+		light.onTime[MINUTE] = (uint8)twrise.min;
+		light.offTime[HOUR] = (uint8)twset.hour;
+		light.offTime[MINUTE] = (uint8)twset.min;
 	}
 
-	printf("[ Rise Time      ] : %02d:%02d\n", conf.light.onTime[HOUR],
-	       conf.light.onTime[MINUTE]);
-	printf("[ Set Time       ] : %02d:%02d\n", conf.light.offTime[HOUR],
-	       conf.light.offTime[MINUTE]);
+	printf("[ Rise Time      ] : %02d:%02d\n", light.onTime[HOUR], light.onTime[MINUTE]);
+	printf("[ Set Time       ] : %02d:%02d\n", light.offTime[HOUR], light.offTime[MINUTE]);
 	printf("=============================================\n");
 }
 

@@ -56,9 +56,9 @@ void ALARM_init()
 		AlarmList[0].minute = conf.reportMin;
 	} else {
 		AlarmList[0].type = RTC_ALARM_LIGHT_ON;
-		AlarmList[0].minute = conf.light.onTime[MINUTE];
+		AlarmList[0].minute = light.onTime[MINUTE];
 		AlarmList[1].type = RTC_ALARM_LIGHT_OFF;
-		AlarmList[1].minute = conf.light.offTime[MINUTE];
+		AlarmList[1].minute = light.offTime[MINUTE];
 		AlarmList[2].type = RTC_ALARM_REPORT;
 		AlarmList[2].minute = conf.reportMin;
 	}
@@ -135,8 +135,8 @@ void normalScheduler()
 	if (TimeSyncFlag) {
 		updateSunTime(&date);
 
-		AlarmList[0].minute = conf.light.onTime[MINUTE];
-		AlarmList[1].minute = conf.light.offTime[MINUTE];
+		AlarmList[0].minute = light.onTime[MINUTE];
+		AlarmList[1].minute = light.offTime[MINUTE];
 	}
 
 	// 시간 동기화에 의한 알람 중복 등록을 피하기 위해 이전 알람 이벤트에 의한 순차 등록으로 수정.
@@ -153,14 +153,14 @@ void normalScheduler()
 
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
-				hourdiff = conf.light.onTime[HOUR] - date.hour;
+				hourdiff = light.onTime[HOUR] - date.hour;
 				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
 				} else {
 					continue;
 				}
 			} else if (idx == RTC_ALARM_LIGHT_OFF) {
-				hourdiff = conf.light.offTime[HOUR] - date.hour;
+				hourdiff = light.offTime[HOUR] - date.hour;
 				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
 				} else {
@@ -255,14 +255,14 @@ void ALARM_run()
 			printf("\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
-		if (conf.light.onTime[HOUR] == date.hour) {
+		if (light.onTime[HOUR] == date.hour) {
 			printf_ts("light on run\n");
 			Relay_Status(RELAY_ON);
 		} else {
 			printf_ts("not light on hour\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
-		if (conf.light.offTime[HOUR] == date.hour) {
+		if (light.offTime[HOUR] == date.hour) {
 			printf_ts("light off run\n");
 			Relay_Status(RELAY_OFF);
 		} else {
