@@ -289,19 +289,6 @@ void APP_runMetering(MeteringType_t meteringType)
 		return;
 	}
 
-	// INITIAL_METERING 과 PERIODIC_METERING은 무조건 처리하나 즉시 검침은 확인
-	// 필요
-	if (meteringType == IMMEDIATE_METERING || meteringType == IMMEDIATE_METERING_FOR_REPORT) {
-		if (METER_needNewMetering(10) ==
-		    0) // 즉시 검침의 경우에는 10초 이하이면 재 검침하지 않음.
-		{
-			// 즉시 검침의 경우에는 10초 이하이면 재 검침하지 않음
-			Metering.type = meteringType;
-			meteringCompleted();
-			return;
-		}
-	}
-
 	memset(&Metering, 0, sizeof(Metering));
 	Metering.type = meteringType;
 	Metering.inProcess = 1;
@@ -339,27 +326,10 @@ static void meteringTimeout()
 		} else {
 			Metering.inProcess = 0;
 			Metering.success = 0;
-
 			MeterUnitData_t unit;
-			memset(&unit, 0, sizeof(unit));
-			/* memset(unit.meterData, 0xff, 4); */
-			/* unit.meterStatus = 0xff; */
 
-			Date_t date;
-			RTC_read(&date);
-			/* switch (Metering.type) { */
-			/* case PERIODIC_METERING: */
-			/* 	METER_addStoredData(&date, &unit); */
-			/* 	METER_displayStoredData(); */
-			/* 	break; */
-			/* case PERIODIC_METERING_FOR_SAVE: */
-			/* 	METER_saveInFlash(&date, &unit); */
-			/* 	break; */
-			/* default: */
-			METER_addTempData(&date, &unit);
-			/* METER_displayTempData(); */
-			/* break; */
-			/* } */
+			memset(&unit, 0, sizeof(unit));
+			METER_addTempData(&unit);
 
 			meteringCompleted();
 		}
@@ -380,25 +350,8 @@ static void meteringRecvResponse()
 		if (result == TRUE) {
 			Metering.inProcess = 0;
 			Metering.success = 1;
-
-			Date_t date;
-			RTC_read(&date);
-			METER_addTempData(&date, &unit);
-
-			if (Metering.type == IMMEDIATE_METERING ||
-			    Metering.type == IMMEDIATE_METERING_FOR_REPORT) {
-				if (Metering.meterType != conf.meterType) {
-					printf("meter type changed (%02x --> %02X)\n",
-					       conf.meterType, Metering.meterType);
-
-					conf.meterType = Metering.meterType;
-					FLASH_saveConfigInfo(&conf);
-					FLASH_readConfigInfo(&conf);
-				}
-			}
-
+			METER_addTempData(&unit);
 			meteringCompleted();
-
 		} else {
 			OSAL_setEvent(AppTaskId, APP_EVENT_METER_TIMEOUT);
 		}

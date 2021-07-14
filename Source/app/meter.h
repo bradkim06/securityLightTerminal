@@ -19,13 +19,6 @@
 // Meter data unit structure
 //**************************************
 typedef struct {
-	uint8 year;
-	uint8 mon;
-	uint8 day;
-	uint8 hour;
-	uint8 min;
-	uint8 sec;
-	uint8 isTimeSync;
 	uchar meterStatus;
 	uint32 volt;
 	uint32 curr;
@@ -37,9 +30,7 @@ typedef struct {
 char *METER_getMeterName(int meterType);
 void METER_clearTempData();
 MeterUnitData_t *METER_getTempData();
-void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit);
-BOOL METER_needNewMetering(int secLimit);
-uint8 *METER_getSerialNum();
+void METER_addTempData(MeterUnitData_t *pUnit);
 
 // 점멸기용 추가
 void Relay_Status(int on);

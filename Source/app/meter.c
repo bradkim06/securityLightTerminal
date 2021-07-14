@@ -10,45 +10,11 @@
 #include "device.h"
 
 typedef struct {
-	uint8 meterSerial[4];
 	MeterUnitData_t unit;
 } MeteringData_t;
 
-typedef struct {
-	int nData;
-	int storedInterval;
-	MeterUnitData_t unit[MAX_NUM_STORED_DATA];
-	MeterUnitData_t reportedUnit;
-} MeterStoredData_t;
-
 // 마지막 검침 데이터 저장 영역
 MeteringData_t LastMetering;
-
-//주기 검침 데이터 저장 영역
-MeterStoredData_t StoredMeterData;
-
-static void insertDateToData(Date_t *pDate, MeterUnitData_t *pData, BOOL isIgnoreSec)
-{
-	// Data의 year는 RTC의 year에서 2000을 빼서 사용
-	pData->year = pDate->year - 2000;
-	pData->mon = pDate->mon;
-	pData->day = pDate->day;
-	pData->hour = pDate->hour;
-	pData->min = pDate->min;
-	pData->sec = (isIgnoreSec == TRUE) ? 0 : pDate->sec;
-	pData->isTimeSync = ALARM_isTimeSync();
-}
-
-static void copyDateFromData(MeterUnitData_t *pData, Date_t *pDate, BOOL isIgnoreSec)
-{
-	// RTC의 year는 Data의 year에서 2000을 더해야 함.
-	pDate->year = pData->year + 2000;
-	pDate->mon = pData->mon;
-	pDate->day = pData->day;
-	pDate->hour = pData->hour;
-	pDate->min = pData->min;
-	pDate->sec = (isIgnoreSec == TRUE) ? 0 : pData->sec;
-}
 
 char *METER_getMeterName(int meterType)
 {
@@ -66,32 +32,13 @@ void METER_clearTempData()
 	memset(&LastMetering, 0, sizeof(LastMetering));
 }
 
-uint8 *METER_getSerialNum()
-{
-	return LastMetering.meterSerial;
-}
-
 MeterUnitData_t *METER_getTempData()
 {
 	return &LastMetering.unit;
 }
 
-BOOL METER_needNewMetering(int secLimit)
+void METER_addTempData(MeterUnitData_t *pUnit)
 {
-	Date_t prev;
-	copyDateFromData(&LastMetering.unit, &prev, FALSE);
-
-	Date_t now;
-	RTC_read(&now);
-
-	int32 secDiff = MISC_calcSecDiff(&prev, &now);
-
-	return (secDiff < 0 || secDiff > secLimit) ? TRUE : FALSE;
-}
-
-void METER_addTempData(Date_t *pDate, MeterUnitData_t *pUnit)
-{
-	insertDateToData(pDate, pUnit, FALSE);
 	memcpy(&LastMetering.unit, pUnit, sizeof(MeterUnitData_t));
 }
 

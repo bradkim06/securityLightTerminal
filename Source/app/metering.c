@@ -66,8 +66,7 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 		return FAIL;
 	}
 
-	pUnit->meterStatus = 0xab;
-	/* pUnit->meterStatus = rx->status; */
+	pUnit->meterStatus = rx->status;
 	pUnit->volt = rx->volt;
 	pUnit->curr = rx->curr;
 	pUnit->shortCurr = rx->shortCurr;
