@@ -251,7 +251,12 @@ static int insert_oneData(NbiotMeterData_t *p)
 {
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
-	p->status = pUnitData->meterStatus;
+	p->alarm = pUnitData->meterStatus;
+	if (getRelayStatus()) {
+		p->lampStatus = RELAY_ON;
+	} else {
+		p->lampStatus = RELAY_OFF;
+	}
 	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
 	memcpy(&p->curr, &pUnitData->curr, sizeof(pUnitData->curr));
 	memcpy(&p->shortCurr, &pUnitData->shortCurr, sizeof(pUnitData->shortCurr));
@@ -268,8 +273,8 @@ static int insert_params(NbiotMeterParams_t *p)
 	p->mode = conf.light.mode;
 	p->timeBase = conf.light.timeBase;
 	p->timeTable = conf.light.region;
-	memcpy(&p->setOnTime, &conf.light.onTime, sizeof(p->setOnTime));
-	memcpy(&p->setOffTime, &conf.light.offTime, sizeof(p->setOffTime));
+	memcpy(&p->setOnTime, &conf.light.setOnTime, sizeof(p->setOnTime));
+	memcpy(&p->setOffTime, &conf.light.setOffTime, sizeof(p->setOffTime));
 	p->onOfs = conf.light.onOfs;
 	p->offOfs = conf.light.offOfs;
 	p->psmMode = conf.light.psm;

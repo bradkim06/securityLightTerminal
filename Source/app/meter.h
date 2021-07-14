@@ -43,5 +43,6 @@ uint8 *METER_getSerialNum();
 
 // 점멸기용 추가
 void Relay_Status(int on);
+BOOL getRelayStatus(void);
 
 #endif // __METER_H__

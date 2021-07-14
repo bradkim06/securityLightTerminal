@@ -135,7 +135,10 @@ typedef struct {
 } NbiotTimeStamp_t;
 
 typedef struct {
-	uchar status;
+	uchar alarm;
+	uchar lampStatus;
+	uchar onTime[2];
+	uchar offTime[2];
 	uchar volt[4];
 	uchar curr[4];
 	uchar shortCurr[4];

@@ -101,6 +101,8 @@ typedef struct {
 	uint8 region;
 	uint8 onTime[2];
 	uint8 offTime[2];
+	uint8 setOnTime[2];
+	uint8 setOffTime[2];
 	uint8 onOfs;
 	uint8 offOfs;
 	uint8 psm;

@@ -128,3 +128,8 @@ void Relay_Status(int on)
 	printf_ts("Relay Status : %s[Command], %s[Status]\n", RELAY_STATUS_STR(on),
 		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
 }
+
+BOOL getRelayStatus(void)
+{
+	return P3OUT & RELAY_PIN;
+}

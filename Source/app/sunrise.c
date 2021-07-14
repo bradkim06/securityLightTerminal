@@ -223,10 +223,17 @@ void calcSunrise(Date_t *date)
 	printf("Civil twilight: %0d:%0d\n", twset.hour, twset.min);
 	printf("=============================================\n");
 
-	conf.light.onTime[HOUR] = (uint8)rise.hour;
-	conf.light.onTime[MINUTE] = (uint8)rise.min;
-	conf.light.offTime[HOUR] = (uint8)set.hour;
-	conf.light.offTime[MINUTE] = (uint8)set.min;
+	if (conf.light.timeBase == SUNRISE) {
+		conf.light.onTime[HOUR] = (uint8)rise.hour;
+		conf.light.onTime[MINUTE] = (uint8)rise.min;
+		conf.light.offTime[HOUR] = (uint8)set.hour;
+		conf.light.offTime[MINUTE] = (uint8)set.min;
+	} else if (conf.light.timeBase == CIVIL) {
+		conf.light.onTime[HOUR] = (uint8)twrise.hour;
+		conf.light.onTime[MINUTE] = (uint8)twrise.min;
+		conf.light.offTime[HOUR] = (uint8)twset.hour;
+		conf.light.offTime[MINUTE] = (uint8)twset.min;
+	}
 }
 
 BOOL updateSunTime(Date_t *date)
