@@ -76,8 +76,8 @@
 #define SERVER_IP_STR_LEN 16 // string 길이이므로 \0 처리 길이까지 포함 시킴.
 
 // Light Termianl Mode
-#define INTERNAL 1
-#define SETTING 2
+#define LMODE_INTERNAL 1
+#define LMODE_SETTING 2
 
 // Light Time Base
 #define SUNRISE 0
@@ -101,8 +101,8 @@ typedef struct {
 	uint8 region;
 	uint8 onTime[2];
 	uint8 offTime[2];
-	uint8 onOffset;
-	uint8 offOffset;
+	uint8 onOfs;
+	uint8 offOfs;
 	uint8 psm;
 	uint8 psmOnTime[2]; // Hour, Min
 	uint8 psmOffTime[2]; // Hour, Min

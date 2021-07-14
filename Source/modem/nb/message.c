@@ -264,7 +264,22 @@ static int insert_oneData(NbiotMeterData_t *p)
 
 static int insert_params(NbiotMeterParams_t *p)
 {
-	memset(p, 0, sizeof(NbiotMeterParams_t));
+	p->rInterval = conf.reportInterval;
+	p->mode = conf.light.mode;
+	p->timeBase = conf.light.timeBase;
+	p->timeTable = conf.light.region;
+	memcpy(&p->setOnTime, &conf.light.onTime, sizeof(p->setOnTime));
+	memcpy(&p->setOffTime, &conf.light.offTime, sizeof(p->setOffTime));
+	p->onOfs = conf.light.onOfs;
+	p->offOfs = conf.light.offOfs;
+	p->psmMode = conf.light.psm;
+	memcpy(&p->psmOnTime, &conf.light.psmOnTime, sizeof(p->psmOnTime));
+	memcpy(&p->psmOffTime, &conf.light.psmOffTime, sizeof(p->psmOffTime));
+	memcpy(&p->psmOnDay, &conf.light.psmOnDay, sizeof(p->psmOnDay));
+	memcpy(&p->psmOffDay, &conf.light.psmOffDay, sizeof(p->psmOffDay));
+	p->dimmingMode = conf.light.dimmingMode;
+	p->dimmingLv = conf.light.dimmingLv;
+
 	return sizeof(NbiotMeterParams_t);
 	// 27
 }

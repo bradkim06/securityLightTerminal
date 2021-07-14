@@ -146,14 +146,14 @@ typedef struct {
 typedef struct {
 	uchar rInterval;
 	uchar mode;
-	uchar timeStandard;
+	uchar timeBase;
 	uchar timeTable;
 	uchar setOnTime[2];
 	uchar setOffTime[2];
 	uchar todayOnTime[2];
 	uchar todayOffTime[2];
-	uchar on_Offset;
-	uchar off_Offset;
+	uchar onOfs;
+	uchar offOfs;
 	uchar psmMode;
 	uchar psmOnTime[2];
 	uchar psmOffTime[2];
@@ -162,7 +162,7 @@ typedef struct {
 	uchar forceMode;
 	uchar forceTime;
 	uchar dimmingMode;
-	uchar dimmingLevel;
+	uchar dimmingLv;
 } NbiotMeterParams_t;
 
 typedef struct {
