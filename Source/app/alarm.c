@@ -16,9 +16,9 @@
 
 #define ALARM_TYPE_STR(x)                                                                          \
 	(((x) == RTC_ALARM_LIGHT_ON) ?                                                             \
-		 "light on" :                                                                      \
-		 ((x) == RTC_ALARM_LIGHT_OFF) ? "light off" :                                      \
-						((x) == RTC_ALARM_REPORT) ? "report" : "unknown")
+		 "Light on" :                                                                      \
+		 ((x) == RTC_ALARM_LIGHT_OFF) ? "Light off" :                                      \
+						((x) == RTC_ALARM_REPORT) ? "Report" : "unknown")
 
 static int TimeSyncFlag = 0;
 static Date_t TimeSyncDate;
@@ -154,9 +154,6 @@ void normalScheduler()
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
 				hourdiff = conf.light.onTime[HOUR] - date.hour;
-				printf_ts("[%s - %02d:%02d:00]\n",
-					  ALARM_TYPE_STR(AlarmList[idx].type),
-					  conf.light.onTime[HOUR], conf.light.onTime[MINUTE]);
 				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
 				} else {
@@ -164,9 +161,6 @@ void normalScheduler()
 				}
 			} else if (idx == RTC_ALARM_LIGHT_OFF) {
 				hourdiff = conf.light.offTime[HOUR] - date.hour;
-				printf_ts("[%s - %02d:%02d:00]\n",
-					  ALARM_TYPE_STR(AlarmList[idx].type),
-					  conf.light.offTime[HOUR], conf.light.offTime[MINUTE]);
 				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
 				} else {
@@ -176,12 +170,12 @@ void normalScheduler()
 		}
 
 		diff = AlarmList[idx].minute - date.min;
-		if (diff <= 0) {
+		if (diff <= 1) {
 			// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기 위해 1시간을 더한다.
 			diff += 60;
 		}
 
-		printf_ts("set next alarm [%10s:%02dm diff=%02dm] - ",
+		printf_ts("set next alarm [ %s:%02dm diff=%02dm ] - ",
 			  ALARM_TYPE_STR(AlarmList[idx].type), AlarmList[idx].minute, diff);
 
 		// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
@@ -214,7 +208,7 @@ void normalScheduler()
 	int min = NextAlarm->minute;
 	RTC_alarm(0xFF, hour, min);
 
-	printf_ts("set next alarm [%02d:%02d:00] - %s\n", hour, min,
+	printf_ts("set next alarm [ %02d:%02d:00 ] - %s\n", hour, min,
 		  ALARM_TYPE_STR(NextAlarm->type));
 }
 

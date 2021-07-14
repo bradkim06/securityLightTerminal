@@ -10,6 +10,12 @@
 #include "sunrise.h"
 #include "common.h"
 
+#define MODE_SUNRISE 0
+#define MODE_CIVIL 1
+#define LMODE_TYPE_STR(x)                                                                          \
+	(((x) == MODE_SUNRISE) ? "sun rise & set time" :                                           \
+				 ((x) == MODE_CIVIL) ? "civil twilight time" : "unknown")
+
 const double pi = 3.14159;
 
 double rads;
@@ -201,12 +207,9 @@ void calcSunrise(Date_t *date)
 	if (settm > 24.0)
 		settm -= 24.0;
 
-	printf("\n Sunrise and set\n");
 	printf("=============================================\n");
-
-	printf("[ year  : %d", (int)y);
-	printf("  month : %d", (int)m);
-	printf("  day   : %d ]\n\n", (int)day);
+	printf("Sunrise and set\n");
+	printf("[ Current Time   ] : %04d-%02d-%02d\n", (int)y, (int)m, (int)day);
 
 	sunriseTime_t rise, set, twrise, twset;
 
@@ -215,13 +218,9 @@ void calcSunrise(Date_t *date)
 	gethrmn(twam, &twrise);
 	gethrmn(twpm, &twset);
 
-	printf("Latitude :  %3.1f, longitude: %3.1f, timezone: %3.1f \n", (float)latit,
-	       (float)longit, (float)tzone);
-	printf("Sunrise       : %0d:%0d\n", rise.hour, rise.min);
-	printf("Civil twilight: %0d:%0d\n", twrise.hour, twrise.min);
-	printf("Sunset        : %0d:%0d\n", set.hour, set.min);
-	printf("Civil twilight: %0d:%0d\n", twset.hour, twset.min);
-	printf("=============================================\n");
+	printf("[ Latitude       ] : %3.1f\n", (float)latit);
+	printf("[ longitude      ] : %3.1f\n", (float)longit);
+	printf("[ TimeBase       ] : %s\n", LMODE_TYPE_STR(conf.light.timeBase));
 
 	if (conf.light.timeBase == SUNRISE) {
 		conf.light.onTime[HOUR] = (uint8)rise.hour;
@@ -234,6 +233,12 @@ void calcSunrise(Date_t *date)
 		conf.light.offTime[HOUR] = (uint8)twset.hour;
 		conf.light.offTime[MINUTE] = (uint8)twset.min;
 	}
+
+	printf("[ Rise Time      ] : %02d:%02d\n", conf.light.onTime[HOUR],
+	       conf.light.onTime[MINUTE]);
+	printf("[ Set Time       ] : %02d:%02d\n", conf.light.offTime[HOUR],
+	       conf.light.offTime[MINUTE]);
+	printf("=============================================\n");
 }
 
 BOOL updateSunTime(Date_t *date)
