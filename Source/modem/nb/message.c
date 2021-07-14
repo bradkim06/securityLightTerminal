@@ -89,39 +89,15 @@ static int insert_radioQuality(NbiotRadioQuality_t *p)
 
 static int insert_meteringTime(NbiotTimeStamp_t *p)
 {
-	MeterUnitData_t *pUnit;
-	pUnit = METER_getTempData();
+	Date_t now;
+	RTC_read(&now);
 
-	if (pUnit->isTimeSync) {
-		p->year = pUnit->year;
-		p->mon = pUnit->mon;
-		p->day = pUnit->day;
-		p->hour = pUnit->hour;
-		p->min = pUnit->min;
-		p->sec = pUnit->sec;
-	} else {
-		// 검침 데이터의 시간이 동기화된 것이 아닐 경우 전송시간에 대한 차이값으로
-		// 설정.
-		// Join message가 아닐 경우 전송시간에 대한 차이값을 계산하여 설정.
-		p->year = 0xFF;
-		p->mon = 0xFF;
-		p->day = 0xFF;
-
-		Date_t now;
-		RTC_read(&now);
-		// 1. 주기보고의 경우 Base time 및 interval로 계산된 시간을 설정한다.
-		// 1.1. 이때 분단위 주기 동작 여부에 따라 다르게 설정한다.
-		// 2. 시간단위 주기동작 에서 검침시간 대비 보고시간은 report min만큼
-		// 이후에 보고한다. 2.1. 위의 이유로 분단위는 report min 값을 설정한다.
-		if (conf.isShortInterval) {
-			p->hour = 0;
-			p->min = 0;
-		} else {
-			p->hour = conf.reportInterval;
-			p->min = conf.reportMin;
-		}
-		p->sec = 0;
-	}
+	p->year = now.year - 2000;
+	p->mon = now.mon;
+	p->day = now.day;
+	p->hour = now.hour;
+	p->min = now.min;
+	p->sec = now.sec;
 
 	return sizeof(NbiotTimeStamp_t);
 }
@@ -285,8 +261,7 @@ static int insert_params(NbiotMeterParams_t *p)
 	p->dimmingMode = light.dimmingMode;
 	p->dimmingLv = light.dimmingLv;
 
-	return sizeof(NbiotMeterParams_t);
-	// 27
+	return sizeof(NbiotMeterParams_t); // 21
 }
 
 static int getCurrentDataMessage(uchar *buf)

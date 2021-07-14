@@ -18,7 +18,6 @@
 #define LIGHT_OFF_MSG 4
 #define LIGHT_ON_DONE_MSG 5
 #define LIGHT_OFF_DONE_MSG 6
-#define CHANGE_SETTINGS_MSG 7
 
 // Light on/off Type
 #define AUTO_TYPE 1
@@ -144,7 +143,7 @@ typedef struct {
 	uchar shortCurr[4];
 	char power[4];
 	uchar cumPower[4];
-} NbiotMeterData_t;
+} NbiotMeterData_t; // 26
 
 typedef struct {
 	uchar rInterval;
@@ -153,8 +152,6 @@ typedef struct {
 	uchar timeTable;
 	uchar setOnTime[2];
 	uchar setOffTime[2];
-	uchar todayOnTime[2];
-	uchar todayOffTime[2];
 	uchar onOfs;
 	uchar offOfs;
 	uchar psmMode;
@@ -162,11 +159,9 @@ typedef struct {
 	uchar psmOffTime[2];
 	uchar psmOnDay[2];
 	uchar psmOffDay[2];
-	uchar forceMode;
-	uchar forceTime;
 	uchar dimmingMode;
 	uchar dimmingLv;
-} NbiotMeterParams_t;
+} NbiotMeterParams_t; // 21
 
 typedef struct {
 	uchar protocol;

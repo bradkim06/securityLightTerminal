@@ -9,13 +9,14 @@
 #include "rtc.h"
 #include "sunrise.h"
 #include "common.h"
+#include "uart.h"
 
 #define LMODE_STR(x)                                                                               \
 	(((x) == LMODE_INTERNAL) ? "Terminal Internal Algorithm" :                                 \
 				   ((x) == LMODE_SETTING) ? "Server Setting Time" : "unknown")
 #define TIMEBASE_STR(x)                                                                            \
-	(((x) == SUNRISE_BASE) ? "sun rise & set time" :                                           \
-				 ((x) == CIVIL_BASE) ? "civil twilight time" : "unknown")
+	(((x) == SUNRISE_BASE) ? "Sunrise Time" :                                                  \
+				 ((x) == CIVIL_BASE) ? "Civil Twilight Time" : "unknown")
 
 const double pi = 3.14159;
 
@@ -197,9 +198,8 @@ void calcSunrise(Date_t *date)
 		settm -= 24.0;
 
 	printf("=============================================\n");
-	printf("Sunrise and set\n");
-	printf("[ Current Time   ] : %04d-%02d-%02d\n", (int)y, (int)m, (int)day);
-	printf("[ Light Mode     ] : %s\n", LMODE_STR(light.mode));
+	printf("[ Current Day ] : %04d-%02d-%02d\n", (int)y, (int)m, (int)day);
+	printf("[ Light Mode  ] : %s\n", LMODE_STR(light.mode));
 
 	sunriseTime_t rise, set, twrise, twset;
 
@@ -209,9 +209,9 @@ void calcSunrise(Date_t *date)
 	gethrmn(twpm, &twset);
 
 	if (light.mode == LMODE_INTERNAL) {
-		printf("[ Latitude       ] : %3.1f\n", (float)latit);
-		printf("[ longitude      ] : %3.1f\n", (float)longit);
-		printf("[ TimeBase       ] : %s\n", TIMEBASE_STR(light.timeBase));
+		printf("[ Latitude    ] : %3.1f\n", (float)latit);
+		printf("[ longitude   ] : %3.1f\n", (float)longit);
+		printf("[ TimeBase    ] : %s\n", TIMEBASE_STR(light.timeBase));
 		if (light.timeBase == SUNRISE_BASE) {
 			light.onTime[HOUR] = (uint8)rise.hour;
 			light.onTime[MINUTE] = (uint8)rise.min;
@@ -223,14 +223,12 @@ void calcSunrise(Date_t *date)
 			light.offTime[HOUR] = (uint8)twset.hour;
 			light.offTime[MINUTE] = (uint8)twset.min;
 		}
-		printf("[ Rise Time      ] : %02d:%02d\n", light.onTime[HOUR],
-		       light.onTime[MINUTE]);
-		printf("[ Set Time       ] : %02d:%02d\n", light.offTime[HOUR],
-		       light.offTime[MINUTE]);
+		printf("[ Rise Time   ] : %02d:%02d\n", light.onTime[HOUR], light.onTime[MINUTE]);
+		printf("[ Set Time    ] : %02d:%02d\n", light.offTime[HOUR], light.offTime[MINUTE]);
 	} else if (light.mode == LMODE_SETTING) {
-		printf("[ Rise Time      ] : %02d:%02d\n", light.setOnTime[HOUR],
+		printf("[ Rise Time   ] : %02d:%02d\n", light.setOnTime[HOUR],
 		       light.onTime[MINUTE]);
-		printf("[ Set Time       ] : %02d:%02d\n", light.setOffTime[HOUR],
+		printf("[ Set Time    ] : %02d:%02d\n", light.setOffTime[HOUR],
 		       light.offTime[MINUTE]);
 	}
 
@@ -240,11 +238,22 @@ void calcSunrise(Date_t *date)
 BOOL updateSunTime(Date_t *date)
 {
 	static uint8 prevDay = 0;
+	static light_t prevSetting;
 	BOOL retVal = FALSE;
+	BOOL needChange = TRUE;
 
 	if (prevDay != date->day) {
-		prevDay = date->day;
+		printf_ts("Day Changed prev(%d) current(%d)\n", prevDay, date->day);
+	} else if (memcmp(&prevSetting, &light, sizeof(light_t))) {
+		printf_ts("Light Setting Changed\n");
+	} else {
+		needChange = FALSE;
+	}
+
+	if (needChange) {
 		calcSunrise(date);
+		prevDay = date->day;
+		memcpy(&prevSetting, &light, sizeof(light_t));
 		retVal = TRUE;
 	}
 
