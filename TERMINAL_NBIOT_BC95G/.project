@@ -116,6 +116,16 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Source/app/flash.h</locationURI>
 		</link>
 		<link>
+			<name>Source/app/light.c</name>
+			<type>1</type>
+			<location>D:/terminal/Source/app/light.c</location>
+		</link>
+		<link>
+			<name>Source/app/light.h</name>
+			<type>1</type>
+			<location>D:/terminal/Source/app/light.h</location>
+		</link>
+		<link>
 			<name>Source/app/meter.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Source/app/meter.c</locationURI>

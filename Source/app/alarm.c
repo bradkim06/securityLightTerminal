@@ -134,6 +134,9 @@ void normalScheduler()
 
 	if (TimeSyncFlag) {
 		updateSunTime(&date);
+
+		AlarmList[0].minute = conf.light.onTime[MINUTE];
+		AlarmList[1].minute = conf.light.offTime[MINUTE];
 	}
 
 	// 시간 동기화에 의한 알람 중복 등록을 피하기 위해 이전 알람 이벤트에 의한 순차 등록으로 수정.
@@ -154,7 +157,7 @@ void normalScheduler()
 				printf_ts("[%s - %02d:%02d:00]\n",
 					  ALARM_TYPE_STR(AlarmList[idx].type),
 					  conf.light.onTime[HOUR], conf.light.onTime[MINUTE]);
-				if (hourdiff <= 1 && hourdiff >= -1) {
+				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
 				} else {
 					continue;
@@ -164,7 +167,7 @@ void normalScheduler()
 				printf_ts("[%s - %02d:%02d:00]\n",
 					  ALARM_TYPE_STR(AlarmList[idx].type),
 					  conf.light.offTime[HOUR], conf.light.offTime[MINUTE]);
-				if (hourdiff <= 1 && hourdiff >= -1) {
+				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
 				} else {
 					continue;

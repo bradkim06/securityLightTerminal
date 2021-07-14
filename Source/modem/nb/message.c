@@ -338,12 +338,6 @@ static BOOL checkValidAck(uchar *buf, int len)
 		return FALSE;
 	}
 
-#define INVALID_PARAM 0
-	if (p->validParams == INVALID_PARAM) {
-		printf_ts("Not Register Terminal Info In DB\n");
-		return FALSE;
-	}
-
 	return TRUE;
 }
 

@@ -169,38 +169,38 @@ typedef struct {
 } NbiotMeterParams_t;
 
 typedef struct {
-	uchar protocol; // 1 -  1
-	uchar len; // 1 -  2
-	uchar mtype; // 1 -  3
-	uchar validParams;
-	NbiotMeterParams_t params;
-	uchar checksum; // 1  - 29
+	uchar protocol;
+	uchar len;
+	uchar mtype;
+	uchar stabt1;
+	uchar stabt2;
+	uchar checksum;
 } NbiotAck_t;
 
 typedef struct {
-	uchar protocol; // 1 -  1
-	uchar len; // 1 -  2
-	uchar mtype; // 1 -  3
-	MobileId_t id; // 16 - 19
-	NbiotTimeStamp_t currTime; // 6  - 25
-	uchar ip[4]; // 4  - 29
-	uchar port[2]; // 2  - 31
-	uchar checksum; // 1  - 32
+	uchar protocol;
+	uchar len;
+	uchar mtype;
+	MobileId_t id;
+	NbiotTimeStamp_t currTime;
+	uchar ip[4];
+	uchar port[2];
+	uchar checksum;
 } NbiotCmdChgServer_t;
 
 typedef struct {
-	uchar protocol; // 1 -  1
-	uchar len; // 1 -  2
-	uchar msgType; // 1 - 3
-	uchar reportType; // 1 - 4
-	uchar lightReqType; // 1 - 5
-	MobileId_t id; // 16 - 21
-	NbiotRadioQuality_t radio; // 10 - 31
-	NbiotDeviceInfo_t term; // 8  - 39
-	NbiotTimeStamp_t meterTime; // 6  - 46
-	NbiotMeterData_t data; // 21 --> 67
+	uchar protocol;
+	uchar len;
+	uchar msgType;
+	uchar reportType;
+	uchar lightReqType;
+	MobileId_t id;
+	NbiotRadioQuality_t radio;
+	NbiotDeviceInfo_t term;
+	NbiotTimeStamp_t meterTime;
+	NbiotMeterData_t data;
 	NbiotMeterParams_t params;
-	uchar checksum; // 1  - 68
+	uchar checksum;
 } NbiotDataReport_t;
 
 int NBMSG_recvAckMsg(uchar *buf, int len);

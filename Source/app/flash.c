@@ -8,6 +8,7 @@
 #include "misc.h"
 #include "osal.h"
 #include "rtc.h"
+#include "light.h"
 
 const uint8 *FlashAddr[NUM_FLASH_SECTOR] = { (uint8 *)FLASH_SEGA_ADDR, (uint8 *)FLASH_SEGB_ADDR,
 					     (uint8 *)FLASH_SEGC_ADDR, (uint8 *)FLASH_SEGD_ADDR };
@@ -302,6 +303,8 @@ void FLASH_readConfigInfo(Config_t *config)
 
 	config->meterType = E_METER;
 	config->debugPrint = TRUE;
+
+	initLightConfig();
 }
 
 void FLASH_updateResetCount(Config_t *config)
