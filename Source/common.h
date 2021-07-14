@@ -81,8 +81,8 @@
 #define LMODE_SETTING 2
 
 // Light Time Base
-#define SUNRISE 0
-#define CIVIL 1
+#define SUNRISE_BASE 0
+#define CIVIL_BASE 1
 
 // PSM Mode
 #define PSM_NOT_USING 0
