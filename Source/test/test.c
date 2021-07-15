@@ -333,13 +333,13 @@ void TEST_readFwVersion()
 void TEST_relayMode(int flag)
 {
 	uint32 ms = TIMER_getMsec();
-	Relay_Status(flag);
+	Relay_Status(flag, AUTO);
 
 	if (flag == RELAY_TOGGLE) {
 		while (1) {
 			if (TIMER_getMsecDiff(ms) > 10000) {
 				ms = TIMER_getMsec();
-				Relay_Status(flag);
+				Relay_Status(flag, AUTO);
 			}
 
 			if (TEST_stop()) {

@@ -69,7 +69,7 @@ BOOL ATCMD_write(uint32 *timeout)
 	}
 
 	if (QUEUE_isEmpty(CommandQueue)) {
-		ATCMD_DBG("queue is empty in send\n");
+		// ATCMD_DBG("queue is empty in send\n");
 		return FALSE;
 	}
 

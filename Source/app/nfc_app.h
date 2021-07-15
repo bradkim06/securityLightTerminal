@@ -16,34 +16,46 @@
 #define NODE_CONF_REQ 0x01
 #define LORA_CONF_SET 0x02
 #define NB_CONF_SET 0x03
-#define METER_REQ 0x04
-#define SERVER_CONNECT_REQ 0x05
-#define BD_CONTROL_REQ 0x06
-#define PERIOD_METER_REQ 0x07
-// #define PERIOD_METER_ACK        0x08 // reserved
-#define PULSE_METER_VALUE_SET 0x09
-#define DEVICE_INFO_REQ 0x0A
-#define SLAVE_CHECK_REQ 0x0B
-#define NB_ID_REQ 0x0C
-#define NB_ID_SET 0x0D
+#define SERVER_CONNECT_REQ 0x04
+#define BD_CONTROL_REQ 0x05
+#define NB_ID_REQ 0x06
+#define NB_ID_SET 0x07
+#define PSM_MODE_REQ 0x08
+#define PSM_MODE_SET 0x09
 #define LORA_APP_EUI_KEY_REQ 0x11
 #define LORA_APP_EUI_KEY_SET 0x12
+#define GPS_INFO_REQ 0x0A
+#define GPS_INFO_SET 0x0B
+#define MEASURE_REQ 0x0C
 
 #define METER_BYPASS_REQ 0x41
 
 // Node -> SMART Phone
 #define LORA_CONF_REPORT 0x51
 #define NB_CONF_REPORT 0x52
-#define METER_REPORT 0x53
+#define FW_VER_REPORT 0x53
 #define SERVER_CONNECT_REPORT 0x54
 #define BD_CONTROL_ACK 0x55
-#define FW_VER_REPORT 0x56
-#define PERIOD_METER_REPORT 0x57
-#define PULSE_METER_VALUE_ACK 0x58
-#define DEVICE_INFO_REPORT 0x59
-#define SLAVE_CHECK_REPORT 0x5A
-#define NB_ID_REPORT 0x5B
+#define NB_ID_REPORT 0x56
+#define PSM_MODE_REPORT 0x58
+#define GPS_INFO_REPORT 0x5A
+#define MEASURE_REPORT 0x5C
 #define LORA_APP_EUI_KEY_REPORT 0x61
+
+// TimeTable
+#define SEOUL 1
+#define BU_SAN 2
+#define DAE_GU 3
+#define IN_CHEON 4
+#define GWANG_JU 5
+#define DAE_JEON 6
+#define UL_SAN 7
+#define SU_WON 8
+#define CHUN_CHEON 9
+#define JIN_JU 10
+#define CHEONG_JU 11
+#define JEON_JU 12
+#define JE_JU 13
 
 #define METER_BYPASS_RESP 0x91
 #define METER_BYPASS_ERROR 0x92
@@ -51,8 +63,8 @@
 #define REPORT_TYPE_REQ 0
 #define REPORT_TYPE_SET 1
 
-#define NFC_PROTOCOL_VER_1 0
-#define NFC_PROTOCOL_VER_2 1
+#define NFC_PROTOCOL_VER_1 1
+#define NFC_PROTOCOL_VER_2 2
 
 #define MSG_OFFSET_LEN 2 // Device Code(1) + msgLen(1)
 #define MSG_TYPE_POSITION 10
@@ -104,41 +116,24 @@ typedef struct {
 	uint8 mtype;
 	uint8 mversion;
 	uint8 serialNum[SERIAL_NUM_LEN];
-	uint8 datTime[4];
-	uint8 reportInterval;
+	uint8 dateTime[4];
 	uint8 serviceCode[4];
 	uint8 serverIp[4];
 	uint8 serverPort[2];
-	uint8 areaCode;
-	uint8 activeMode;
-	uint8 controlMode;
-	uint8 saveMode;
-	uint8 delayOffset;
-	uint8 dimmingMode;
+	uint8 lightMode;
+	uint8 timeBase;
+	uint8 reportInterval;
+	uint8 timeTable;
+	uint8 latitInt[2];
+	uint8 latitDec[3];
+	uint8 longitInt[2];
+	uint8 longitDec[3];
 } NfcConfSetV1_t;
 
-// For Repeator message format (protocol version 2)
 typedef struct {
 	NfcHeader_t header;
 	uint8 mtype;
 	uint8 mversion;
-	uint8 serialNum[SERIAL_NUM_LEN];
-	uint8 sleepMode;
-	uint8 dateTime[4];
-	uint8 reportInterval;
-	uint8 messageFrame;
-#if NBIOT_DEVICE
-	uint8 serverIp[4];
-	uint8 serverPort[2];
-#endif
-	NfcAmiInfo_t amiInfo;
-} NfcConfSetV2_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 meterPort;
 	uint8 year[2];
 	uint8 mon;
 	uint8 day;
@@ -159,52 +154,8 @@ typedef struct {
 	uint8 mtype;
 	uint8 mversion;
 	uint8 reset;
-	uint8 sleepMode;
-} NfcBdCtrlReqV1_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 reset;
-	uint8 sleepMode;
-	uint8 reportMode;
-} NfcBdCtrlReqV2_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 meterport;
-	uint8 year[2];
-	uint8 mon;
-	uint8 day;
-	uint8 hour;
-	uint8 min;
-	uint8 sec;
-	uint8 from_year[2];
-	uint8 from_mon;
-	uint8 from_day;
-	uint8 to_year[2];
-	uint8 to_mon;
-	uint8 to_day;
-} NfcPeriodMeterReq_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 serialNum[SERIAL_NUM_LEN];
-	uint8 meterType;
-	uint8 meterPort;
-	uint8 meterValue[4];
-	uint8 year[2];
-	uint8 mon;
-	uint8 day;
-	uint8 hour;
-	uint8 min;
-	uint8 sec;
-} NfcPulseMeterValueSet_t;
+	uint8 powerCtrl;
+} NfcBdCtrlReq_t;
 
 #define IGNORE_SERIAL_NUM 0
 #define CHANGE_SERIAL_NUM 1
@@ -224,20 +175,36 @@ typedef struct {
 	NfcHeader_t header;
 	uint8 mtype;
 	uint8 mversion;
-} NfcSlaveCheckReq_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-} NfcNbiotIdReq_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
 	uint8 serviceCode[4];
+	uint8 serverIp[4];
+	uint8 serverPort[2];
 } NfcNbiotIdSet_t;
+
+typedef struct {
+	NfcHeader_t header;
+	uint8 mtype;
+	uint8 mversion;
+	uint8 psm;
+	uint8 psmStartTime[2];
+	uint8 psmEndTime[2];
+	uint8 psmStartDate[2];
+	uint8 psmEndDate[2];
+	uint8 onOfs;
+	uint8 offOfs;
+	uint8 dimmMode;
+	uint8 dimmLv;
+} NfcPsmModeSet_t;
+
+typedef struct {
+	NfcHeader_t header;
+	uint8 mtype;
+	uint8 mversion;
+	uint8 timeTable;
+	uint8 latitInt[2];
+	uint8 latitDec[3];
+	uint8 longitInt[2];
+	uint8 longitDec[3];
+} NfcGpsSet_t;
 
 //////////////////////
 ///// Send
@@ -253,19 +220,16 @@ typedef struct {
 	uint8 errorCode;
 	uint8 serialNum[SERIAL_NUM_LEN];
 	uint8 imsi[8];
+	uint8 serviceCode[4];
 	uint8 serverIp[4];
 	uint8 serverPort[2];
-	uint8 batt;
 	uint8 fwVer[4];
-	uint8 serviceCode[4];
-	uint8 areaCode;
-	uint8 activeMode;
-	uint8 controlMode;
-	uint8 saveMode;
-	uint8 delayOffset;
-	uint8 dimmingMode;
-	uint8 reportInterval;
+	uint8 batt;
 	uint8 dateTime[4];
+	uint8 lightMode;
+	uint8 timeBase;
+	uint8 reportInterval;
+	uint8 timeTable;
 } NfcConfReportV1_t;
 
 // For Repeator message format (protocol version 2)
@@ -334,28 +298,6 @@ typedef struct {
 	uint8 accessStepOrResult;
 	uint8 rssi;
 	uint8 snr;
-} NfcServerConnReportV1_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 currentYear[2];
-	uint8 currentMon;
-	uint8 currentDay;
-	uint8 currentHour;
-	uint8 currentMin;
-	uint8 currentSec;
-	uint8 lastAccessYear[2];
-	uint8 lastAccessMon;
-	uint8 lastAccessDay;
-	uint8 lastAccessHour;
-	uint8 lastAccessMin;
-	uint8 lastAccessSec;
-	uint8 serverAccessState;
-	uint8 accessStepOrResult;
-	uint8 rssi;
-	uint8 snr;
 	uint8 rsrp;
 	uint8 rsrq;
 } NfcServerConnReportV2_t;
@@ -365,17 +307,30 @@ typedef struct {
 	uint8 mtype;
 	uint8 mversion;
 	uint8 reset;
-	uint8 sleepMode;
-} NfcBdCtrlAckV1_t;
+	uint8 powerCtrl;
+} NfcBdCtrlAck_t;
 
 typedef struct {
 	NfcHeader_t header;
 	uint8 mtype;
 	uint8 mversion;
-	uint8 reset;
-	uint8 sleepMode;
-	uint8 reportMode;
-} NfcBdCtrlAckV2_t;
+	uint8 batt;
+	uint8 year[2];
+	uint8 mon;
+	uint8 day;
+	uint8 hour;
+	uint8 min;
+	uint8 sec;
+	uint32 volt;
+	uint32 curr;
+	uint32 shortCurr;
+	int32 power;
+	uint32 cumPower;
+	uint8 status;
+	uint8 alarm;
+	uint8 onTime[2];
+	uint8 offTime[2];
+} NfcMeasureResp_t;
 
 typedef struct {
 	NfcHeader_t header;
@@ -393,22 +348,6 @@ typedef struct {
 	uint8 deviceCode;
 	uint8 deviceType;
 } NfcDevInfoReport_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-	uint8 totalBlock;
-	uint8 currentBlock;
-	uint8 meterNum;
-	uint8 meterInfo[45];
-} NfcPeriodMeterReport_t;
-
-typedef struct {
-	NfcHeader_t header;
-	uint8 mtype;
-	uint8 mversion;
-} NfcPulseMeterValueSetAck_t;
 
 typedef struct {
 	NfcHeader_t header;
@@ -435,11 +374,45 @@ typedef struct {
 	uint8 mtype;
 	uint8 mversion;
 	uint8 reportType;
+	uint8 serviceCode[4];
 	uint8 cseid[LEN_MODEM_EP_NAME];
 	uint8 iccid[10];
 } NfcNbiotIdReport_t;
 #endif
 
+typedef struct {
+	NfcHeader_t header;
+	uint8 mtype;
+	uint8 mversion;
+	uint8 reportType;
+	uint8 year[2];
+	uint8 mon;
+	uint8 day;
+	uint8 hour;
+	uint8 min;
+	uint8 sec;
+	uint8 psm;
+	uint8 psmStartTime[2];
+	uint8 psmEndTime[2];
+	uint8 psmStartDate[2];
+	uint8 psmEndDate[2];
+	uint8 onOfs;
+	uint8 offOfs;
+	uint8 dimmMode;
+	uint8 dimmLv;
+} NfcPsmResp_t;
+
+typedef struct {
+	NfcHeader_t header;
+	uint8 mtype;
+	uint8 mversion;
+	uint8 reportType;
+	uint8 timeTable;
+	uint8 latitInt[2];
+	uint8 latitDec[3];
+	uint8 longitInt[2];
+	uint8 longitDec[3];
+} NfcGpsResp_t;
 // Functio Prototype
 
 void NFCAPP_runMessage(byte *data, uint8 len);

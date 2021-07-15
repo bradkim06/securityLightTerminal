@@ -230,7 +230,9 @@ void APP_init(uint8 taskId)
 static void meteringCompleted()
 {
 	// int state = MODEM_getState();
-	MODEM_run((ModemProc_t)Metering.type, Metering.cause);
+	if (Metering.type != IMMEDIATE_METERING) {
+		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
+	}
 }
 
 BOOL APP_isMetering()
@@ -325,7 +327,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 {
 	if (events & APP_EVENT_IMMEDIATE_REPORT) {
 		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
-			/* APP_runMetering(IMMEDIATE_METERING_FOR_REPORT); */
+			APP_runMetering(IMMEDIATE_METERING, WORKER);
 		}
 		return (events ^ APP_EVENT_IMMEDIATE_REPORT);
 	}

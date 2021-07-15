@@ -42,7 +42,7 @@ void METER_addTempData(MeterUnitData_t *pUnit)
 	memcpy(&LastMetering.unit, pUnit, sizeof(MeterUnitData_t));
 }
 
-void Relay_Status(int on)
+void Relay_Status(int on, Cause_t cause)
 {
 	static char prevStatus = RELAY_OFF;
 
@@ -64,10 +64,10 @@ void Relay_Status(int on)
 	if (prevStatus != on) {
 		if (on == RELAY_ON) {
 			printf_ts("light on\n");
-			APP_runMetering(LIGHT_ON, AUTO);
+			APP_runMetering(LIGHT_ON, cause);
 		} else if (on == RELAY_OFF) {
 			printf_ts("light off\n");
-			APP_runMetering(LIGHT_OFF, AUTO);
+			APP_runMetering(LIGHT_OFF, cause);
 		}
 	}
 #define RELAY_STATUS_STR(x)                                                                        \

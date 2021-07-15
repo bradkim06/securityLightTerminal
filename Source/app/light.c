@@ -1,4 +1,5 @@
 #include "app.h"
+#include "light.h"
 
 light_t light;
 

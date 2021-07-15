@@ -145,7 +145,7 @@ void normalScheduler()
 	// 2. 알람 동작 완료 후 Idle 시간 5분.
 	// 3. 시간 오차를 고려하여 실제 알람 시간의 +-1분 오차를 고려.
 
-	int diff, lastDiff = 60;
+	int diff, lastDiff = 61;
 	int isLight = 0;
 	RtcAlarm_t *pNext = NULL;
 	for (int idx = 0; idx < RTC_ALARM_COUNT; idx++) {
@@ -257,14 +257,14 @@ void ALARM_run()
 	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
 		if (light.onTime[HOUR] == date.hour) {
 			printf_ts("light on run\n");
-			Relay_Status(RELAY_ON);
+			Relay_Status(RELAY_ON, AUTO);
 		} else {
 			printf_ts("not light on hour\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
 		if (light.offTime[HOUR] == date.hour) {
 			printf_ts("light off run\n");
-			Relay_Status(RELAY_OFF);
+			Relay_Status(RELAY_OFF, AUTO);
 		} else {
 			printf_ts("not light off hour\n");
 		}

@@ -76,26 +76,6 @@
 #define SERIAL_NUM_LEN 12
 #define SERVER_IP_STR_LEN 16 // string 길이이므로 \0 처리 길이까지 포함 시킴.
 
-// Light Termianl Mode
-#define LMODE_INTERNAL 1
-#define LMODE_SETTING 2
-
-// Light Time Base
-#define SUNRISE_BASE 0
-#define CIVIL_BASE 1
-
-// PSM Mode
-#define PSM_NOT_USING 0
-#define PSM_RELIGHT 1
-#define PSM_NOT_RELIGHT 2
-
-// Time
-#define HOUR 0
-#define MINUTE 1
-
-#define MONTH 0
-#define DAY 1
-
 struct Config {
 	uint8 serialNum[SERIAL_NUM_LEN + 1];
 	uint8 meterType;
@@ -117,7 +97,10 @@ struct Config {
 	uint16 resetCount;
 	uint8 debugPrint;
 	uint8 termModel;
-	light_t light;
+	uint8 latitInt[2];
+	uint8 latitDec[3];
+	uint8 longitInt[2];
+	uint8 longitDec[3];
 };
 
 extern struct Config conf;

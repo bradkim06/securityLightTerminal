@@ -185,44 +185,44 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 
 	NfcConfReportV1_t *p = (NfcConfReportV1_t *)msg;
 
-	/* p->mtype = NB_CONF_REPORT; */
-	/* p->mversion = NFC_PROTOCOL_VER_1; */
-	/* p->reportType = reportType; */
-	/* if (p->reportType == REPORT_TYPE_SET) { */
-	/* 	if (error) { */
-	/* 		p->result = 1; */
-	/* 	} else { */
-	/* 		p->result = 0; */
-	/* 	} */
-	/* 	p->errorCode = error; */
-	/* } */
+	p->mtype = NB_CONF_REPORT;
+	p->mversion = NFC_PROTOCOL_VER_1;
+	p->reportType = reportType;
+	if (p->reportType == REPORT_TYPE_SET) {
+		if (error) {
+			p->result = 1;
+		} else {
+			p->result = 0;
+		}
+		p->errorCode = error;
+	}
 
-	/* memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN); */
+	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
+	MODEM_getImsi(p->imsi);
+	memcpy(p->serviceCode, conf.serviceCode, 4);
 
-	/* MODEM_getImsi(p->imsi); */
-	/* MISC_ipToHexArray(conf.serverIp, p->serverIp); */
+	MISC_ipToHexArray(conf.serverIp, p->serverIp);
+	uchar temp = 0;
+	temp = p->serverIp[0];
+	p->serverIp[0] = p->serverIp[3];
+	p->serverIp[3] = temp;
 
-	/* uchar temp = 0; */
-	/* temp = p->serverIp[0]; */
-	/* p->serverIp[0] = p->serverIp[3]; */
-	/* p->serverIp[3] = temp; */
+	temp = p->serverIp[2];
+	p->serverIp[2] = p->serverIp[1];
+	p->serverIp[1] = temp;
 
-	/* temp = p->serverIp[2]; */
-	/* p->serverIp[2] = p->serverIp[1]; */
-	/* p->serverIp[1] = temp; */
+	memcpy(p->serverPort, &conf.serverPort, 2);
+	memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN);
+	p->batt = BATT_getLastVoltage() & 0xff;
+	readRtcV1(p->dateTime);
+	p->lightMode = light.mode;
+	p->timeBase = light.timeBase;
+	p->reportInterval = conf.reportInterval;
+	p->timeTable = light.region;
 
-	/* memcpy(p->serverPort, &conf.serverPort, 2); */
-	/* p->batt = BATT_getLastVoltage() & 0xff; */
-	/* memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN); */
-	/* p->reportInterval = conf.reportInterval; */
+	int msgLen = sizeof(NfcConfReportV1_t);
 
-	/* readRtcV1(p->year); */
-
-	/* // meter가 3개일 때를 기준으로 message format이 정의되어 있으므로 그 수가 */
-	/* // 모자라면 그만큼 줄임 */
-	/* int msgLen = sizeof(NfcConfReportV1_t) - (3 - p->nMeter) * 2; */
-
-	/* send(msg, msgLen); */
+	send(msg, msgLen);
 }
 
 void sendNodeConfReport(uint8 reportType, int error)
@@ -230,8 +230,28 @@ void sendNodeConfReport(uint8 reportType, int error)
 	sendNodeConfReportV1(reportType, error);
 }
 
-void sendMeterReport()
+static void sendMeterReport(void)
 {
+	byte msg[64];
+	memset(msg, 0, sizeof(msg));
+
+	NfcMeasureResp_t *p = (NfcMeasureResp_t *)msg;
+	MeterUnitData_t *pUnitData = METER_getTempData();
+
+	readRtcV1(p->year);
+	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
+	memcpy(&p->curr, &pUnitData->curr, sizeof(pUnitData->curr));
+	memcpy(&p->shortCurr, &pUnitData->shortCurr, sizeof(pUnitData->shortCurr));
+	memcpy(&p->power, &pUnitData->power, sizeof(pUnitData->power));
+	memcpy(&p->cumPower, &pUnitData->cumPower, sizeof(pUnitData->cumPower));
+	p->status = getRelayStatus();
+	p->alarm = pUnitData->meterStatus;
+	memcpy(p->onTime, light.onTime, 2);
+	memcpy(p->offTime, light.offTime, 2);
+
+	int msgLen = sizeof(NfcMeasureResp_t);
+
+	send(msg, msgLen);
 }
 
 void sendFwVerReport()
@@ -249,39 +269,14 @@ void sendFwVerReport()
 	send(msg, sizeof(NfcFwVerReport_t));
 }
 
-void sendDeviceInfo()
-{
-	byte msg[64];
-	memset(msg, 0, sizeof(msg));
-
-	NfcDevInfoReport_t *p = (NfcDevInfoReport_t *)msg;
-
-	p->mtype = DEVICE_INFO_REPORT;
-	p->mversion = NFC_PROTOCOL_VER_1;
-
-	memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN);
-	memcpy(p->serialNum, conf.serialNum, SERIAL_NUM_LEN);
-	p->deviceCode = getMyDeviceCode();
-
-	p->deviceType = conf.termModel;
-
-	send(msg, sizeof(NfcDevInfoReport_t));
-}
-
 void sendServerConnectReport(int reqType)
 {
 	byte msg[64];
 	memset(msg, 0, sizeof(msg));
 
-#if NBIOT_DEVICE
 	NfcServerConnReportV2_t *p = (NfcServerConnReportV2_t *)msg;
 	p->mtype = SERVER_CONNECT_REPORT;
 	p->mversion = NFC_PROTOCOL_VER_2;
-#else
-	NfcServerConnReportV1_t *p = (NfcServerConnReportV1_t *)msg;
-	p->mtype = SERVER_CONNECT_REPORT;
-	p->mversion = NFC_PROTOCOL_VER_1;
-#endif
 
 	readRtcV1(p->currentYear);
 
@@ -309,11 +304,7 @@ void sendServerConnectReport(int reqType)
 	p->rsrq = MODEM_getAbsRsrq();
 #endif
 
-#if NBIOT_DEVICE
 	send(msg, sizeof(NfcServerConnReportV2_t));
-#else
-	send(msg, sizeof(NfcServerConnReportV1_t));
-#endif
 
 	if (reqType == 1) { // 접속 시작 명령
 		if (accessState == ACCESS_STATE_IDLE) {
@@ -331,51 +322,66 @@ void sendServerConnectReport(int reqType)
 	}
 }
 
-void sendPulseMeterValueAck()
+static void sendBdControlAck(uint8 reset, uint8 powerCtrl)
 {
 	byte msg[64];
 	memset(msg, 0, sizeof(msg));
 
-	NfcPulseMeterValueSetAck_t *p = (NfcPulseMeterValueSetAck_t *)msg;
-
-	p->mtype = PULSE_METER_VALUE_ACK;
-	p->mversion = NFC_PROTOCOL_VER_1;
-
-	send(msg, sizeof(NfcPulseMeterValueSetAck_t));
-}
-
-void sendBdControlAck(uint8 mversion, uint8 reset, uint8 sleepMode, uint8 reportMode)
-{
-	byte msg[64];
-	memset(msg, 0, sizeof(msg));
-
-	// Protocol version 관계없이 동일한 Data 먼저 처리.
-	NfcBdCtrlAckV1_t *p = (NfcBdCtrlAckV1_t *)msg;
+	NfcBdCtrlAck_t *p = (NfcBdCtrlAck_t *)msg;
 
 	p->mtype = BD_CONTROL_ACK;
-	p->mversion = mversion;
+	p->mversion = NFC_PROTOCOL_VER_1;
 	p->reset = reset;
+	p->powerCtrl = powerCtrl;
 
-	if (sleepMode) {
-		p->sleepMode = SLEEP_MODE_SLEEP;
-	} else {
-		p->sleepMode = SLEEP_MODE_NORMAL;
-	}
+	int messageLen = sizeof(NfcBdCtrlAck_t);
 
-	// Protocol version에 따라 다른 부분 처리.
-	int messageLen;
-	if (mversion == NFC_PROTOCOL_VER_1) {
-		messageLen = sizeof(NfcBdCtrlAckV1_t);
-	} else {
-		messageLen = sizeof(NfcBdCtrlAckV2_t);
+	send(msg, messageLen);
+}
 
-		NfcBdCtrlAckV2_t *p = (NfcBdCtrlAckV2_t *)msg;
-		if (reportMode) {
-			p->reportMode = REPORT_MODE_TERMINAL;
-		} else {
-			p->reportMode = REPORT_MODE_SERVER;
-		}
-	}
+static void sendPsmResp(uint8 reportType)
+{
+	byte msg[64];
+	memset(msg, 0, sizeof(msg));
+
+	NfcPsmResp_t *p = (NfcPsmResp_t *)msg;
+
+	p->mtype = PSM_MODE_REPORT;
+	p->mversion = NFC_PROTOCOL_VER_1;
+	p->reportType = reportType;
+
+	readRtcV1(p->year);
+
+	p->psm = light.psm;
+	memcpy(p->psmStartTime, light.psmOnTime, 2);
+	memcpy(p->psmStartDate, light.psmOnDay, 2);
+	p->onOfs = light.onOfs;
+	p->offOfs = light.offOfs;
+	p->dimmMode = light.dimmingMode;
+	p->dimmLv = light.dimmingLv;
+
+	int messageLen = sizeof(NfcPsmResp_t);
+
+	send(msg, messageLen);
+}
+
+static void sendGpsResp(uint8 reportType)
+{
+	byte msg[64];
+	memset(msg, 0, sizeof(msg));
+
+	NfcGpsResp_t *p = (NfcGpsResp_t *)msg;
+
+	p->mtype = GPS_INFO_REPORT;
+	p->mversion = NFC_PROTOCOL_VER_1;
+	p->reportType = reportType;
+	p->timeTable = light.region;
+	memcpy(p->latitInt, conf.latitInt, 2);
+	memcpy(p->latitDec, conf.latitDec, 2);
+	memcpy(p->longitInt, conf.longitInt, 2);
+	memcpy(p->longitDec, conf.longitDec, 2);
+
+	int messageLen = sizeof(NfcGpsResp_t);
 
 	send(msg, messageLen);
 }
@@ -384,80 +390,106 @@ void sendBdControlAck(uint8 mversion, uint8 reset, uint8 sleepMode, uint8 report
 /////  Recv Message
 ///////////////////////////////
 
-// void Recv_Node_Conf_Req(byte* data, uint8 len)
-// {
-//     sendNodeConfReport(REPORT_TYPE_REQ, 0);
-// }
+void Recv_Node_Conf_Req(byte *data, uint8 len)
+{
+	sendNodeConfReport(REPORT_TYPE_REQ, 0);
+}
 
 void recvNodeConfSetV1(byte *data, uint8 len)
 {
 	NfcConfSetV1_t *p = (NfcConfSetV1_t *)data;
 
-	/* setRtcV1(p->year); */
+	setRtcV1(p->dateTime);
 
-	/* Config_t tconfig; */
-	/* memcpy(&tconfig, &conf, sizeof(Config_t)); */
+	Config_t tconfig;
+	memcpy(&tconfig, &conf, sizeof(Config_t));
 
-	/* int error = 0; */
-	/* int changed = 0; */
-	/* do { */
-	/* 	// p->serialNum --> check하여 에러 처리할 필요가 있는가? */
-	/* 	if (memcmp(p->serialNum, tconfig.serialNum, SERIAL_NUM_LEN) != */
-	/* 	    0) { */
-	/* 		error = CONFIG_ERR_SERIAL_NUM; */
-	/* 		break; */
-	/* 	} */
+	light_t tlight;
+	memcpy(&tlight, &light, sizeof(light_t));
 
-	/* 	uint8 ri = p->reportInterval; */
+	int error = 0;
+	int changed = 0;
+	do {
+		// p->serialNum --> check하여 에러 처리할 필요가 있는가?
+		if (memcmp(p->serialNum, tconfig.serialNum, SERIAL_NUM_LEN) != 0) {
+			error = CONFIG_ERR_SERIAL_NUM;
+			break;
+		}
 
-	/* 	if ((24 % mi) != 0 || (24 % ri) != 0 || mi > ri) { */
-	/* 		error = CONFIG_ERR_METERING_PARAM; */
-	/* 		break; */
-	/* 	} */
+		uint8 ri = p->reportInterval;
 
-	/* 	if (tconfig.reportInterval != ri) { */
-	/* 		tconfig.reportInterval = ri; */
-	/* 		changed = 1; */
-	/* 	} */
+		if ((24 % ri) != 0) {
+			error = CONFIG_ERR_METERING_PARAM;
+			break;
+		}
 
-	/* #if NBIOT_DEVICE */
-	/* 	char newIP[SERVER_IP_STR_LEN]; */
-	/* 	sprintf(newIP, "%d.%d.%d.%d", p->serverIp[3], p->serverIp[2], */
-	/* 		p->serverIp[1], p->serverIp[0]); */
+		if (tconfig.reportInterval != ri) {
+			tconfig.reportInterval = ri;
+			changed = 1;
+		}
 
-	/* 	if (strncmp(newIP, tconfig.serverIp, SERVER_IP_STR_LEN) != 0) { */
-	/* 		strcpy(tconfig.serverIp, newIP); */
-	/* 		changed = 1; */
-	/* 	} */
+		char newIP[SERVER_IP_STR_LEN];
+		sprintf(newIP, "%d.%d.%d.%d", p->serverIp[3], p->serverIp[2], p->serverIp[1],
+			p->serverIp[0]);
 
-	/* 	uint16 newPort; */
-	/* 	memcpy(&newPort, p->serverPort, 2); */
+		if (strncmp(newIP, tconfig.serverIp, SERVER_IP_STR_LEN) != 0) {
+			strcpy(tconfig.serverIp, newIP);
+			changed = 1;
+		}
 
-	/* 	if (newPort != tconfig.serverPort) { */
-	/* 		tconfig.serverPort = newPort; */
-	/* 		changed = 1; */
-	/* 	} */
-	/* #endif */
-	/* 	uint8 mt = p->meterInfo[0].meterType; */
-	/* 	if (mt != E_METER) { */
-	/* 		error = CONFIG_ERR_METER_TYPE; */
-	/* 		break; */
-	/* 	} */
+		uint16 newPort;
+		memcpy(&newPort, p->serverPort, 2);
 
-	/* 	if (tconfig.meterType != mt) { */
-	/* 		tconfig.meterType = mt; */
-	/* 		changed = 1; */
-	/* 	} */
+		if (newPort != tconfig.serverPort) {
+			tconfig.serverPort = newPort;
+			changed = 1;
+		}
 
-	/* 	error = 0; */
-	/* } while (0); */
+		if (p->lightMode) {
+			tlight.mode = p->lightMode;
+			changed = 1;
+		}
 
-	/* if (error == 0 && changed) { */
-	/* 	memcpy(&conf, &tconfig, sizeof(Config_t)); */
-	/* 	OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG); */
-	/* } */
+		if (p->timeBase) {
+			tlight.timeBase = p->timeBase;
+			changed = 1;
+		}
 
-	/* sendNodeConfReport(REPORT_TYPE_SET, error); */
+		if (p->timeTable) {
+			tlight.region = p->timeTable;
+			changed = 1;
+		}
+
+		if (p->latitInt[0] || p->latitInt[1]) {
+			memcpy(tconfig.latitInt, p->latitInt, sizeof(p->latitInt));
+			changed = 1;
+		}
+
+		if (p->latitDec[0] || p->latitDec[1] || p->latitDec[2]) {
+			memcpy(tconfig.latitDec, p->latitDec, sizeof(p->latitDec));
+			changed = 1;
+		}
+
+		if (p->longitInt[0] || p->longitInt[1]) {
+			memcpy(tconfig.longitInt, p->longitInt, sizeof(p->longitInt));
+			changed = 1;
+		}
+
+		if (p->longitDec[0] || p->longitDec[1] || p->longitDec[2]) {
+			memcpy(tconfig.longitDec, p->longitDec, sizeof(p->longitDec));
+			changed = 1;
+		}
+
+		error = 0;
+	} while (0);
+
+	if (error == 0 && changed) {
+		memcpy(&conf, &tconfig, sizeof(Config_t));
+		memcpy(&light, &tlight, sizeof(light_t));
+		OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG);
+	}
+
+	sendNodeConfReport(REPORT_TYPE_SET, error);
 }
 
 void recvNodeConfSet(byte *data, uint8 len)
@@ -479,14 +511,23 @@ void recvServerConnectReq(byte *data, uint8 len)
 	sendServerConnectReport(p->reqType);
 }
 
-void recvPulseMeterValueSet(byte *data, uint8 len)
+static void recvBdControlReq(byte *data, uint8 len)
 {
-	// NfcPulseMeterValueSet_t *p = (NfcPulseMeterValueSet_t *)data;
-	sendPulseMeterValueAck();
-}
+	NfcBdCtrlReq_t *p = (NfcBdCtrlReq_t *)data;
 
-void recvBdControlReq(byte *data, uint8 len)
-{
+	if (p->reset) {
+		OSAL_setEvent(APP_getTaskId(), APP_EVENT_REBOOT);
+	}
+
+#define POWER_ON 1
+#define POWER_OFF 2
+	if (p->powerCtrl == POWER_ON) {
+		Relay_Status(RELAY_ON, WORKER);
+	} else if (p->powerCtrl == POWER_OFF) {
+		Relay_Status(RELAY_OFF, WORKER);
+	}
+
+	sendBdControlAck(p->reset, p->powerCtrl);
 }
 
 ///////////////////////////////
@@ -578,9 +619,8 @@ void recvMeterBypassRequest(byte *data, uint8 len)
 ///////////////////////////////
 /////  Send Recv NB-IoT for U+ Message
 ///////////////////////////////
-#if NBIOT_DEVICE
 
-void sendNbiotIdReport(uint8 reportType)
+static void sendNbiotIdReport(uint8 reportType)
 {
 	byte msg[64];
 	memset(msg, 0, sizeof(msg));
@@ -588,34 +628,98 @@ void sendNbiotIdReport(uint8 reportType)
 	NfcNbiotIdReport_t *p = (NfcNbiotIdReport_t *)msg;
 
 	p->mtype = NB_ID_REPORT;
-	p->mversion = 0;
+	p->mversion = NFC_PROTOCOL_VER_1;
 	p->reportType = reportType;
 
+	memcpy(p->serviceCode, conf.serviceCode, 4);
 	MODEM_getCseId(p->cseid);
 	MODEM_getIccid(p->iccid);
 
 	send(msg, sizeof(NfcNbiotIdReport_t));
 }
 
-void recvNbiotIdSet(byte *data, uint8 len)
+static void recvNbiotIdSet(byte *data, uint8 len)
 {
 	NfcNbiotIdSet_t *p = (NfcNbiotIdSet_t *)data;
 
+	BOOL isChange = FALSE;
 	Config_t tconfig;
 	memcpy(&tconfig, &conf, sizeof(Config_t));
 	if (memcmp(tconfig.serviceCode, p->serviceCode, 4) != 0) {
 		memcpy(tconfig.serviceCode, p->serviceCode, 4);
 		if (MODEM_makeCseID(tconfig.serviceCode, NULL, NULL, NULL, 0)) {
 			// 설정 변경 시 Global context에 복사 후 이벤트 등록
-			memcpy(&conf, &tconfig, sizeof(Config_t));
-			OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG);
+			isChange = TRUE;
 		}
+	}
+
+	if (p->serverIp[3]) {
+		char newIP[SERVER_IP_STR_LEN];
+		sprintf(newIP, "%d.%d.%d.%d", p->serverIp[3], p->serverIp[2], p->serverIp[1],
+			p->serverIp[0]);
+
+		if (strncmp(newIP, tconfig.serverIp, SERVER_IP_STR_LEN) != 0) {
+			strcpy(tconfig.serverIp, newIP);
+			isChange = TRUE;
+		}
+	}
+
+	if (p->serverPort[1] || p->serverPort[0]) {
+		uint16 newPort;
+		memcpy(&newPort, p->serverPort, 2);
+
+		if (newPort != tconfig.serverPort) {
+			tconfig.serverPort = newPort;
+			isChange = TRUE;
+		}
+	}
+
+	if (isChange) {
+		memcpy(&conf, &tconfig, sizeof(Config_t));
+		OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG);
 	}
 
 	sendNbiotIdReport(REPORT_TYPE_SET);
 }
 
-#endif
+static void recvPsmModeSet(byte *data, uint8 len)
+{
+	NfcPsmModeSet_t *p = (NfcPsmModeSet_t *)data;
+
+	if (p->psm) {
+		light.psm = p->psm;
+		memcpy(light.psmOnTime, p->psmStartTime, 2);
+		memcpy(light.psmOffTime, p->psmEndTime, 2);
+		memcpy(light.psmOnDay, p->psmStartDate, 2);
+		memcpy(light.psmOffDay, p->psmEndDate, 2);
+	}
+
+	if (p->dimmMode) {
+		light.dimmingMode = p->dimmMode;
+	}
+
+	if (p->dimmLv) {
+		light.dimmingLv = p->dimmLv;
+	}
+
+	sendPsmResp(REPORT_TYPE_SET);
+}
+
+static void recvGpsSet(byte *data, uint8 len)
+{
+	NfcGpsSet_t *p = (NfcGpsSet_t *)data;
+
+	if (p->timeTable) {
+		light.region = p->timeTable;
+
+		memcpy(conf.latitInt, p->latitInt, 2);
+		memcpy(conf.latitDec, p->latitDec, 2);
+		memcpy(conf.longitInt, p->longitInt, 2);
+		memcpy(conf.longitDec, p->longitDec, 2);
+	}
+
+	sendGpsResp(REPORT_TYPE_SET);
+}
 
 ///////////////////////////////
 /////  NFC process and print
@@ -645,17 +749,11 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 {
 	switch (data[MSG_TYPE_POSITION]) {
 	case NODE_CONF_REQ:
-		// Recv_Node_Conf_Req(data, len);
-		sendNodeConfReport(REPORT_TYPE_REQ, CONFIG_ERR_NONE);
+		Recv_Node_Conf_Req(data, len);
 		break;
 
-	case LORA_CONF_SET:
 	case NB_CONF_SET:
 		recvNodeConfSet(data, len);
-		break;
-
-	case METER_REQ:
-		recvMeterReq(data, len);
 		break;
 
 	case SERVER_CONNECT_REQ:
@@ -666,23 +764,6 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 		recvBdControlReq(data, len);
 		break;
 
-	case PERIOD_METER_REQ:
-		break;
-
-	case PULSE_METER_VALUE_SET:
-		// Not support this command
-		sendFwVerReport();
-		break;
-
-	case DEVICE_INFO_REQ:
-		sendDeviceInfo();
-		break;
-
-	case SLAVE_CHECK_REQ:
-		sendFwVerReport();
-		break;
-
-#if NBIOT_DEVICE
 	case NB_ID_REQ:
 		sendNbiotIdReport(REPORT_TYPE_REQ);
 		break;
@@ -690,12 +771,26 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 	case NB_ID_SET:
 		recvNbiotIdSet(data, len);
 		break;
-#else
-	case NB_ID_REQ:
-	case NB_ID_SET:
-		sendFwVerReport();
+
+	case PSM_MODE_REQ:
+		sendPsmResp(REPORT_TYPE_REQ);
 		break;
-#endif
+
+	case PSM_MODE_SET:
+		recvPsmModeSet(data, len);
+		break;
+
+	case GPS_INFO_REQ:
+		sendGpsResp(REPORT_TYPE_REQ);
+		break;
+
+	case GPS_INFO_SET:
+		recvGpsSet(data, len);
+		break;
+
+	case MEASURE_REQ:
+		recvMeterReq(data, len);
+		break;
 
 	case LORA_APP_EUI_KEY_REQ:
 	case LORA_APP_EUI_KEY_SET:

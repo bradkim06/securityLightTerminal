@@ -3,6 +3,26 @@
 
 #include "var_type.h"
 
+// Light Termianl Mode
+#define LMODE_INTERNAL 1
+#define LMODE_SETTING 2
+
+// Light Time Base
+#define SUNRISE_BASE 0
+#define CIVIL_BASE 1
+
+// PSM Mode
+#define PSM_NOT_USING 0
+#define PSM_RELIGHT 1
+#define PSM_NOT_RELIGHT 2
+
+// Time
+#define HOUR 0
+#define MINUTE 1
+
+#define MONTH 0
+#define DAY 1
+
 typedef struct {
 	uint8 mode;
 	uint8 timeBase;

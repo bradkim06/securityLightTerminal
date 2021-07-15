@@ -27,7 +27,8 @@ typedef enum {
 	LIGHT_ON,
 	LIGHT_OFF,
 	STABILIZE_ON,
-	StABILIZE_OFF,
+	STABILIZE_OFF,
+	IMMEDIATE_METERING,
 } MeteringType_t;
 
 typedef enum {
