@@ -226,7 +226,6 @@ void MODEM_run(ModemProc_t proc)
 		MODEM_DBG("Modem is running, step (%s)\n", NBIOT_STEP_STR(nbCtx.nextStep));
 		return;
 	}
-	APP_runMetering(PERIODIC_METERING);
 
 	modemCtx.isStop = FALSE;
 	modemCtx.currentProc = proc;
@@ -247,7 +246,6 @@ void MODEM_run(ModemProc_t proc)
 		nbCtx.status.waitDL = 0;
 		// ATCMD_release();
 	}
-
 	OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 }
 

@@ -228,8 +228,12 @@ void APP_init(uint8 taskId)
 
 static void meteringCompleted()
 {
-	int state = MODEM_getState();
-	// MODEM_run(MODEM_PROC_PERIOD_REPORT);
+	// int state = MODEM_getState();
+	if (Metering.type == INITIAL_METERING) {
+		MODEM_run(MODEM_PROC_INIT);
+	} else {
+		MODEM_run(MODEM_PROC_PERIOD_REPORT);
+	}
 }
 
 BOOL APP_isMetering()
@@ -278,7 +282,7 @@ void APP_runPeriodicReport()
 {
 	int state = MODEM_getState();
 	if (state == DEVICE_STATUS_IDLE) {
-		MODEM_run(MODEM_PROC_PERIOD_REPORT);
+		APP_runMetering(PERIODIC_METERING);
 	} else {
 		printf_ts("Modem is running(%d) when reporting period\n", state);
 	}
@@ -345,7 +349,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_INITIAL) {
-		MODEM_run(MODEM_PROC_INIT);
+		APP_runMetering(INITIAL_METERING);
 		return (events ^ APP_EVENT_INITIAL);
 	}
 
