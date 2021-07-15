@@ -13,6 +13,8 @@
 #include "test.h"
 #include "uart.h"
 
+#define CHECKSUM_OFS 3
+
 #if defined(DEBUG)
 #define NBMSG_DBG(...)                                                                             \
 	do {                                                                                       \
@@ -267,8 +269,8 @@ static int getCurrentDataMessage(uchar *buf)
 
 	int len = 0;
 	p->msgType = NBIOT_DATA_REPORT;
-	p->reportType = PERIOD_MSG;
-	p->lightReqType = AUTO_TYPE;
+	p->reportType = modemCtx.currentProc;
+	p->lightReqType = modemCtx.cause;
 	len += 3;
 
 	len += insert_id(&p->id);
@@ -284,31 +286,104 @@ static int getCurrentDataMessage(uchar *buf)
 	return len + 3; // 3 = protocol + len + checksum
 }
 
-static BOOL checkValidAck(uchar *buf, int len)
+static BOOL checkDataAck(uchar *buf, int len)
 {
 	NbiotAck_t *p = (NbiotAck_t *)buf;
-	uchar checksum = cal_checksum(&p->mtype, len - 3);
+	uchar checksum = cal_checksum(&p->mtype, len - CHECKSUM_OFS);
 
 	if (p->checksum != checksum) {
 		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
 		return FALSE;
 	}
 
-#define ACK_PROTOCOL 0xC1
-	if (p->protocol != ACK_PROTOCOL) {
-		printf_ts("protocol version not match need(0x%02X) recv(0x%02X)\n", ACK_PROTOCOL,
-			  p->protocol);
-		return FALSE;
-	}
+	return TRUE;
+}
 
-#define ACK_MTYPE 0x50
-	if (p->mtype != ACK_MTYPE) {
-		printf_ts("message type not match need(0x%02X) recv(0x%02X)\n", ACK_MTYPE,
-			  p->mtype);
+static BOOL checkResetCmd(uchar *buf, int len)
+{
+	ResetCmd_t *p = (ResetCmd_t *)buf;
+	uchar checksum = cal_checksum(&p->mtype, len - CHECKSUM_OFS);
+
+	if (p->checksum != checksum) {
+		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
 		return FALSE;
 	}
 
 	return TRUE;
+}
+
+static BOOL checkLampCtrl(uchar *buf, int len)
+{
+	LampCtrl_t *p = (LampCtrl_t *)buf;
+	uchar checksum = cal_checksum(&p->mtype, len - CHECKSUM_OFS);
+
+	if (p->checksum != checksum) {
+		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static BOOL checkReadConf(uchar *buf, int len)
+{
+	ReadConf_t *p = (ReadConf_t *)buf;
+	uchar checksum = cal_checksum(&p->mtype, len - CHECKSUM_OFS);
+
+	if (p->checksum != checksum) {
+		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static BOOL checkChangeConf(uchar *buf, int len)
+{
+	ChangeConf_t *p = (ChangeConf_t *)buf;
+	uchar checksum = cal_checksum(&p->mtype, len - CHECKSUM_OFS);
+
+	if (p->checksum != checksum) {
+		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static BOOL checkValidAck(uchar *buf, int len)
+{
+	BOOL retVal = FALSE;
+
+#define ACK_PROTOCOL 0xC1
+	if (buf[0] != ACK_PROTOCOL) {
+		printf_ts("protocol version not match need(0x%02X) recv(0x%02X)\n", ACK_PROTOCOL,
+			  buf[0]);
+		return FALSE;
+	}
+
+	switch (buf[2]) {
+	case DATA_ACK:
+		retVal = checkDataAck(buf, len);
+		break;
+	case RESET_COMMAND:
+		retVal = checkResetCmd(buf, len);
+		break;
+	case LAMP_CTRL:
+		retVal = checkLampCtrl(buf, len);
+		break;
+	case REQ_CONFIG:
+		retVal = checkReadConf(buf, len);
+		break;
+	case CHANGE_CONFIG:
+		retVal = checkChangeConf(buf, len);
+		break;
+
+	default:
+		break;
+	}
+
+	return retVal;
 }
 
 int NBMSG_recvAckMsg(uchar *buf, int len)

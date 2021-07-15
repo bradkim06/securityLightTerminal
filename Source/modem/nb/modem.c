@@ -33,15 +33,7 @@
 	} while (0);
 #endif
 
-typedef struct {
-	ModemProc_t currentProc;
-	BOOL isStop;
-	BOOL isPowerOn;
-	uint8 taskId;
-	uint8 retry;
-} ModemContext_t;
-
-static ModemContext_t modemCtx;
+ModemContext_t modemCtx;
 
 void MODEM_turnOn()
 {
@@ -219,7 +211,7 @@ int MODEM_read(char *buf)
 	return len;
 }
 
-void MODEM_run(ModemProc_t proc)
+void MODEM_run(ModemProc_t proc, Cause_t cause)
 {
 	// 무선통신 간의 접속간격이 필요한 경우도 있으므로 getState()를 사용.
 	if (MODEM_getState() != DEVICE_STATUS_IDLE) {
@@ -229,6 +221,7 @@ void MODEM_run(ModemProc_t proc)
 
 	modemCtx.isStop = FALSE;
 	modemCtx.currentProc = proc;
+	modemCtx.cause = cause;
 
 	if (proc == MODEM_PROC_INIT) {
 		NBIOT_open();
@@ -244,7 +237,6 @@ void MODEM_run(ModemProc_t proc)
 		nbCtx.status.error = 0;
 		nbCtx.status.setCfg = 0;
 		nbCtx.status.waitDL = 0;
-		// ATCMD_release();
 	}
 	OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);
 }
@@ -388,6 +380,9 @@ int MODEM_getState()
 	case NBIOT_STEP_FOTA:
 	case NBIOT_STEP_TRANSFER:
 		status = DEVICE_STATUS_COMM;
+		break;
+	default:
+		status = DEVICE_STATUS_IDLE;
 		break;
 	}
 

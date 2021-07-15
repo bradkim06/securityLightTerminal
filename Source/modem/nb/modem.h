@@ -67,7 +67,7 @@ void MODEM_enable();
 void MODEM_disable();
 void MODEM_write(const char *pCmd);
 int MODEM_read(char *buf);
-void MODEM_run(ModemProc_t proc);
+void MODEM_run(ModemProc_t proc, Cause_t cause);
 void MODEM_stop(BOOL isVccOff, BOOL isLcdOn);
 
 void MODEM_getImei(uchar *imei);
@@ -92,6 +92,17 @@ BOOL MODEM_makeCseID(const char *sc, const char *ctnStr, const char *iccidStr, c
 uchar *MODEM_getErrorLog(uint8 idx);
 int MODEM_getTaskId();
 ModemProc_t MODEM_getCurrentProc();
+
+typedef struct {
+	ModemProc_t currentProc;
+	Cause_t cause;
+	BOOL isStop;
+	BOOL isPowerOn;
+	uint8 taskId;
+	uint8 retry;
+} ModemContext_t;
+
+extern ModemContext_t modemCtx;
 
 /* 추가해야 할 인터페이스 */
 event32_t MODEM_tasks(uint8 taskId, event32_t events);

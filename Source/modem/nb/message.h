@@ -25,6 +25,13 @@
 #define SERVER_TYPE 3
 #define FORCE_TYPE 4
 
+// Ack Type
+#define DATA_ACK 0x50
+#define RESET_COMMAND 0x10
+#define LAMP_CTRL 0x11
+#define REQ_CONFIG 0x12
+#define CHANGE_CONFIG 0x13
+
 #define NBIOT_QA_MSG_VER 1
 #define NBIOT_ERR_MSG_VER 1
 
@@ -176,12 +183,32 @@ typedef struct {
 	uchar protocol;
 	uchar len;
 	uchar mtype;
-	MobileId_t id;
-	NbiotTimeStamp_t currTime;
-	uchar ip[4];
-	uchar port[2];
 	uchar checksum;
-} NbiotCmdChgServer_t;
+} ResetCmd_t;
+
+typedef struct {
+	uchar protocol;
+	uchar len;
+	uchar mtype;
+	uchar lampStatus;
+	uchar forceMin;
+	uchar checksum;
+} LampCtrl_t;
+
+typedef struct {
+	uchar protocol;
+	uchar len;
+	uchar mtype;
+	uchar checksum;
+} ReadConf_t;
+
+typedef struct {
+	uchar protocol;
+	uchar len;
+	uchar mtype;
+	NbiotMeterParams_t params;
+	uchar checksum;
+} ChangeConf_t;
 
 typedef struct {
 	uchar protocol;

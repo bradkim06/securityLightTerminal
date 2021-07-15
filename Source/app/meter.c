@@ -62,8 +62,13 @@ void Relay_Status(int on)
 	}
 
 	if (prevStatus != on) {
-		printf_ts("light status change\n");
-		APP_runPeriodicReport();
+		if (on == RELAY_ON) {
+			printf_ts("light on\n");
+			APP_runMetering(LIGHT_ON, AUTO);
+		} else if (on == RELAY_OFF) {
+			printf_ts("light off\n");
+			APP_runMetering(LIGHT_OFF, AUTO);
+		}
 	}
 #define RELAY_STATUS_STR(x)                                                                        \
 	(((x) == RELAY_OFF) ?                                                                      \

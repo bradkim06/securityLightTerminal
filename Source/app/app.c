@@ -24,6 +24,7 @@ typedef struct {
 	uint8 meterType;
 	uint8 success;
 	MeteringType_t type;
+	Cause_t cause;
 } Metering_t;
 
 /**
@@ -229,11 +230,7 @@ void APP_init(uint8 taskId)
 static void meteringCompleted()
 {
 	// int state = MODEM_getState();
-	if (Metering.type == INITIAL_METERING) {
-		MODEM_run(MODEM_PROC_INIT);
-	} else {
-		MODEM_run(MODEM_PROC_PERIOD_REPORT);
-	}
+	MODEM_run((ModemProc_t)Metering.type, Metering.cause);
 }
 
 BOOL APP_isMetering()
@@ -243,23 +240,23 @@ BOOL APP_isMetering()
 
 void APP_bypassMetering(uint8 *body, int bodyLen)
 {
-	// 미터 조정을 위한 요청이라는 걸 기록하고, 재전송은 없음
-	Metering.nRetry = 1;
-	Metering.inProcess = 1;
-	Metering.meterType = conf.meterType;
-	Metering.type = BYPASS_METERING;
+	// // 미터 조정을 위한 요청이라는 걸 기록하고, 재전송은 없음
+	// Metering.nRetry = 1;
+	// Metering.inProcess = 1;
+	// Metering.meterType = conf.meterType;
+	// Metering.type = BYPASS_METERING;
 
-	METER_bypassReq(body, bodyLen);
+	// METER_bypassReq(body, bodyLen);
 
-	// nfc로 돌려 줄 회신을 meter로부터 수신할 때까지 다소 시간이 걸림
-	// 그 시간 동안 vcc를 계속 유지하기 위해 timeout을 길게 설정
-	OSAL_stopEventTimer(AppTaskId, APP_EVENT_NFC_WAIT);
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)1500);
+	// // nfc로 돌려 줄 회신을 meter로부터 수신할 때까지 다소 시간이 걸림
+	// // 그 시간 동안 vcc를 계속 유지하기 위해 timeout을 길게 설정
+	// OSAL_stopEventTimer(AppTaskId, APP_EVENT_NFC_WAIT);
+	// OSAL_startEventTimer(AppTaskId, APP_EVENT_NFC_WAIT, (uint32)1500);
 
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1200);
+	// OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1200);
 }
 
-void APP_runMetering(MeteringType_t meteringType)
+void APP_runMetering(MeteringType_t meteringType, Cause_t cause)
 {
 	if (Metering.inProcess) // 현재 검침중이면 재 검침하지 않음
 	{
@@ -268,6 +265,7 @@ void APP_runMetering(MeteringType_t meteringType)
 
 	memset(&Metering, 0, sizeof(Metering));
 	Metering.type = meteringType;
+	Metering.cause = cause;
 	Metering.inProcess = 1;
 	Metering.meterType = conf.meterType;
 	Metering.success = 0;
@@ -282,7 +280,7 @@ void APP_runPeriodicReport()
 {
 	int state = MODEM_getState();
 	if (state == DEVICE_STATUS_IDLE) {
-		APP_runMetering(PERIODIC_METERING);
+		APP_runMetering(PERIODIC_METERING, AUTO);
 	} else {
 		printf_ts("Modem is running(%d) when reporting period\n", state);
 	}
@@ -290,25 +288,20 @@ void APP_runPeriodicReport()
 
 static void meteringTimeout()
 {
-	if (Metering.type == BYPASS_METERING) {
+	if (--Metering.nRetry > 0) {
+		// 약간의 시간 gap을 준 뒤 재검침 시도
+		MISC_delayMs(200);
+		METER_sendRequest(Metering.meterType);
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1500);
+	} else {
 		Metering.inProcess = 0;
 		Metering.success = 0;
-	} else {
-		if (--Metering.nRetry > 0) {
-			// 약간의 시간 gap을 준 뒤 재검침 시도
-			MISC_delayMs(200);
-			METER_sendRequest(Metering.meterType);
-			OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1500);
-		} else {
-			Metering.inProcess = 0;
-			Metering.success = 0;
-			MeterUnitData_t unit;
+		MeterUnitData_t unit;
 
-			memset(&unit, 0, sizeof(unit));
-			METER_addTempData(&unit);
+		memset(&unit, 0, sizeof(unit));
+		METER_addTempData(&unit);
 
-			meteringCompleted();
-		}
+		meteringCompleted();
 	}
 }
 
@@ -316,21 +309,15 @@ static void meteringRecvResponse()
 {
 	OSAL_stopEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT);
 
-	if (Metering.type == BYPASS_METERING) {
+	MeterUnitData_t unit;
+	BOOL result = METER_recvResponse(Metering.meterType, &unit);
+	if (result == TRUE) {
 		Metering.inProcess = 0;
 		Metering.success = 1;
-		METER_bypassResp();
+		METER_addTempData(&unit);
+		meteringCompleted();
 	} else {
-		MeterUnitData_t unit;
-		BOOL result = METER_recvResponse(Metering.meterType, &unit);
-		if (result == TRUE) {
-			Metering.inProcess = 0;
-			Metering.success = 1;
-			METER_addTempData(&unit);
-			meteringCompleted();
-		} else {
-			OSAL_setEvent(AppTaskId, APP_EVENT_METER_TIMEOUT);
-		}
+		OSAL_setEvent(AppTaskId, APP_EVENT_METER_TIMEOUT);
 	}
 }
 
@@ -349,7 +336,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_INITIAL) {
-		APP_runMetering(INITIAL_METERING);
+		APP_runMetering(INITIAL_METERING, AUTO);
 		return (events ^ APP_EVENT_INITIAL);
 	}
 
