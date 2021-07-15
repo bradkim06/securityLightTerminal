@@ -228,11 +228,7 @@ static int insert_oneData(NbiotMeterData_t *p)
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
 	p->alarm = pUnitData->meterStatus;
-	if (getRelayStatus()) {
-		p->lampStatus = RELAY_ON;
-	} else {
-		p->lampStatus = RELAY_OFF;
-	}
+	p->lampStatus = getRelayStatus();
 	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
 	memcpy(&p->curr, &pUnitData->curr, sizeof(pUnitData->curr));
 	memcpy(&p->shortCurr, &pUnitData->shortCurr, sizeof(pUnitData->shortCurr));
@@ -240,7 +236,6 @@ static int insert_oneData(NbiotMeterData_t *p)
 	memcpy(&p->cumPower, &pUnitData->cumPower, sizeof(pUnitData->cumPower));
 
 	return sizeof(NbiotMeterData_t);
-	// 21 = status(1), volt(4), curr(4), shortCurr(4), power(4), cumPower(4)
 }
 
 static int insert_params(NbiotMeterParams_t *p)

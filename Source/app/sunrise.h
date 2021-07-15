@@ -2,8 +2,8 @@
 #define __SUNRISE_H__
 
 typedef struct {
-	int hour;
-	int min;
+	signed char hour;
+	signed char min;
 } sunriseTime_t;
 
 void calcSunrise(Date_t *date);

@@ -112,6 +112,40 @@ static void gethrmn(double dhr, sunriseTime_t *p)
 	p->min = mn;
 };
 
+static void addOffset(sunriseTime_t *rise, sunriseTime_t *set)
+{
+	rise->min += light.onOfs;
+	set->min += light.offOfs;
+
+	if (rise->min >= 60) {
+		rise->hour++;
+		rise->min -= 60;
+		if (rise->hour > 23) {
+			rise->hour = 0;
+		}
+	} else if (rise->min < 0) {
+		rise->hour--;
+		rise->min += 60;
+		if (rise->hour < 0) {
+			rise->hour = 23;
+		}
+	}
+
+	if (set->min >= 60) {
+		set->hour++;
+		set->min -= 60;
+		if (set->hour > 23) {
+			set->hour = 0;
+		}
+	} else if (set->min < 0) {
+		set->hour--;
+		set->min += 60;
+		if (set->hour < 0) {
+			set->hour = 23;
+		}
+	}
+}
+
 void calcSunrise(Date_t *date)
 {
 	int y = date->year;
@@ -200,6 +234,8 @@ void calcSunrise(Date_t *date)
 	printf("=============================================\n");
 	printf("[ Current Day ] : %04d-%02d-%02d\n", (int)y, (int)m, (int)day);
 	printf("[ Light Mode  ] : %s\n", LMODE_STR(light.mode));
+	printf("[ Rise Offset ] : %02dmin\n", light.onOfs);
+	printf("[ Set Offset  ] : %02dmin\n", light.offOfs);
 
 	sunriseTime_t rise, set, twrise, twset;
 
@@ -213,11 +249,13 @@ void calcSunrise(Date_t *date)
 		printf("[ longitude   ] : %3.1f\n", (float)longit);
 		printf("[ TimeBase    ] : %s\n", TIMEBASE_STR(light.timeBase));
 		if (light.timeBase == SUNRISE_BASE) {
+			addOffset(&rise, &set);
 			light.onTime[HOUR] = (uint8)rise.hour;
 			light.onTime[MINUTE] = (uint8)rise.min;
 			light.offTime[HOUR] = (uint8)set.hour;
 			light.offTime[MINUTE] = (uint8)set.min;
 		} else if (light.timeBase == CIVIL_BASE) {
+			addOffset(&twrise, &twset);
 			light.onTime[HOUR] = (uint8)twrise.hour;
 			light.onTime[MINUTE] = (uint8)twrise.min;
 			light.offTime[HOUR] = (uint8)twset.hour;
@@ -226,10 +264,11 @@ void calcSunrise(Date_t *date)
 		printf("[ Rise Time   ] : %02d:%02d\n", light.onTime[HOUR], light.onTime[MINUTE]);
 		printf("[ Set Time    ] : %02d:%02d\n", light.offTime[HOUR], light.offTime[MINUTE]);
 	} else if (light.mode == LMODE_SETTING) {
+		addOffset((sunriseTime_t *)light.setOnTime, (sunriseTime_t *)light.setOffTime);
 		printf("[ Rise Time   ] : %02d:%02d\n", light.setOnTime[HOUR],
-		       light.onTime[MINUTE]);
+		       light.setOnTime[MINUTE]);
 		printf("[ Set Time    ] : %02d:%02d\n", light.setOffTime[HOUR],
-		       light.offTime[MINUTE]);
+		       light.setOffTime[MINUTE]);
 	}
 
 	printf("=============================================\n");

@@ -219,17 +219,23 @@ int MODEM_read(char *buf)
 	return len;
 }
 
-void MODEM_run(ModemProc_t proc, BOOL isLcdOn)
+void MODEM_run(ModemProc_t proc)
 {
 	// 무선통신 간의 접속간격이 필요한 경우도 있으므로 getState()를 사용.
 	if (MODEM_getState() != DEVICE_STATUS_IDLE) {
 		MODEM_DBG("Modem is running, step (%s)\n", NBIOT_STEP_STR(nbCtx.nextStep));
 		return;
 	}
+	APP_runMetering(PERIODIC_METERING);
+
 	modemCtx.isStop = FALSE;
 	modemCtx.currentProc = proc;
 
-	if (proc == MODEM_PROC_PERIODIC_REPORT) {
+	if (proc == MODEM_PROC_INIT) {
+		NBIOT_open();
+		MODEM_enable();
+		MODEM_turnOn();
+	} else {
 		// Process 시작 전 error code 초기화
 		nbCtx.error = NBIOT_ERROR_NONE;
 		// Process 시작 전 step 초기화
@@ -239,15 +245,7 @@ void MODEM_run(ModemProc_t proc, BOOL isLcdOn)
 		nbCtx.status.error = 0;
 		nbCtx.status.setCfg = 0;
 		nbCtx.status.waitDL = 0;
-		ATCMD_release();
-	} else {
-		NBIOT_open();
-		MODEM_enable();
-		// if (nbCtx.status.psmOn) {
-		// 	MODEM_wakeup();
-		// } else {
-		MODEM_turnOn();
-		// }
+		// ATCMD_release();
 	}
 
 	OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_RUN_PROC);

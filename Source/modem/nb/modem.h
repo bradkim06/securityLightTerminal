@@ -49,10 +49,12 @@
 
 // modem type definition
 typedef enum {
-	MODEM_PROC_EVENT_REPORT = 0,
-	MODEM_PROC_PERIODIC_REPORT = 1,
-	MODEM_PROC_SET_CONFIG = 2,
-	MODEM_PROC_TEST_REPORT = 3,
+	MODEM_PROC_INIT = 1,
+	MODEM_PROC_PERIOD_REPORT = 2,
+	MODEM_PROC_LIGHT_ON = 3,
+	MODEM_PROC_LIGHT_OFF = 4,
+	MODEM_PROC_STAB_ON = 5,
+	MODEM_PROC_STAB_OFF = 6,
 	MODEM_PROC_UNKNOWN = 99,
 } ModemProc_t;
 
@@ -65,7 +67,7 @@ void MODEM_enable();
 void MODEM_disable();
 void MODEM_write(const char *pCmd);
 int MODEM_read(char *buf);
-void MODEM_run(ModemProc_t proc, BOOL isLcdOn);
+void MODEM_run(ModemProc_t proc);
 void MODEM_stop(BOOL isVccOff, BOOL isLcdOn);
 
 void MODEM_getImei(uchar *imei);

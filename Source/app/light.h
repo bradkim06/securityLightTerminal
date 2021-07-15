@@ -11,8 +11,8 @@ typedef struct {
 	uint8 offTime[2];
 	uint8 setOnTime[2];
 	uint8 setOffTime[2];
-	uint8 onOfs;
-	uint8 offOfs;
+	signed char onOfs;
+	signed char offOfs;
 	uint8 psm;
 	uint8 psmOnTime[2]; // Hour, Min
 	uint8 psmOffTime[2]; // Hour, Min

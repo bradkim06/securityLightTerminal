@@ -34,6 +34,6 @@ void METER_addTempData(MeterUnitData_t *pUnit);
 
 // 점멸기용 추가
 void Relay_Status(int on);
-BOOL getRelayStatus(void);
+uchar getRelayStatus(void);
 
 #endif // __METER_H__

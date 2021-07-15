@@ -76,7 +76,20 @@ void Relay_Status(int on)
 		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
 }
 
-BOOL getRelayStatus(void)
+uchar getRelayStatus(void)
 {
-	return P3OUT & RELAY_PIN;
+#define LAMP_ON 1
+#define LAMP_OFF 2
+#define LAMP_PSM 3
+	uchar retVal = LAMP_OFF;
+
+	if (P3OUT & RELAY_PIN) {
+		retVal = LAMP_ON;
+	}
+
+	if (light.psm) {
+		retVal = LAMP_PSM;
+	}
+
+	return retVal;
 }

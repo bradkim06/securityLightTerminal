@@ -1017,7 +1017,6 @@ BOOL NBIOT_sendDataProcess()
 		init();
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
-		APP_runMetering(PERIODIC_METERING);
 		attach();
 		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
