@@ -168,7 +168,7 @@ void calcSunrise(Date_t *date)
 	}
 
 	double h, latit, longit;
-	float inlat, inlon, intz;
+	double inlat, inlon, intz;
 	double tzone, d, lambda;
 	double obliq, alpha, delta, LL, equation, ha, hb, twx;
 	double twam, settm, riset, twpm;
@@ -177,12 +177,8 @@ void calcSunrise(Date_t *date)
 	//  get the date and time from the user
 	// read system date and extract the year
 
-	// 초광산단서로 7
-	// inlat = 37.529215;
-	// inlon = 127.169043;
-	// 대전시청
-	inlat = 36.35061;
-	inlon = 127.38477;
+	getGps(&inlat, conf.latitInt, conf.latitDec);
+	getGps(&inlon, conf.longitInt, conf.longitDec);
 #define KST_ZONE 9
 	intz = KST_ZONE;
 	latit = (double)inlat;

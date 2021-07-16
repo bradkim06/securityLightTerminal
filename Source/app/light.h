@@ -43,5 +43,7 @@ typedef struct {
 } light_t;
 
 void initLightConfig(void);
+void setGps(double src, uint8 dstInt[], uint8 dstDec[]);
+void getGps(double *dst, uint8 srcInt[], uint8 srcDec[]);
 
 #endif

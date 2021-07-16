@@ -214,7 +214,7 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 	memcpy(p->serverPort, &conf.serverPort, 2);
 	memcpy(p->fwVer, APP_getFwVer(), FIRMWARE_VER_LEN);
 	p->batt = BATT_getLastVoltage() & 0xff;
-	readRtcV1(p->dateTime);
+	readRtcV2(p->dateTime);
 	p->lightMode = light.mode;
 	p->timeBase = light.timeBase;
 	p->reportInterval = conf.reportInterval;
@@ -399,7 +399,7 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 {
 	NfcConfSetV1_t *p = (NfcConfSetV1_t *)data;
 
-	setRtcV1(p->dateTime);
+	setRtcV2(p->dateTime);
 
 	Config_t tconfig;
 	memcpy(&tconfig, &conf, sizeof(Config_t));

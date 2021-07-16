@@ -4,9 +4,8 @@
 #include "modem.h"
 #include "var_type.h"
 
-#define DEVICE_CODE_LORA 0x05
-#define DEVICE_CODE_NB 0x06
-#define DEVICE_CODE_LORA_RF 0x07
+#define DEVICE_CODE_NB 0x01
+#define DEVICE_CODE_LORA 0x02
 #define DEVICE_CODE_SMART_PHONE 0xFA
 
 //=======================================
