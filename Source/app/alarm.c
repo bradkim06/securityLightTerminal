@@ -153,6 +153,9 @@ void normalScheduler()
 
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
+				printf_ts("%s - [%02d:%02d:00]\n",
+					  ALARM_TYPE_STR(AlarmList[idx].type), light.onTime[HOUR],
+					  light.onTime[MINUTE]);
 				hourdiff = light.onTime[HOUR] - date.hour;
 				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
@@ -160,6 +163,9 @@ void normalScheduler()
 					continue;
 				}
 			} else if (idx == RTC_ALARM_LIGHT_OFF) {
+				printf_ts("%s - [%02d:%02d:00]\n",
+					  ALARM_TYPE_STR(AlarmList[idx].type), light.offTime[HOUR],
+					  light.offTime[MINUTE]);
 				hourdiff = light.offTime[HOUR] - date.hour;
 				if (hourdiff <= 1 && hourdiff >= 0) {
 					isLight = 1;
@@ -175,15 +181,14 @@ void normalScheduler()
 			diff += 60;
 		}
 
-		printf_ts("set next alarm [ %s:%02dm diff=%02dm ] - ",
-			  ALARM_TYPE_STR(AlarmList[idx].type), AlarmList[idx].minute, diff);
+		// printf_ts("set next alarm [ %s:%02dm diff=%02dm ] - ",
+		// 	  ALARM_TYPE_STR(AlarmList[idx].type), AlarmList[idx].minute, diff);
 
 		// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
 		if (diff > 1) {
 			if (diff <= lastDiff) {
 				pNext = &AlarmList[idx];
 				lastDiff = diff;
-				printf("change\n");
 
 				if (isLight) {
 					break;
@@ -208,7 +213,7 @@ void normalScheduler()
 	int min = NextAlarm->minute;
 	RTC_alarm(0xFF, hour, min);
 
-	printf_ts("set next alarm [ %02d:%02d:00 ] - %s\n", hour, min,
+	printf_ts("set next alarm [%02d:%02d:00] - %s\n", hour, min,
 		  ALARM_TYPE_STR(NextAlarm->type));
 }
 
