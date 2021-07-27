@@ -773,6 +773,7 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 		break;
 
 	case PSM_MODE_REQ:
+		printf_ts("PSM_MODE_REQ\n");
 		sendPsmResp(REPORT_TYPE_REQ);
 		break;
 
