@@ -15,6 +15,7 @@ typedef struct {
 
 // 마지막 검침 데이터 저장 영역
 MeteringData_t LastMetering;
+uint8 relayStatus = RELAY_OFF;
 
 char *METER_getMeterName(int meterType)
 {
@@ -61,15 +62,6 @@ void Relay_Status(int on, Cause_t cause)
 		break;
 	}
 
-	if (prevStatus != on) {
-		if (on == RELAY_ON) {
-			printf_ts("light on\n");
-			APP_runMetering(LIGHT_ON, cause);
-		} else if (on == RELAY_OFF) {
-			printf_ts("light off\n");
-			APP_runMetering(LIGHT_OFF, cause);
-		}
-	}
 #define RELAY_STATUS_STR(x)                                                                        \
 	(((x) == RELAY_OFF) ?                                                                      \
 		 "OFF" :                                                                           \
@@ -79,6 +71,23 @@ void Relay_Status(int on, Cause_t cause)
 
 	printf_ts("Relay Status : %s[Command], %s[Status]\n", RELAY_STATUS_STR(on),
 		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
+
+	relayStatus = P3OUT & RELAY_PIN;
+
+	if (on == RELAY_TOGGLE) {
+		return;
+	}
+
+	if (prevStatus != on) {
+		prevStatus = on;
+		if (on == RELAY_ON) {
+			printf_ts("light on\n");
+			APP_runMetering(LIGHT_ON, cause);
+		} else if (on == RELAY_OFF) {
+			printf_ts("light off\n");
+			APP_runMetering(LIGHT_OFF, cause);
+		}
+	}
 }
 
 uchar getRelayStatus(void)

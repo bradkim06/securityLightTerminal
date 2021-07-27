@@ -223,6 +223,7 @@ void APP_init(uint8 taskId)
 	MISC_delayMs(500);
 
 	METER_clearTempData();
+	Relay_Status(RELAY_TOGGLE, AUTO);
 
 	OSAL_setEvent(AppTaskId, APP_EVENT_INITIAL);
 }

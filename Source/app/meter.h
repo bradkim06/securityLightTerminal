@@ -27,6 +27,8 @@ typedef struct {
 	uint32 cumPower;
 } MeterUnitData_t;
 
+extern uint8 relayStatus;
+
 char *METER_getMeterName(int meterType);
 void METER_clearTempData();
 MeterUnitData_t *METER_getTempData();
