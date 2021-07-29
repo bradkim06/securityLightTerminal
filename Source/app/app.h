@@ -29,6 +29,7 @@ typedef enum {
 	STABILIZE_ON,
 	STABILIZE_OFF,
 	IMMEDIATE_METERING,
+	NO_REPORT,
 } MeteringType_t;
 
 typedef enum {

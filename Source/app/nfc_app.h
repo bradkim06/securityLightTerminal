@@ -320,11 +320,11 @@ typedef struct {
 	uint8 hour;
 	uint8 min;
 	uint8 sec;
-	uint32 volt;
-	uint32 curr;
-	uint32 shortCurr;
-	int32 power;
-	uint32 cumPower;
+	uint8 volt[4];
+	uint8 curr[4];
+	uint8 shortCurr[4];
+	uint8 power[4];
+	uint8 cumPower[4];
 	uint8 status;
 	uint8 alarm;
 	uint8 onTime[2];

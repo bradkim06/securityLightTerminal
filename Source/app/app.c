@@ -231,9 +231,9 @@ void APP_init(uint8 taskId)
 static void meteringCompleted()
 {
 	// int state = MODEM_getState();
-	// if (Metering.type != IMMEDIATE_METERING) {
-	MODEM_run((ModemProc_t)Metering.type, Metering.cause);
-	// }
+	if (Metering.type != MODEM_PROC_NO_REPORT) {
+		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
+	}
 }
 
 BOOL APP_isMetering()

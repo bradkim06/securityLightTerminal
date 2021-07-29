@@ -239,11 +239,11 @@ static void sendMeterReport(void)
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
 	readRtcV1(p->year);
-	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
-	memcpy(&p->curr, &pUnitData->curr, sizeof(pUnitData->curr));
-	memcpy(&p->shortCurr, &pUnitData->shortCurr, sizeof(pUnitData->shortCurr));
-	memcpy(&p->power, &pUnitData->power, sizeof(pUnitData->power));
-	memcpy(&p->cumPower, &pUnitData->cumPower, sizeof(pUnitData->cumPower));
+	MISC_intToBCD(&pUnitData->volt, p->volt, 4);
+	MISC_intToBCD(&pUnitData->curr, p->curr, 4);
+	MISC_intToBCD(&pUnitData->shortCurr, p->shortCurr, 4);
+	MISC_intToBCD(&pUnitData->power, p->power, 4);
+	MISC_intToBCD(&pUnitData->cumPower, p->cumPower, 4);
 	p->status = getRelayStatus();
 	p->alarm = pUnitData->meterStatus;
 	memcpy(p->onTime, light.onTime, 2);
@@ -501,7 +501,7 @@ void recvMeterReq(byte *data, uint8 len)
 {
 	NfcMeterReq_t *p = (NfcMeterReq_t *)data;
 
-	setRtcV1(p->year);
+	// APP_runMetering(NO_REPORT, WORKER);
 	sendMeterReport();
 }
 
@@ -725,25 +725,24 @@ static void recvGpsSet(byte *data, uint8 len)
 /////  NFC process and print
 ///////////////////////////////
 
-// void printNfcMsg(int dir, byte *msg, uint8 len)
-// {
-// #if 1
-//     printf("\n[%s] MSG_TYPE(%02X) (%02X)",
-//         dir?"TX":"RX", *(msg + 10), *(msg + 10));
+void printNfcMsg(int dir, byte *msg, uint8 len)
+{
+#if 1
+	printf("\n[%s] MSG_TYPE(%02X) (%02X)", dir ? "TX" : "RX", *(msg + 10), *(msg + 10));
 
-//     char *p = (char *)(msg+10);
+	char *p = (char *)(msg + 10);
 
-//     printf("\n");
+	printf("\n");
 
-//     for(int i = 0; i < len-10; i++) {
-//         if(!(i%0x16)) {
-//             printf("\n    ");
-//         }
-//         printf("%02x ", *(p + i));
-//     }
-//     printf("\n");
-// #endif
-// }
+	for (int i = 0; i < len - 10; i++) {
+		if (!(i % 0x16)) {
+			printf("\n    ");
+		}
+		printf("%02x ", *(p + i));
+	}
+	printf("\n");
+#endif
+}
 
 void NFCAPP_runMessage(byte *data, uint8 len)
 {
@@ -773,7 +772,6 @@ void NFCAPP_runMessage(byte *data, uint8 len)
 		break;
 
 	case PSM_MODE_REQ:
-		printf_ts("PSM_MODE_REQ\n");
 		sendPsmResp(REPORT_TYPE_REQ);
 		break;
 

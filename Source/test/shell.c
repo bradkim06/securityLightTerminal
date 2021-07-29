@@ -327,6 +327,10 @@ void SHELL_run()
 	ShellCmdBuffer_t *h = ShellCmdBuf;
 
 	while (1) {
+		// H/W Watch Dog Reset
+#define HW_WDT_PIN 0x02
+		P2OUT ^= HW_WDT_PIN;
+
 		PROMPT();
 
 		// Get shell string

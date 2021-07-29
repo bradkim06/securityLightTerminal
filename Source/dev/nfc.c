@@ -528,7 +528,7 @@ void NFC_init()
 
 BOOL NFC_tagDetect()
 {
-	PRINT_stop();
+	// PRINT_stop();
 	NFC_tagDisable();
 	NFC_fdDisable();
 
@@ -548,7 +548,7 @@ BOOL NFC_tagDetect()
 
 BOOL NFC_recvMessage()
 {
-	PRINT_stop();
+	// PRINT_stop();
 	NFC_tagDisable();
 	NFC_fdDisable();
 
