@@ -2,6 +2,7 @@
 #define __METERING_H__
 
 #include "meter.h"
+#include "rtc.h"
 
 #define LEN_MAX_METER_TX 0x40
 #define LEN_MAX_METER_RX 0x60
@@ -33,6 +34,8 @@
 typedef struct {
 	uint8 stx;
 	uint8 msgType;
+	struct Time time;
+	light_t light;
 	uint8 checkSum;
 	uint8 etx;
 } evMeterReq_t;

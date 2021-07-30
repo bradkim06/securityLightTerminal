@@ -54,6 +54,8 @@ void APP_showConfig(Config_t *p)
 	printf(" [ Model      ] %s \n", TERM_MODEL_STRING(p->termModel));
 	printf(" [ Build      ] %s %s (%s)\n", __DATE__, __TIME__, APP_getFwVer());
 	printf(" [ S/N        ] %s\n", serial);
+	printf(" [ IMSI       ] %02x%02x%02x%02x%02x%02x%02x%x\n", p->imsi[0], p->imsi[1],
+	       p->imsi[2], p->imsi[3], p->imsi[4], p->imsi[5], p->imsi[6], p->imsi[7] / 0x10);
 	printf(" [ IMEI       ] %02x-%02x%02x%02x-%02x%02x%02x-%x\n", p->imei[0], p->imei[1],
 	       p->imei[2], p->imei[3], p->imei[4], p->imei[5], p->imei[6], p->imei[7] / 0x10);
 	printf(" [ Server     ] %s : %d, %s\n", p->serverIp, p->serverPort, p->serviceCode);

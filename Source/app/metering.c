@@ -96,10 +96,26 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 
 static BOOL send_meteringEV(void)
 {
+	Date_t date;
+	RTC_read(&date);
+
 	evMeterReq_t msg;
 	evMeterReq_t *pMsg = &msg;
 
+	memset(&msg, 0, sizeof(evMeterReq_t));
+
+	printf("year : %u ", date.year);
+	printf("month : %u ", date.mon);
+	printf("day : %u ", date.day);
+	printf("hour : %u ", date.hour);
+	printf("min : %u ", date.min);
+	printf("sec : %u\n", date.sec);
+
 	pMsg->stx = TERMINAL_STX;
+	if (ALARM_isTimeSync()) {
+		memcpy(&pMsg->time, &date, sizeof(struct Time));
+	}
+	memcpy(&pMsg->light, &light, sizeof(light_t));
 	pMsg->msgType = REQ_READ_METER;
 	pMsg->checkSum = std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t));
 	pMsg->etx = TERMINAL_ETX;
