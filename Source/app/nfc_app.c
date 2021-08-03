@@ -219,6 +219,8 @@ void sendNodeConfReportV1(uint8 reportType, int error)
 	p->timeBase = light.timeBase;
 	p->reportInterval = conf.reportInterval;
 	p->timeTable = light.region;
+	p->onOfs = light.onOfs;
+	p->offOfs = light.offOfs;
 
 	int msgLen = sizeof(NfcConfReportV1_t);
 
@@ -238,6 +240,8 @@ static void sendMeterReport(void)
 	NfcMeasureResp_t *p = (NfcMeasureResp_t *)msg;
 	MeterUnitData_t *pUnitData = METER_getTempData();
 
+	p->mtype = 0x5C;
+	p->mversion = NFC_PROTOCOL_VER_1;
 	readRtcV1(p->year);
 	MISC_intToBCD(&pUnitData->volt, p->volt, 4);
 	MISC_intToBCD(&pUnitData->curr, p->curr, 4);
@@ -246,8 +250,16 @@ static void sendMeterReport(void)
 	MISC_intToBCD(&pUnitData->cumPower, p->cumPower, 4);
 	p->status = getRelayStatus();
 	p->alarm = pUnitData->meterStatus;
-	memcpy(p->onTime, light.onTime, 2);
-	memcpy(p->offTime, light.offTime, 2);
+
+	uint32 Hour = light.onTime[HOUR];
+	uint32 Minute = light.onTime[MINUTE];
+	MISC_intToBCD(&Hour, &p->onTime[HOUR], 1);
+	MISC_intToBCD(&Minute, &p->onTime[MINUTE], 1);
+
+	Hour = light.offTime[HOUR];
+	Minute = light.offTime[MINUTE];
+	MISC_intToBCD(&Hour, &p->offTime[HOUR], 1);
+	MISC_intToBCD(&Minute, &p->offTime[MINUTE], 1);
 
 	int msgLen = sizeof(NfcMeasureResp_t);
 
@@ -355,8 +367,6 @@ static void sendPsmResp(uint8 reportType)
 	p->psm = light.psm;
 	memcpy(p->psmStartTime, light.psmOnTime, 2);
 	memcpy(p->psmStartDate, light.psmOnDay, 2);
-	p->onOfs = light.onOfs;
-	p->offOfs = light.offOfs;
 	p->dimmMode = light.dimmingMode;
 	p->dimmLv = light.dimmingLv;
 
@@ -377,9 +387,9 @@ static void sendGpsResp(uint8 reportType)
 	p->reportType = reportType;
 	p->timeTable = light.region;
 	memcpy(p->latitInt, conf.latitInt, 2);
-	memcpy(p->latitDec, conf.latitDec, 2);
+	memcpy(p->latitDec, conf.latitDec, 3);
 	memcpy(p->longitInt, conf.longitInt, 2);
-	memcpy(p->longitDec, conf.longitDec, 2);
+	memcpy(p->longitDec, conf.longitDec, 3);
 
 	int messageLen = sizeof(NfcGpsResp_t);
 
@@ -480,6 +490,16 @@ void recvNodeConfSetV1(byte *data, uint8 len)
 			changed = 1;
 		}
 
+		if (p->onOfs) {
+			tlight.onOfs = p->onOfs;
+			changed = 1;
+		}
+
+		if (p->offOfs) {
+			tlight.offOfs = p->offOfs;
+			changed = 1;
+		}
+
 		error = 0;
 	} while (0);
 
@@ -516,7 +536,7 @@ static void recvBdControlReq(byte *data, uint8 len)
 	NfcBdCtrlReq_t *p = (NfcBdCtrlReq_t *)data;
 
 	if (p->reset) {
-		OSAL_setEvent(APP_getTaskId(), APP_EVENT_REBOOT);
+		OSAL_startEventTimer(APP_getTaskId(), APP_EVENT_REBOOT, 2000);
 	}
 
 #define POWER_ON 1
@@ -527,7 +547,8 @@ static void recvBdControlReq(byte *data, uint8 len)
 		Relay_Status(RELAY_OFF, WORKER);
 	}
 
-	sendBdControlAck(p->reset, p->powerCtrl);
+	uint8 powerCtrl = getRelayStatus();
+	sendBdControlAck(p->reset, powerCtrl);
 }
 
 ///////////////////////////////
@@ -713,9 +734,9 @@ static void recvGpsSet(byte *data, uint8 len)
 		light.region = p->timeTable;
 
 		memcpy(conf.latitInt, p->latitInt, 2);
-		memcpy(conf.latitDec, p->latitDec, 2);
+		memcpy(conf.latitDec, p->latitDec, 3);
 		memcpy(conf.longitInt, p->longitInt, 2);
-		memcpy(conf.longitDec, p->longitDec, 2);
+		memcpy(conf.longitDec, p->longitDec, 3);
 	}
 
 	sendGpsResp(REPORT_TYPE_SET);

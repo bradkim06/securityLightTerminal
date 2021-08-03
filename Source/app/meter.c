@@ -101,9 +101,9 @@ uchar getRelayStatus(void)
 		retVal = LAMP_ON;
 	}
 
-	if (light.psm) {
-		retVal = LAMP_PSM;
-	}
+	// if (light.psm) {
+	// 	retVal = LAMP_PSM;
+	// }
 
 	return retVal;
 }

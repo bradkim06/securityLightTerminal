@@ -8,13 +8,17 @@
 #define LMODE_SETTING 2
 
 // Light Time Base
-#define SUNRISE_BASE 0
-#define CIVIL_BASE 1
+#define SUNRISE_BASE 1
+#define CIVIL_BASE 2
 
 // PSM Mode
 #define PSM_NOT_USING 0
 #define PSM_RELIGHT 1
 #define PSM_NOT_RELIGHT 2
+
+// Dimming
+#define DIMM_NOT_USE 0
+#define DIMM_USE 1
 
 // Time
 #define HOUR 0

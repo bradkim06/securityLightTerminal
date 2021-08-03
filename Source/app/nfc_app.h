@@ -127,6 +127,8 @@ typedef struct {
 	uint8 latitDec[3];
 	uint8 longitInt[2];
 	uint8 longitDec[3];
+	uint8 onOfs;
+	uint8 offOfs;
 } NfcConfSetV1_t;
 
 typedef struct {
@@ -188,8 +190,6 @@ typedef struct {
 	uint8 psmEndTime[2];
 	uint8 psmStartDate[2];
 	uint8 psmEndDate[2];
-	uint8 onOfs;
-	uint8 offOfs;
 	uint8 dimmMode;
 	uint8 dimmLv;
 } NfcPsmModeSet_t;
@@ -229,6 +229,8 @@ typedef struct {
 	uint8 timeBase;
 	uint8 reportInterval;
 	uint8 timeTable;
+	uint8 onOfs;
+	uint8 offOfs;
 } NfcConfReportV1_t;
 
 // For Repeator message format (protocol version 2)
@@ -395,8 +397,6 @@ typedef struct {
 	uint8 psmEndTime[2];
 	uint8 psmStartDate[2];
 	uint8 psmEndDate[2];
-	uint8 onOfs;
-	uint8 offOfs;
 	uint8 dimmMode;
 	uint8 dimmLv;
 } NfcPsmResp_t;
