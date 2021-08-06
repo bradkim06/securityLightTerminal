@@ -152,7 +152,7 @@ void METER_enable(uint8 meterType)
 	UartInitParam_t param = {
 		.isRxEnable = TRUE,
 		.isTxEnable = TRUE,
-		.baudrate = UART_BAUDRATE_9600,
+		.baudrate = UART_BAUDRATE_38400,
 		.parity = UART_PARITY_NONE,
 		.stopbit = UART_STOPBIT_ONE,
 		.charLen = UART_8BITS_CHAR,

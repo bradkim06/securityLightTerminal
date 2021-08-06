@@ -232,7 +232,7 @@ void sendNodeConfReport(uint8 reportType, int error)
 	sendNodeConfReportV1(reportType, error);
 }
 
-static void sendMeterReport(void)
+void sendMeterReport(void)
 {
 	byte msg[64];
 	memset(msg, 0, sizeof(msg));
@@ -521,8 +521,8 @@ void recvMeterReq(byte *data, uint8 len)
 {
 	NfcMeterReq_t *p = (NfcMeterReq_t *)data;
 
-	// APP_runMetering(NO_REPORT, WORKER);
-	sendMeterReport();
+	APP_runMetering(NO_REPORT, WORKER);
+	// sendMeterReport();
 }
 
 void recvServerConnectReq(byte *data, uint8 len)

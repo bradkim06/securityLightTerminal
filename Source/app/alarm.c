@@ -127,6 +127,22 @@ void shortScheduler()
 		  ALARM_TYPE_STR(NextAlarm->type));
 }
 
+static BOOL checkLightAlarm(Date_t date, uint8 time[], int idx)
+{
+	int hourdiff, retVal;
+
+	printf_ts("%s - [%02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type), time[HOUR],
+		  time[MINUTE]);
+	hourdiff = time[HOUR] - date.hour;
+	if (hourdiff <= 1 && hourdiff >= 0) {
+		retVal = TRUE;
+	} else {
+		retVal = FALSE;
+	}
+
+	return retVal;
+}
+
 void normalScheduler()
 {
 	Date_t date;
@@ -146,32 +162,33 @@ void normalScheduler()
 	// 3. 시간 오차를 고려하여 실제 알람 시간의 +-1분 오차를 고려.
 
 	int diff, lastDiff = 61;
-	int isLight = 0;
+	BOOL isLight = 0;
 	RtcAlarm_t *pNext = NULL;
 	for (int idx = 0; idx < RTC_ALARM_COUNT; idx++) {
 		int hourdiff;
 
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
-				printf_ts("%s - [%02d:%02d:00]\n",
-					  ALARM_TYPE_STR(AlarmList[idx].type), light.onTime[HOUR],
-					  light.onTime[MINUTE]);
-				hourdiff = light.onTime[HOUR] - date.hour;
-				if (hourdiff <= 1 && hourdiff >= 0) {
-					isLight = 1;
+				if (checkLightAlarm(date, light.onTime, idx)) {
+					isLight = TRUE;
 				} else {
 					continue;
 				}
 			} else if (idx == RTC_ALARM_LIGHT_OFF) {
-				printf_ts("%s - [%02d:%02d:00]\n",
-					  ALARM_TYPE_STR(AlarmList[idx].type), light.offTime[HOUR],
-					  light.offTime[MINUTE]);
-				hourdiff = light.offTime[HOUR] - date.hour;
-				if (hourdiff <= 1 && hourdiff >= 0) {
-					isLight = 1;
+				if (checkLightAlarm(date, light.offTime, idx)) {
+					isLight = TRUE;
 				} else {
 					continue;
 				}
+				// printf_ts("%s - [%02d:%02d:00]\n",
+				// 	  ALARM_TYPE_STR(AlarmList[idx].type), light.offTime[HOUR],
+				// 	  light.offTime[MINUTE]);
+				// hourdiff = light.offTime[HOUR] - date.hour;
+				// if (hourdiff <= 1 && hourdiff >= 0) {
+				// 	isLight = 1;
+				// } else {
+				// 	continue;
+				// }
 			}
 		}
 

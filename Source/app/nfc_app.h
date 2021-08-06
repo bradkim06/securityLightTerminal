@@ -418,5 +418,6 @@ void NFCAPP_runMessage(byte *data, uint8 len);
 void NFCAPP_meterBypassResp(uint8 *body, int bodyLen);
 void NFCAPP_meterBypassReq();
 void NFCAPP_clearAsyncCmd();
+void sendMeterReport(void);
 
 #endif // _MESSAGE_HEADER_

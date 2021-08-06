@@ -19,7 +19,7 @@
 #include "uart.h"
 
 typedef struct {
-	uint8 nRetry;
+	signed char nRetry;
 	uint8 inProcess;
 	uint8 meterType;
 	uint8 success;
@@ -235,12 +235,9 @@ static void meteringCompleted()
 	// int state = MODEM_getState();
 	if (Metering.type != MODEM_PROC_NO_REPORT) {
 		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
+	} else {
+		sendMeterReport();
 	}
-}
-
-BOOL APP_isMetering()
-{
-	return Metering.inProcess;
 }
 
 void APP_bypassMetering(uint8 *body, int bodyLen)
@@ -275,10 +272,10 @@ void APP_runMetering(MeteringType_t meteringType, Cause_t cause)
 	Metering.meterType = conf.meterType;
 	Metering.success = 0;
 
-	Metering.nRetry = 3;
+	Metering.nRetry = 0;
 
 	METER_sendRequest(Metering.meterType);
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1500);
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)400);
 }
 
 void APP_runPeriodicReport()
@@ -294,11 +291,13 @@ void APP_runPeriodicReport()
 static void meteringTimeout()
 {
 	if (--Metering.nRetry > 0) {
+		printf_ts("retry : %d\n", Metering.nRetry);
 		// 약간의 시간 gap을 준 뒤 재검침 시도
-		MISC_delayMs(200);
+		MISC_delayMs(100);
 		METER_sendRequest(Metering.meterType);
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1500);
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)400);
 	} else {
+		printf_ts("retry : %d\n", Metering.nRetry);
 		Metering.inProcess = 0;
 		Metering.success = 0;
 		MeterUnitData_t unit;

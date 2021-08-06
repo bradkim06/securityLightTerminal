@@ -47,7 +47,6 @@ void APP_init(uint8 taskId);
 /* void APP_prepareToSleep(); */
 
 void APP_runPeriodicReport();
-BOOL APP_isMetering();
 void APP_bypassMetering(uint8 *body, int bodyLen);
 void APP_runMetering(MeteringType_t meteringType, Cause_t cause);
 void APP_showConfig(Config_t *p);
