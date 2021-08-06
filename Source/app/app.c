@@ -340,7 +340,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_INITIAL) {
-		APP_runMetering(INITIAL_METERING, AUTO);
+		MODEM_run(MODEM_PROC_INIT, AUTO);
 		return (events ^ APP_EVENT_INITIAL);
 	}
 

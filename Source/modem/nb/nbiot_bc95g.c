@@ -10,6 +10,7 @@
 #include "misc.h"
 #include "rtc.h"
 #include "test.h"
+#include "sunrise.h"
 
 #if defined(DEBUG)
 #define NBIOT_DBG(...)                                                                             \
@@ -642,6 +643,10 @@ static BOOL parseCCLK(const char *pHead, const int *len, uint32 *nextDelay)
 		ALARM_writeTime(&date);
 		RTC_read(&nbInfo.lastAttachTime);
 
+		if (modemCtx.currentProc == MODEM_PROC_INIT) {
+			updateSunTime(&date);
+			APP_runMetering(NO_REPORT, AUTO);
+		}
 		return TRUE;
 	}
 
@@ -1021,9 +1026,11 @@ BOOL NBIOT_sendDataProcess()
 		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 		transfer();
-		nbCtx.nextStep = (nbCtx.lwm2m.fotaDownReq) ? NBIOT_STEP_FOTA : NBIOT_STEP_FINISH;
+		nbCtx.nextStep = NBIOT_STEP_FOTA;
 	} else if (nbCtx.currentStep == NBIOT_STEP_FOTA) {
-		fota();
+		if (nbCtx.lwm2m.fotaDownReq) {
+			fota();
+		}
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_DETACH_NW) {
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
