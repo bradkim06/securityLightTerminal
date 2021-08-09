@@ -104,13 +104,6 @@ static BOOL send_meteringEV(void)
 
 	memset(&msg, 0, sizeof(evMeterReq_t));
 
-	printf("year : %u ", date.year);
-	printf("month : %u ", date.mon);
-	printf("day : %u ", date.day);
-	printf("hour : %u ", date.hour);
-	printf("min : %u ", date.min);
-	printf("sec : %u\n", date.sec);
-
 	pMsg->stx = TERMINAL_STX;
 	if (ALARM_isTimeSync()) {
 		memcpy(&pMsg->time, &date, sizeof(struct Time));

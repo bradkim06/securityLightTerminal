@@ -25,21 +25,3 @@ void getGps(double *dst, uint8 srcInt[], uint8 srcDec[])
 
 	*dst = integer + ((double)decimal / 1000000);
 }
-
-void initLightConfig(void)
-{
-	memset(&light, 0, sizeof(light_t));
-	light.mode = LMODE_INTERNAL;
-	light.timeBase = SUNRISE_BASE;
-
-	// 초광산단서로 7
-	// inlat = 37.529215;
-	// inlon = 127.169043;
-	// 대전시청
-	// inlat = 36.35061;
-	// inlon = 127.38477;
-	double latit = 36.35061;
-	double longit = 127.38477;
-	setGps(latit, conf.latitInt, conf.latitDec);
-	setGps(longit, conf.longitInt, conf.longitDec);
-}

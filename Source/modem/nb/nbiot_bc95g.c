@@ -446,8 +446,6 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 		conf.isModemInit = 0;
 		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
 			      ATCMD_QLWEPNS "=1,\"%s\"", nbInfo.epName);
-		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-			      ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
 	}
 
 	return TRUE;
@@ -455,15 +453,31 @@ static BOOL parseQLWEPNS(const char *pHead, const int *len, uint32 *nextDelay)
 
 static BOOL parseQLWSERVERIP(const char *pHead, const int *len, uint32 *nextDelay)
 {
-#define ATCMD_RESP_QLWSERVERIP "+QLWSERVERIP:BS,"
+#define ATCMD_RESP_QLWSERVERIP_BS "+QLWSERVERIP:BS,"
+#define ATCMD_RESP_QLWSERVERIP_LWM2M "+QLWSERVERIP:LWM2M,"
 	BOOL isSetCfg = FALSE;
 	char addr[22];
 
 	snprintf(addr, sizeof(addr), "%s,%d", conf.serverIp, conf.serverPort);
 
 	char *p = NULL;
-	if ((p = strstr(pHead, ATCMD_RESP_QLWSERVERIP))) {
-		p += strlen(ATCMD_RESP_QLWSERVERIP);
+	if ((p = strstr(pHead, ATCMD_RESP_QLWSERVERIP_BS))) {
+		p += strlen(ATCMD_RESP_QLWSERVERIP_BS);
+		if (strncmp((const char *)p, (const char *)addr, strlen(addr)) == 0) {
+		} else {
+			NBIOT_DBG("BS server address is not matched \n");
+			isSetCfg = TRUE;
+		}
+	} else {
+		if (nbCtx.status.error) {
+			nbCtx.status.error = 0;
+			NBIOT_DBG("BS server address have to set \n");
+			isSetCfg = TRUE;
+		}
+	}
+
+	if ((p = strstr(pHead, ATCMD_RESP_QLWSERVERIP_LWM2M))) {
+		p += strlen(ATCMD_RESP_QLWSERVERIP_LWM2M);
 		if (strncmp((const char *)p, (const char *)addr, strlen(addr)) == 0) {
 			return TRUE;
 		} else {
@@ -493,6 +507,41 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len, uint32 *nextDela
 	return FALSE;
 }
 
+static BOOL parseQLWMBSPS(const char *pHead, const int *len, uint32 *nextDelay)
+{
+#define ATCMD_RESP_QLWMBSPS "+QLWMBSPS: "
+
+	char *p = NULL;
+	if ((p = strstr(pHead, ATCMD_RESP_QLWMBSPS))) {
+		p += strlen(ATCMD_RESP_QLWMBSPS);
+		int len = LEN_MODEM_BS_PARAM;
+		char str[LEN_MODEM_BS_PARAM];
+		memcpy(str, p, len);
+
+		char *pStr = str;
+		for (; *pStr != '\0'; pStr++) { //종료 문자를 만날 때까지 반복
+			if (*pStr == '\"') {
+				strcpy(pStr, pStr + 1);
+				len--;
+				pStr--;
+			}
+			if (len-- <= 0)
+				break;
+		}
+
+		if (strncmp((const char *)str, (const char *)nbInfo.bsParam,
+			    strlen(nbInfo.bsParam)) != 0) {
+			printf_ts("LWM2M : bootstrap parameter is not matched\n");
+			ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+				      ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
+		} else {
+			printf_ts("LWM2M : bootstrap parameter is matched\n");
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+
 static BOOL parseQREGSWT(const char *pHead, const int *len, uint32 *nextDelay)
 {
 #define ATCMD_RESP_QREGSWT "+QREGSWT:"
@@ -501,26 +550,21 @@ static BOOL parseQREGSWT(const char *pHead, const int *len, uint32 *nextDelay)
 	char *p = NULL;
 	if ((p = strstr(pHead, ATCMD_RESP_QREGSWT))) {
 		int status = atoi(p + strlen(ATCMD_RESP_QREGSWT));
-		// Set FOTA manual working if LWM2M on
-		if (status != DISABLE_LWM2M && !conf.isModemInit) {
-			nbCtx.status.setCfg = 1;
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-				   ATCMD_QLWFOTAIND "=1");
-		}
 
 		// LWM2M On/Off switching
 		if (nbCtx.proc.runFota) {
 			if (status != MANUAL_LWM2M) {
 				nbCtx.status.setCfg = 1;
-				ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-					   ATCMD_QREGSWT "=0");
+				ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+					      ATCMD_QREGSWT "=0");
 			}
-		} else {
-			if (status != DISABLE_LWM2M) {
-				nbCtx.status.setCfg = 1;
-				ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
-					   ATCMD_QREGSWT "=2");
-			}
+		}
+
+		// Set FOTA manual working if LWM2M on
+		if (status != DISABLE_LWM2M && !conf.isModemInit) {
+			nbCtx.status.setCfg = 1;
+			ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+				      ATCMD_QLWFOTAIND "=1");
 		}
 
 		return TRUE;
@@ -543,19 +587,19 @@ static BOOL parseQGMR(const char *pHead, const int *len, uint32 *nextDelay)
 
 		// Make Bootstrap paramter
 		char model[TERM_MODEL_STRING_LEN + 1];
-		if (SMART_WATER_METER(conf.termModel)) {
-			// memcpy(model, "HTM-115W", TERM_MODEL_STRING_LEN+1);
-			memcpy(model, "HTM-115Q", TERM_MODEL_STRING_LEN + 1);
-		} else {
-			// memcpy(model, "HAT-124N", TERM_MODEL_STRING_LEN+1);
-			memcpy(model, "HAT-124Q", TERM_MODEL_STRING_LEN + 1);
-		}
+		memcpy(model, "HAT-124Q", TERM_MODEL_STRING_LEN + 1);
 
-		char devSn[13];
-		// Bootstrap 상의 serial number 는 IMEI의 13자리 수만 사용.
-		// EX : IMEI=359689090501559 >> devSn=968909050155
-		memcpy(devSn, &nbInfo.imeiStr[2], 12);
-		devSn[12] = 0; // Last char is set string end
+		// char devSn[13];
+		// // Bootstrap 상의 serial number 는 IMEI의 13자리 수만 사용.
+		// // EX : IMEI=359689090501559 >> devSn=968909050155
+		// memcpy(devSn, &nbInfo.imeiStr[2], 12);
+		// devSn[12] = 0; // Last char is set string end
+		char devSn[11];
+		// Bootstrap 상의 serial number 는 ICCID의 10자리 사용.
+		// USIM Model num 4 + Usim S/N num 6
+		// EX : ICCID = 8982068086002814399 >> devSn = 8600281439
+		memcpy(devSn, &nbInfo.iccidStr[LEN_MODEM_ICCID - 11], 10);
+		devSn[10] = 0; // Last char is set string end
 
 		snprintf(nbInfo.bsParam, LEN_MODEM_BS_PARAM + 1, "%s,%s,%s,%s,%s", conf.serviceCode,
 			 devSn, nbInfo.ctnStr, &nbInfo.iccidStr[LEN_MODEM_ICCID - 6], model);
@@ -876,6 +920,7 @@ static void init()
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWEPNS, ATCMD_QLWEPNS "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWSERVERIP,
 		   ATCMD_QLWSERVERIP "?");
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWMBSPS, ATCMD_QLWMBSPS "?");
 
 	if (!conf.isModemInit) {
 		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);

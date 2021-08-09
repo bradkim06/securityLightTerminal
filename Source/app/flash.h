@@ -27,14 +27,19 @@ typedef struct {
 	uint8 fotaPort[2];
 	uint8 fotaInterval;
 	uint8 checksum;
-} FlashConfig_t;
+} FlashConfig_t; // 49
 
 typedef struct {
 	uint8 serialNum[SERIAL_NUM_LEN];
 	uint8 imei[8];
 	uint8 imsi[8];
+	light_t light;
+	uint8 latitInt[2];
+	uint8 latitDec[3];
+	uint8 longitInt[2];
+	uint8 longitDec[3];
 	uint8 checksum;
-} FlashId_t;
+} FlashId_t; // 29
 
 //! Meter data position in sector
 #define POS_METER_REPORT 32
@@ -93,7 +98,6 @@ FlashMeterData_t *FLASH_readPeriodData(Date_t *fromDate, Date_t *toDate, int *to
  **************************************************/
 void FLASH_saveConfigInfo(Config_t *config);
 void FLASH_readConfigInfo(Config_t *config);
-uint8 FLASH_readResetCause();
 void FLASH_updateResetCount(Config_t *config);
 
 /**************************************************

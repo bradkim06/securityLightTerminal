@@ -23,23 +23,28 @@ static uint8 calChecksum(uint8 *p, int len)
 	return checksum;
 }
 
+static void initLightConfig(FlashId_t *pInfo)
+{
+	memset(&pInfo->light, 0, sizeof(light_t));
+	pInfo->light.mode = LMODE_INTERNAL;
+	pInfo->light.timeBase = SUNRISE_BASE;
+
+	// 초광산단서로 7
+	// inlat = 37.529215;
+	// inlon = 127.169043;
+	// 대전시청
+	// inlat = 36.35061;
+	// inlon = 127.38477;
+	//
+	double latit = 36.35061;
+	double longit = 127.38477;
+	setGps(latit, pInfo->latitInt, pInfo->latitDec);
+	setGps(longit, pInfo->longitInt, pInfo->longitDec);
+}
+
 /**************************************************
  * Flash functions for Configuration data
  **************************************************/
-
-uint8 FLASH_readResetCause()
-{
-	uint8 cause = 0;
-
-	halIntState_t intState;
-	HAL_ENTER_CRITICAL_SECTION(intState);
-	MSP430FLASH_read((uint8 *)SYSRSTIV_ADDR, &cause, 1);
-	// 현재 Reset cuase data를 사용하고 있지 않으므로 추가처리는 생략한다.
-	MSP430FLASH_erasePage((uint8 *)SYSRSTIV_ADDR);
-	HAL_EXIT_CRITICAL_SECTION(intState);
-
-	return cause;
-}
 
 static void saveConfig(FlashConfig_t *pInfo)
 {
@@ -207,6 +212,7 @@ static void readID(FlashId_t *pInfo)
 		memcpy((uint8 *)pInfo, (uint8 *)&info_b, sizeof(FlashId_t));
 		printf("ID: both side are false\n");
 		// 두개의 영역이 모두 깨지더라도 Serial Number는 지우지 않음.
+		initLightConfig(pInfo);
 #if 0
         memset((uint8 *)pInfo, 0xff, sizeof(FlashId_t));
         memset(pInfo->serialNum, '0', SERIAL_NUM_LEN);
@@ -224,6 +230,11 @@ void FLASH_saveConfigInfo(Config_t *config)
 	memcpy(flashID.serialNum, config->serialNum, SERIAL_NUM_LEN);
 	memcpy(flashID.imei, config->imei, 8);
 	memcpy(flashID.imsi, config->imsi, 8);
+	memcpy(&flashID.light, &light, sizeof(light_t));
+	memcpy(flashID.latitInt, config->latitInt, sizeof(config->latitInt));
+	memcpy(flashID.latitDec, config->latitDec, sizeof(config->latitDec));
+	memcpy(flashID.longitInt, config->longitInt, sizeof(config->longitInt));
+	memcpy(flashID.longitDec, config->longitDec, sizeof(config->longitDec));
 
 	flashID.checksum = calChecksum((uint8 *)&flashID, sizeof(FlashId_t) - 1);
 
@@ -236,15 +247,14 @@ void FLASH_saveConfigInfo(Config_t *config)
 	flashConfig.reportInterval = config->reportInterval;
 	MISC_ipToHexArray(config->serverIp, flashConfig.serverIp);
 	memcpy(flashConfig.serverPort, &config->serverPort, 2);
+	memcpy(flashConfig.resetCount, &config->resetCount, 2);
+	flashConfig.isShortInterval = config->isShortInterval;
+	flashConfig.debugPrint = config->debugPrint;
+	memcpy(flashConfig.serviceCode, &config->serviceCode, 4);
+	flashConfig.isModemInit = config->isModemInit;
 	MISC_ipToHexArray(config->fotaIp, flashConfig.fotaIp);
 	memcpy(flashConfig.fotaPort, &config->fotaPort, 2);
 	flashConfig.fotaInterval = config->fotaInterval;
-	memcpy(flashConfig.serviceCode, &config->serviceCode, 4);
-	flashConfig.isModemInit = config->isModemInit;
-	flashConfig.isShortInterval = config->isShortInterval;
-	flashConfig.debugPrint = config->debugPrint;
-
-	memcpy(flashConfig.resetCount, &config->resetCount, 2);
 
 	Date_t date;
 	RTC_read(&date);
@@ -267,16 +277,15 @@ void FLASH_readConfigInfo(Config_t *config)
 	sprintf(config->serverIp, "%d.%d.%d.%d", flashConfig.serverIp[0], flashConfig.serverIp[1],
 		flashConfig.serverIp[2], flashConfig.serverIp[3]);
 	memcpy(&config->serverPort, flashConfig.serverPort, 2);
+	memcpy(&config->resetCount, flashConfig.resetCount, 2);
+	config->isShortInterval = flashConfig.isShortInterval;
+	config->debugPrint = flashConfig.debugPrint;
+	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
+	config->isModemInit = flashConfig.isModemInit;
 	sprintf(config->fotaIp, "%d.%d.%d.%d", flashConfig.fotaIp[0], flashConfig.fotaIp[1],
 		flashConfig.fotaIp[2], flashConfig.fotaIp[3]);
 	memcpy(&config->fotaPort, flashConfig.fotaPort, 2);
 	config->fotaInterval = flashConfig.fotaInterval;
-	memcpy(config->serviceCode, flashConfig.serviceCode, 4);
-	config->isModemInit = flashConfig.isModemInit;
-	config->isShortInterval = flashConfig.isShortInterval;
-	config->debugPrint = flashConfig.debugPrint;
-
-	memcpy(&config->resetCount, flashConfig.resetCount, 2);
 
 	// read serial number
 	FlashId_t flashID;
@@ -284,6 +293,11 @@ void FLASH_readConfigInfo(Config_t *config)
 
 	memcpy(config->imei, flashID.imei, 8);
 	memcpy(config->imsi, flashID.imsi, 8);
+	memcpy(&light, &flashID.light, sizeof(light_t));
+	memcpy(config->latitInt, flashID.latitInt, sizeof(config->latitInt));
+	memcpy(config->latitDec, flashID.latitDec, sizeof(config->latitDec));
+	memcpy(config->longitInt, flashID.longitInt, sizeof(config->longitInt));
+	memcpy(config->longitDec, flashID.longitDec, sizeof(config->longitDec));
 
 	memcpy(config->serialNum, flashID.serialNum, SERIAL_NUM_LEN);
 
@@ -303,8 +317,6 @@ void FLASH_readConfigInfo(Config_t *config)
 
 	config->meterType = E_METER;
 	config->debugPrint = TRUE;
-
-	initLightConfig();
 }
 
 void FLASH_updateResetCount(Config_t *config)

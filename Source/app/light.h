@@ -44,9 +44,8 @@ typedef struct {
 	uint8 psmOffDay[2]; // Month, Day
 	uint8 dimmingMode;
 	uint8 dimmingLv;
-} light_t;
+} light_t; // 24
 
-void initLightConfig(void);
 void setGps(double src, uint8 dstInt[], uint8 dstDec[]);
 void getGps(double *dst, uint8 srcInt[], uint8 srcDec[]);
 
