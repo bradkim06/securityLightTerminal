@@ -18,24 +18,15 @@
 #include "timer.h"
 #include "uart.h"
 
-typedef struct {
-	signed char nRetry;
-	uint8 inProcess;
-	uint8 meterType;
-	uint8 success;
-	MeteringType_t type;
-	Cause_t cause;
-} Metering_t;
-
 /**
  * @brief Meter metering context. (related meter.c & slave_access.c)
  */
-static Metering_t Metering;
+Metering_t Metering;
 
 /**
  * @brief APP event(include ISR event) task ID
  */
-static uint8 AppTaskId;
+uint8 AppTaskId;
 
 /**
  * @brief Terminal configuration context(Global context)
@@ -144,19 +135,19 @@ __interrupt void Port_1(void)
 }
 
 // Port 2 interrupt service routine - Reed, Tamper, Flood
-#pragma vector = PORT2_VECTOR
-__interrupt void Port_2(void)
-{
-	if (P2IFG & BM(REED_SENSOR_P2_PIN)) {
-		P2IFG &= ~BM(REED_SENSOR_P2_PIN); // P1.2 IFG cleared
-		if (TEST_isTestMode()) {
-			OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_SENSOR_REED, (uint32)10);
-		} else {
-			OSAL_startEventTimer(AppTaskId, APP_EVENT_SENSOR_REED, (uint32)500);
-		}
-		WAKEUP_DEVICE();
-	}
-}
+// #pragma vector = PORT2_VECTOR
+// __interrupt void Port_2(void)
+// {
+// 	if (P2IFG & BM(REED_SENSOR_P2_PIN)) {
+// 		P2IFG &= ~BM(REED_SENSOR_P2_PIN); // P1.2 IFG cleared
+// 		if (TEST_isTestMode()) {
+// 			OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_SENSOR_REED, (uint32)10);
+// 		} else {
+// 			OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)500);
+// 		}
+// 		WAKEUP_DEVICE();
+// 	}
+// }
 
 #pragma vector = UNMI_VECTOR
 __interrupt void UNMI_ISR(void)
@@ -225,7 +216,6 @@ void APP_init(uint8 taskId)
 	MISC_delayMs(500);
 
 	METER_clearTempData();
-	Relay_Status(RELAY_TOGGLE, AUTO);
 
 	OSAL_setEvent(AppTaskId, APP_EVENT_INITIAL);
 }
@@ -272,7 +262,7 @@ void APP_runMetering(MeteringType_t meteringType, Cause_t cause)
 	Metering.meterType = conf.meterType;
 	Metering.success = 0;
 
-	Metering.nRetry = 0;
+	Metering.nRetry = 1;
 
 	METER_sendRequest(Metering.meterType);
 	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)400);
@@ -364,9 +354,10 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 		return (events ^ APP_EVENT_IMMEDIATE_METERING);
 	}
 
-	if (events & APP_EVENT_SENSOR_REED) {
+	if (events & APP_EVENT_LIGHT_REPORT) {
+		APP_runMetering(Metering.type, Metering.cause);
 		/* APP_runMetering(IMMEDIATE_METERING); */
-		return (events ^ APP_EVENT_SENSOR_REED);
+		return (events ^ APP_EVENT_LIGHT_REPORT);
 	}
 
 	if (events & APP_EVENT_NFC_WAIT) {

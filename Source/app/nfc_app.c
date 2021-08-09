@@ -542,9 +542,9 @@ static void recvBdControlReq(byte *data, uint8 len)
 #define POWER_ON 1
 #define POWER_OFF 2
 	if (p->powerCtrl == POWER_ON) {
-		Relay_Status(RELAY_ON, WORKER);
+		Relay_Status(RELAY_ON, LIGHT_ON, WORKER);
 	} else if (p->powerCtrl == POWER_OFF) {
-		Relay_Status(RELAY_OFF, WORKER);
+		Relay_Status(RELAY_OFF, LIGHT_OFF, WORKER);
 	}
 
 	uint8 powerCtrl = getRelayStatus();

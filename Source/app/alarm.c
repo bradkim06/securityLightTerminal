@@ -279,14 +279,14 @@ void ALARM_run()
 	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
 		if (light.onTime[HOUR] == date.hour) {
 			printf_ts("light on run\n");
-			Relay_Status(RELAY_ON, AUTO);
+			Relay_Status(RELAY_ON, LIGHT_ON, AUTO);
 		} else {
 			printf_ts("not light on hour\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
 		if (light.offTime[HOUR] == date.hour) {
 			printf_ts("light off run\n");
-			Relay_Status(RELAY_OFF, AUTO);
+			Relay_Status(RELAY_OFF, LIGHT_OFF, AUTO);
 		} else {
 			printf_ts("not light off hour\n");
 		}

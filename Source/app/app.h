@@ -10,7 +10,7 @@
 /// APP Event
 #define APP_EVENT_INITIAL 0x00000001
 #define APP_EVENT_RTC_ALARM 0x00000002
-#define APP_EVENT_SENSOR_REED 0x00000004
+#define APP_EVENT_LIGHT_REPORT 0x00000004
 #define APP_EVENT_METER_RX 0x00000008
 #define APP_EVENT_METER_TIMEOUT 0x00000010
 #define APP_EVENT_METER_BYPASS 0x00000020
@@ -38,6 +38,18 @@ typedef enum {
 	SERVER,
 	FORCE,
 } Cause_t;
+
+typedef struct {
+	signed char nRetry;
+	uint8 inProcess;
+	uint8 meterType;
+	uint8 success;
+	MeteringType_t type;
+	Cause_t cause;
+} Metering_t;
+
+extern Metering_t Metering;
+extern uint8 AppTaskId;
 
 // Function proto-type
 char *APP_getFwVer();

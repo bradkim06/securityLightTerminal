@@ -43,7 +43,7 @@ void METER_addTempData(MeterUnitData_t *pUnit)
 	memcpy(&LastMetering.unit, pUnit, sizeof(MeterUnitData_t));
 }
 
-void Relay_Status(int on, Cause_t cause)
+void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 {
 	static char prevStatus = RELAY_OFF;
 
@@ -74,19 +74,24 @@ void Relay_Status(int on, Cause_t cause)
 
 	relayStatus = P3OUT & RELAY_PIN;
 
-	if (on == RELAY_TOGGLE) {
+	if (type == NO_REPORT) {
 		return;
 	}
 
 	if (prevStatus != on) {
 		prevStatus = on;
+
 		if (on == RELAY_ON) {
 			printf_ts("light on\n");
-			APP_runMetering(LIGHT_ON, cause);
 		} else if (on == RELAY_OFF) {
 			printf_ts("light off\n");
-			APP_runMetering(LIGHT_OFF, cause);
+		} else {
+			return;
 		}
+
+		Metering.type = type;
+		Metering.cause = cause;
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)5000);
 	}
 }
 

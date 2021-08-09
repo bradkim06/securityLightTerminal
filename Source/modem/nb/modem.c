@@ -493,7 +493,7 @@ static void eventRunProc()
 	} else {
 		if (modemCtx.currentProc == MODEM_PROC_INIT &&
 		    nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
-			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 1000);
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 2000);
 		} else {
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
 		}
