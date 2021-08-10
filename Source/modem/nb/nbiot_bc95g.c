@@ -464,6 +464,7 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len, uint32 *nextDela
 	if ((p = strstr(pHead, ATCMD_RESP_QLWSERVERIP_BS))) {
 		p += strlen(ATCMD_RESP_QLWSERVERIP_BS);
 		if (strncmp((const char *)p, (const char *)addr, strlen(addr)) == 0) {
+			return TRUE;
 		} else {
 			NBIOT_DBG("BS server address is not matched \n");
 			isSetCfg = TRUE;
@@ -472,22 +473,6 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len, uint32 *nextDela
 		if (nbCtx.status.error) {
 			nbCtx.status.error = 0;
 			NBIOT_DBG("BS server address have to set \n");
-			isSetCfg = TRUE;
-		}
-	}
-
-	if ((p = strstr(pHead, ATCMD_RESP_QLWSERVERIP_LWM2M))) {
-		p += strlen(ATCMD_RESP_QLWSERVERIP_LWM2M);
-		if (strncmp((const char *)p, (const char *)addr, strlen(addr)) == 0) {
-			return TRUE;
-		} else {
-			NBIOT_DBG("LWM2M server address is not matched \n");
-			isSetCfg = TRUE;
-		}
-	} else {
-		if (nbCtx.status.error) {
-			nbCtx.status.error = 0;
-			NBIOT_DBG("LWM2M server address have to set \n");
 			isSetCfg = TRUE;
 		}
 	}

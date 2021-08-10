@@ -63,15 +63,18 @@ void ALARM_init()
 		AlarmList[0].minute = light.onTime[MINUTE];
 		AlarmList[1].type = RTC_ALARM_LIGHT_OFF;
 		AlarmList[1].minute = light.offTime[MINUTE];
-		AlarmList[2].type = RTC_ALARM_REPORT;
-		AlarmList[2].minute = conf.reportMin;
 
 		if (light.psm) {
-			AlarmList[3].type = RTC_ALARM_PSM_ON;
-			AlarmList[3].minute = light.psmOnTime[MINUTE];
-			AlarmList[4].type = RTC_ALARM_PSM_OFF;
-			AlarmList[4].minute = light.psmOffTime[MINUTE];
+			AlarmList[2].type = RTC_ALARM_PSM_ON;
+			AlarmList[2].minute = light.psmOnTime[MINUTE];
+			if (light.psm == PSM_RELIGHT) {
+				AlarmList[3].type = RTC_ALARM_PSM_OFF;
+				AlarmList[3].minute = light.psmOffTime[MINUTE];
+			}
 		}
+
+		AlarmList[4].type = RTC_ALARM_REPORT;
+		AlarmList[4].minute = conf.reportMin;
 	}
 
 	TimeSyncFlag = 0;
@@ -140,12 +143,20 @@ void shortScheduler()
 
 static BOOL checkLightAlarm(Date_t date, uint8 time[], int idx)
 {
-	int hourdiff, retVal;
+	int hourdiff, mindiff;
+	BOOL retVal = FALSE;
 
 	printf_ts("%s - [%02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type), time[HOUR],
 		  time[MINUTE]);
 	hourdiff = time[HOUR] - date.hour;
-	if (hourdiff <= 1 && hourdiff >= 0) {
+
+	if (hourdiff == 0) {
+		mindiff = time[MINUTE] - date.min;
+
+		if (mindiff > 0) {
+			retVal = TRUE;
+		}
+	} else if (hourdiff == 1) {
 		retVal = TRUE;
 	} else {
 		retVal = FALSE;
@@ -188,14 +199,10 @@ void normalScheduler()
 			if (idx == RTC_ALARM_LIGHT_ON) {
 				if (checkLightAlarm(date, light.onTime, idx)) {
 					isLight = TRUE;
-				} else {
-					continue;
 				}
 			} else if (idx == RTC_ALARM_LIGHT_OFF) {
 				if (checkLightAlarm(date, light.offTime, idx)) {
 					isLight = TRUE;
-				} else {
-					continue;
 				}
 			}
 
@@ -203,18 +210,26 @@ void normalScheduler()
 				if (idx == RTC_ALARM_PSM_ON) {
 					if (checkLightAlarm(date, light.psmOnTime, idx)) {
 						isLight = TRUE;
-					} else {
-						continue;
-					}
-				} else if (idx == RTC_ALARM_PSM_OFF) {
-					if (checkLightAlarm(date, light.psmOffTime, idx)) {
-						isLight = TRUE;
-					} else {
-						continue;
 					}
 				}
+
+				if (light.psm == PSM_RELIGHT) {
+					if (idx == RTC_ALARM_PSM_OFF) {
+						if (checkLightAlarm(date, light.psmOffTime, idx)) {
+							isLight = TRUE;
+						}
+					}
+				}
+			}
+
+			if (idx == RTC_ALARM_REPORT) {
+				if (isLight) {
+					break;
+				}
 			} else {
-				break;
+				if (!isLight) {
+					continue;
+				}
 			}
 		}
 
@@ -223,10 +238,6 @@ void normalScheduler()
 			if (diff <= lastDiff) {
 				pNext = &AlarmList[idx];
 				lastDiff = diff;
-
-				if (isLight) {
-					break;
-				}
 			}
 		}
 	}

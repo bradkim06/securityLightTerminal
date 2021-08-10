@@ -716,7 +716,7 @@ static void recvPsmModeSet(byte *data, uint8 len)
 	NfcPsmModeSet_t *p = (NfcPsmModeSet_t *)data;
 	BOOL isChange = FALSE;
 
-	if (p->psm) {
+	if (p->psm != light.psm) {
 		light.psm = p->psm;
 		BYTE_bcdToInt(&p->psmStartTime[HOUR], &light.psmOnTime[HOUR]);
 		BYTE_bcdToInt(&p->psmStartTime[MINUTE], &light.psmOnTime[MINUTE]);
@@ -730,7 +730,7 @@ static void recvPsmModeSet(byte *data, uint8 len)
 		isChange = TRUE;
 	}
 
-	if (p->dimmMode) {
+	if (p->dimmMode != light.dimmingMode) {
 		light.dimmingMode = p->dimmMode;
 		isChange = TRUE;
 	}

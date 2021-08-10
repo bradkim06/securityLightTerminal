@@ -8,9 +8,9 @@ typedef enum {
 	// 매 시간 정해진 시간(serial number에 따라 변경)에 발생하는 보고 이벤트
 	RTC_ALARM_LIGHT_ON = 0,
 	RTC_ALARM_LIGHT_OFF = 1,
-	RTC_ALARM_REPORT = 2,
-	RTC_ALARM_PSM_ON = 3,
-	RTC_ALARM_PSM_OFF = 4,
+	RTC_ALARM_PSM_ON = 2,
+	RTC_ALARM_PSM_OFF = 3,
+	RTC_ALARM_REPORT = 4,
 	RTC_ALARM_UNKNOWN, // 미사용 알람
 } RtcAlarmType_t;
 
