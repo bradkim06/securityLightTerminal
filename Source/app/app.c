@@ -213,6 +213,9 @@ void APP_init(uint8 taskId)
 	APP_showConfig(&conf);
 	METER_enable(E_METER);
 
+	printf_ts("light Status : %d\n", lightStatus);
+	Relay_Status(lightStatus, NO_REPORT, AUTO);
+
 	MISC_delayMs(500);
 
 	METER_clearTempData();
@@ -222,7 +225,12 @@ void APP_init(uint8 taskId)
 
 static void meteringCompleted()
 {
-	// int state = MODEM_getState();
+	int state = MODEM_getState();
+
+	if (state != DEVICE_STATUS_IDLE) {
+		return;
+	}
+
 	if (Metering.type != MODEM_PROC_NO_REPORT) {
 		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
 	} else {

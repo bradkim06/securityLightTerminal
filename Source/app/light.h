@@ -48,5 +48,7 @@ typedef struct {
 
 void setGps(double src, uint8 dstInt[], uint8 dstDec[]);
 void getGps(double *dst, uint8 srcInt[], uint8 srcDec[]);
+void BYTE_bcdToInt(uint8 *pBCD, uint8 *pInt);
+void BYTE_intToBCD(uint8 *pInt, uint8 *pBCD);
 
 #endif

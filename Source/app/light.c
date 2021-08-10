@@ -25,3 +25,26 @@ void getGps(double *dst, uint8 srcInt[], uint8 srcDec[])
 
 	*dst = integer + ((double)decimal / 1000000);
 }
+
+void BYTE_bcdToInt(uint8 *pBCD, uint8 *pInt)
+{
+	uint8 value = 0;
+	uint8 temp = 0;
+
+	value *= 100;
+	temp = *(pBCD);
+	temp = ((temp & 0xf0) >> 4) * 10 + (temp & 0x0f);
+	value += temp;
+
+	*pInt = value;
+}
+
+void BYTE_intToBCD(uint8 *pInt, uint8 *pBCD)
+{
+	uint8 value = *pInt;
+	uint8 temp = 0;
+
+	temp = value % 100;
+	value /= 100;
+	*(pBCD) = (temp / 10) * 0x10 + (temp % 10);
+}

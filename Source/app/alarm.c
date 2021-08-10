@@ -12,13 +12,17 @@
 #include "sunrise.h"
 
 // 정의된 RTC 타이머 이벤트 개수.
-#define RTC_ALARM_COUNT 3
+#define RTC_ALARM_COUNT 5
 
 #define ALARM_TYPE_STR(x)                                                                          \
 	(((x) == RTC_ALARM_LIGHT_ON) ?                                                             \
 		 "Light on" :                                                                      \
-		 ((x) == RTC_ALARM_LIGHT_OFF) ? "Light off" :                                      \
-						((x) == RTC_ALARM_REPORT) ? "Report" : "unknown")
+		 ((x) == RTC_ALARM_LIGHT_OFF) ?                                                    \
+		 "Light off" :                                                                     \
+		 ((x) == RTC_ALARM_PSM_ON) ?                                                       \
+		 "Psm on" :                                                                        \
+		 ((x) == RTC_ALARM_PSM_OFF) ? "Psm off" :                                          \
+					      ((x) == RTC_ALARM_REPORT) ? "Report" : "unknown")
 
 static int TimeSyncFlag = 0;
 static Date_t TimeSyncDate;
@@ -61,6 +65,13 @@ void ALARM_init()
 		AlarmList[1].minute = light.offTime[MINUTE];
 		AlarmList[2].type = RTC_ALARM_REPORT;
 		AlarmList[2].minute = conf.reportMin;
+
+		if (light.psm) {
+			AlarmList[3].type = RTC_ALARM_PSM_ON;
+			AlarmList[3].minute = light.psmOnTime[MINUTE];
+			AlarmList[4].type = RTC_ALARM_PSM_OFF;
+			AlarmList[4].minute = light.psmOffTime[MINUTE];
+		}
 	}
 
 	TimeSyncFlag = 0;
@@ -167,6 +178,12 @@ void normalScheduler()
 	for (int idx = 0; idx < RTC_ALARM_COUNT; idx++) {
 		int hourdiff;
 
+		diff = AlarmList[idx].minute - date.min;
+		if (diff <= 1) {
+			// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기 위해 1시간을 더한다.
+			diff += 60;
+		}
+
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
 				if (checkLightAlarm(date, light.onTime, idx)) {
@@ -180,26 +197,26 @@ void normalScheduler()
 				} else {
 					continue;
 				}
-				// printf_ts("%s - [%02d:%02d:00]\n",
-				// 	  ALARM_TYPE_STR(AlarmList[idx].type), light.offTime[HOUR],
-				// 	  light.offTime[MINUTE]);
-				// hourdiff = light.offTime[HOUR] - date.hour;
-				// if (hourdiff <= 1 && hourdiff >= 0) {
-				// 	isLight = 1;
-				// } else {
-				// 	continue;
-				// }
+			}
+
+			if (light.psm) {
+				if (idx == RTC_ALARM_PSM_ON) {
+					if (checkLightAlarm(date, light.psmOnTime, idx)) {
+						isLight = TRUE;
+					} else {
+						continue;
+					}
+				} else if (idx == RTC_ALARM_PSM_OFF) {
+					if (checkLightAlarm(date, light.psmOffTime, idx)) {
+						isLight = TRUE;
+					} else {
+						continue;
+					}
+				}
+			} else {
+				break;
 			}
 		}
-
-		diff = AlarmList[idx].minute - date.min;
-		if (diff <= 1) {
-			// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기 위해 1시간을 더한다.
-			diff += 60;
-		}
-
-		// printf_ts("set next alarm [ %s:%02dm diff=%02dm ] - ",
-		// 	  ALARM_TYPE_STR(AlarmList[idx].type), AlarmList[idx].minute, diff);
 
 		// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
 		if (diff > 1) {
@@ -210,11 +227,7 @@ void normalScheduler()
 				if (isLight) {
 					break;
 				}
-			} else {
-				printf("skip\n");
 			}
-		} else {
-			printf("diff is too small \n");
 		}
 	}
 
@@ -267,28 +280,26 @@ void ALARM_run()
 	if (alarmType == RTC_ALARM_REPORT) {
 		if (MISC_checkInterval(date.hour, conf.reportHour, conf.reportInterval)) {
 			APP_runPeriodicReport();
-		} else {
-			printf_ts("not report hour ");
-			for (int h = 0; h < 24; h++) {
-				if (MISC_checkInterval(h, conf.reportHour, conf.reportInterval)) {
-					printf("%d, ", h);
-				}
-			}
-			printf("\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
 		if (light.onTime[HOUR] == date.hour) {
 			printf_ts("light on run\n");
 			Relay_Status(RELAY_ON, LIGHT_ON, AUTO);
-		} else {
-			printf_ts("not light on hour\n");
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
 		if (light.offTime[HOUR] == date.hour) {
 			printf_ts("light off run\n");
 			Relay_Status(RELAY_OFF, LIGHT_OFF, AUTO);
-		} else {
-			printf_ts("not light off hour\n");
+		}
+	} else if (alarmType == RTC_ALARM_PSM_ON) {
+		if (light.psmOnTime[HOUR] == date.hour) {
+			printf_ts("psm on\n");
+			Relay_Status(RELAY_OFF, LIGHT_OFF, AUTO);
+		}
+	} else if (alarmType == RTC_ALARM_PSM_OFF) {
+		if (light.psmOffTime[HOUR] == date.hour) {
+			printf_ts("psm off\n");
+			Relay_Status(RELAY_ON, LIGHT_ON, AUTO);
 		}
 	} else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);

@@ -9,6 +9,8 @@ typedef enum {
 	RTC_ALARM_LIGHT_ON = 0,
 	RTC_ALARM_LIGHT_OFF = 1,
 	RTC_ALARM_REPORT = 2,
+	RTC_ALARM_PSM_ON = 3,
+	RTC_ALARM_PSM_OFF = 4,
 	RTC_ALARM_UNKNOWN, // 미사용 알람
 } RtcAlarmType_t;
 

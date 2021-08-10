@@ -9,13 +9,15 @@
 #include "rtc.h"
 #include "device.h"
 
+#pragma NOINIT(lightStatus)
+int lightStatus;
+
 typedef struct {
 	MeterUnitData_t unit;
 } MeteringData_t;
 
 // 마지막 검침 데이터 저장 영역
 MeteringData_t LastMetering;
-uint8 relayStatus = RELAY_OFF;
 
 char *METER_getMeterName(int meterType)
 {
@@ -72,27 +74,22 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 	printf_ts("Relay Status : %s[Command], %s[Status]\n", RELAY_STATUS_STR(on),
 		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
 
-	relayStatus = P3OUT & RELAY_PIN;
+	prevStatus = on;
+	lightStatus = on;
 
 	if (type == NO_REPORT) {
 		return;
 	}
 
-	if (prevStatus != on) {
-		prevStatus = on;
-
-		if (on == RELAY_ON) {
-			printf_ts("light on\n");
-		} else if (on == RELAY_OFF) {
-			printf_ts("light off\n");
-		} else {
-			return;
-		}
-
-		Metering.type = type;
-		Metering.cause = cause;
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)5000);
+	if (on == RELAY_ON) {
+		printf_ts("light on\n");
+	} else if (on == RELAY_OFF) {
+		printf_ts("light off\n");
 	}
+
+	Metering.type = type;
+	Metering.cause = cause;
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)5000);
 }
 
 uchar getRelayStatus(void)

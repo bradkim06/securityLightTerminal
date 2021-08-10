@@ -365,8 +365,16 @@ static void sendPsmResp(uint8 reportType)
 	readRtcV1(p->year);
 
 	p->psm = light.psm;
-	memcpy(p->psmStartTime, light.psmOnTime, 2);
-	memcpy(p->psmStartDate, light.psmOnDay, 2);
+	BYTE_intToBCD(&light.psmOnTime[HOUR], &p->psmStartTime[HOUR]);
+	BYTE_intToBCD(&light.psmOnTime[MINUTE], &p->psmStartTime[MINUTE]);
+	BYTE_intToBCD(&light.psmOffTime[HOUR], &p->psmEndTime[HOUR]);
+	BYTE_intToBCD(&light.psmOffTime[MINUTE], &p->psmEndTime[MINUTE]);
+
+	BYTE_intToBCD(&light.psmOnDay[HOUR], &p->psmStartDate[HOUR]);
+	BYTE_intToBCD(&light.psmOnDay[MINUTE], &p->psmStartDate[MINUTE]);
+	BYTE_intToBCD(&light.psmOffDay[HOUR], &p->psmEndDate[HOUR]);
+	BYTE_intToBCD(&light.psmOffDay[MINUTE], &p->psmEndDate[MINUTE]);
+
 	p->dimmMode = light.dimmingMode;
 	p->dimmLv = light.dimmingLv;
 
@@ -706,21 +714,34 @@ static void recvNbiotIdSet(byte *data, uint8 len)
 static void recvPsmModeSet(byte *data, uint8 len)
 {
 	NfcPsmModeSet_t *p = (NfcPsmModeSet_t *)data;
+	BOOL isChange = FALSE;
 
 	if (p->psm) {
 		light.psm = p->psm;
-		memcpy(light.psmOnTime, p->psmStartTime, 2);
-		memcpy(light.psmOffTime, p->psmEndTime, 2);
-		memcpy(light.psmOnDay, p->psmStartDate, 2);
-		memcpy(light.psmOffDay, p->psmEndDate, 2);
+		BYTE_bcdToInt(&p->psmStartTime[HOUR], &light.psmOnTime[HOUR]);
+		BYTE_bcdToInt(&p->psmStartTime[MINUTE], &light.psmOnTime[MINUTE]);
+		BYTE_bcdToInt(&p->psmEndTime[HOUR], &light.psmOffTime[HOUR]);
+		BYTE_bcdToInt(&p->psmEndTime[MINUTE], &light.psmOffTime[MINUTE]);
+
+		BYTE_bcdToInt(&p->psmStartDate[HOUR], &light.psmOnDay[HOUR]);
+		BYTE_bcdToInt(&p->psmStartDate[MINUTE], &light.psmOnDay[MINUTE]);
+		BYTE_bcdToInt(&p->psmEndDate[HOUR], &light.psmOffDay[HOUR]);
+		BYTE_bcdToInt(&p->psmEndDate[MINUTE], &light.psmOffDay[MINUTE]);
+		isChange = TRUE;
 	}
 
 	if (p->dimmMode) {
 		light.dimmingMode = p->dimmMode;
+		isChange = TRUE;
 	}
 
 	if (p->dimmLv) {
 		light.dimmingLv = p->dimmLv;
+		isChange = TRUE;
+	}
+
+	if (isChange) {
+		OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG);
 	}
 
 	sendPsmResp(REPORT_TYPE_SET);

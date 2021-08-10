@@ -15,6 +15,8 @@
 #define RELAY_ON 2
 #define RELAY_TOGGLE 3
 
+extern int lightStatus;
+
 //**************************************
 // Meter data unit structure
 //**************************************
@@ -26,8 +28,6 @@ typedef struct {
 	int32 power;
 	uint32 cumPower;
 } MeterUnitData_t;
-
-extern uint8 relayStatus;
 
 char *METER_getMeterName(int meterType);
 void METER_clearTempData();
