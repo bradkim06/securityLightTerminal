@@ -47,8 +47,6 @@ void METER_addTempData(MeterUnitData_t *pUnit)
 
 void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 {
-	static char prevStatus = RELAY_OFF;
-
 	switch (on) {
 	case RELAY_ON:
 		P3OUT |= RELAY_PIN;
@@ -60,6 +58,7 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 		P3OUT ^= RELAY_PIN;
 		break;
 	case RELAY_NO_CHANGE:
+		break;
 	default:
 		break;
 	}
@@ -74,8 +73,7 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 	printf_ts("Relay Status : %s[Command], %s[Status]\n", RELAY_STATUS_STR(on),
 		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
 
-	prevStatus = on;
-	lightStatus = on;
+	lightStatus = P3OUT & RELAY_PIN;
 
 	if (type == NO_REPORT) {
 		return;

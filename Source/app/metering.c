@@ -74,7 +74,7 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 	pUnit->cumPower = rx->cumPower;
 
 #define LAMP_ERROR 0x02
-	if (lightStatus) {
+	if (lightStatus == RELAY_ON) {
 		if (pUnit->curr < 20) {
 			printf_ts("Lamp Error : %d\n", lightStatus);
 			pUnit->meterStatus |= LAMP_ERROR;

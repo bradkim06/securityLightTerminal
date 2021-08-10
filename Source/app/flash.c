@@ -213,6 +213,7 @@ static void readID(FlashId_t *pInfo)
 		printf("ID: both side are false\n");
 		// 두개의 영역이 모두 깨지더라도 Serial Number는 지우지 않음.
 		initLightConfig(pInfo);
+		lightStatus = 0;
 #if 0
         memset((uint8 *)pInfo, 0xff, sizeof(FlashId_t));
         memset(pInfo->serialNum, '0', SERIAL_NUM_LEN);
