@@ -561,7 +561,7 @@ static void eventTimeoutCmd()
 				(nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) ?
 				MODEM_ATTACH_RETRY :
 				(nbCtx.currentStep == NBIOT_STEP_TRANSFER) ? MODEM_ONEM2M_RETRY : 0;
-		MODEM_DBG("current retry step count (%d/%d)\n", modemCtx.retry, maxRetry);
+		MODEM_DBG("current retry step count (%d/%d)\n", modemCtx.retry + 1, maxRetry);
 		if (modemCtx.retry < maxRetry) {
 			BOOL isHwReset = (modemCtx.retry == (maxRetry - 1)) ? TRUE : FALSE;
 			BOOL isNeedAttach =

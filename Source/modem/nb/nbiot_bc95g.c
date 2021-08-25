@@ -257,6 +257,8 @@ static BOOL parseBootup(const char *pHead, const int *len, uint32 *nextDelay)
 	if (strstr(pHead, "REBOOT_CAUSE_")) {
 		*nextDelay = DELAY_NBIOT_BOOTUP;
 		return TRUE;
+	} else if (strstr(pHead, "OK")) {
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -319,7 +321,7 @@ static BOOL parseLwm2mFotaUpdate(const char *pHead, const int *len, uint32 *next
 
 static BOOL parseNRB(const char *pHead, const int *len, uint32 *nextDelay)
 {
-#define ATCMD_RESP_NRB_CAUSE_APP "REBOOT_CAUSE_APPLICATION_AT"
+#define ATCMD_RESP_NRB_CAUSE_APP "REBOOT_CAUSE_"
 	if (strstr(pHead, ATCMD_RESP_NRB_CAUSE_APP)) {
 		nbCtx.lwm2m.value = 0;
 		return TRUE;
@@ -495,6 +497,7 @@ static BOOL parseQLWSERVERIP(const char *pHead, const int *len, uint32 *nextDela
 static BOOL parseQLWMBSPS(const char *pHead, const int *len, uint32 *nextDelay)
 {
 #define ATCMD_RESP_QLWMBSPS "+QLWMBSPS: "
+#define ATCMD_RESP_ERROR "ERROR"
 
 	char *p = NULL;
 	if ((p = strstr(pHead, ATCMD_RESP_QLWMBSPS))) {
@@ -522,6 +525,11 @@ static BOOL parseQLWMBSPS(const char *pHead, const int *len, uint32 *nextDelay)
 		} else {
 			printf_ts("LWM2M : bootstrap parameter is matched\n");
 		}
+		return TRUE;
+	} else if ((p = strstr(pHead, ATCMD_RESP_ERROR))) {
+		printf_ts("LWM2M : bootstrap parameter init\n");
+		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+			      ATCMD_QLWMBSPS "=%s", nbInfo.bsParam);
 		return TRUE;
 	}
 	return FALSE;
@@ -1037,6 +1045,11 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNSOCR,
 				   ATCMD_NSOCR "=DGRAM,17,560,0");
 		}
+
+		int len = 0;
+		char *data = NULL;
+		data = NBMSG_getMeterReport(FALSE, &len);
+		NBIOT_registerData(data, len);
 	}
 }
 

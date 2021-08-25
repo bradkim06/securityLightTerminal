@@ -37,8 +37,8 @@
 
 // NB-IoT 총 재시도 횟수 (마지막 1회는 H/W reset, 그 외 재시도는 S/W reset)
 #define MODEM_BIP_RETRY 2
-#define MODEM_ATTACH_RETRY 2
-#define MODEM_ONEM2M_RETRY 0
+#define MODEM_ATTACH_RETRY 6
+#define MODEM_ONEM2M_RETRY 4
 
 // NB-IoT task event
 #define MODEM_EVENT_SEND_ATCMD BM(0) // Send registered AT command
