@@ -86,20 +86,6 @@ int ALARM_isTimeSync()
 	return TimeSyncFlag;
 }
 
-BOOL ALARM_needTimeSync()
-{
-	// LORA에서는 날자가 바뀌면 새로운 time sync를 실행함.
-
-	Date_t date;
-	RTC_read(&date);
-
-	if (TimeSyncFlag && (TimeSyncDate.day == date.day)) {
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
 int ALARM_writeTime(Date_t *date)
 {
 	if (MISC_isValidDate(date)) {

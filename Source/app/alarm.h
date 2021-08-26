@@ -26,6 +26,5 @@ void ALARM_run();
 int ALARM_status();
 int ALARM_writeTime(Date_t *date);
 int ALARM_isTimeSync();
-BOOL ALARM_needTimeSync();
 
 #endif // __RTC_ALARM_H__
