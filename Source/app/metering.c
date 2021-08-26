@@ -66,9 +66,11 @@ static void read_light_status(uint8 *rxBuf)
 		return;
 	}
 
-	printf_ts("light on : %d-%d\n", light.onTime[HOUR], light.onTime[MINUTE]);
-	memcpy(&light, &rx->light, sizeof(light_t));
-	printf_ts("light on : %d-%d\n", light.onTime[HOUR], light.onTime[MINUTE]);
+	if (memcmp(&light, &rx->light, sizeof(light_t))) {
+		memcpy(&light, &rx->light, sizeof(light_t));
+
+		APP_runMetering(IMMEDIATE_METERING, WORKER);
+	}
 }
 
 static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)

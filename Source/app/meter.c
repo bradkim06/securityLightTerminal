@@ -87,7 +87,7 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 
 	Metering.type = type;
 	Metering.cause = cause;
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)5000);
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)10000);
 }
 
 uchar getRelayStatus(void)

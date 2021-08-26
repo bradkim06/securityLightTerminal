@@ -279,9 +279,11 @@ BOOL updateSunTime(Date_t *date)
 
 	if (prevDay != date->day) {
 		printf_ts("Day Changed prev(%d) current(%d)\n", prevDay, date->day);
-	} else if (memcmp(&prevSetting, &light, sizeof(light_t))) {
-		printf_ts("Light Setting Changed\n");
-	} else {
+	}
+	/* else if (memcmp(&prevSetting, &light, sizeof(light_t))) { */
+	/* printf_ts("Light Setting Changed\n"); */
+	/* } */
+	else {
 		needChange = FALSE;
 	}
 

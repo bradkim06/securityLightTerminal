@@ -280,22 +280,18 @@ void ALARM_run()
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_ON) {
 		if (light.onTime[HOUR] == date.hour) {
-			printf_ts("light on run\n");
 			Relay_Status(RELAY_ON, LIGHT_ON, AUTO);
 		}
 	} else if (alarmType == RTC_ALARM_LIGHT_OFF) {
 		if (light.offTime[HOUR] == date.hour) {
-			printf_ts("light off run\n");
 			Relay_Status(RELAY_OFF, LIGHT_OFF, AUTO);
 		}
 	} else if (alarmType == RTC_ALARM_PSM_ON) {
 		if (light.psmOnTime[HOUR] == date.hour) {
-			printf_ts("psm on\n");
 			Relay_Status(RELAY_OFF, LIGHT_OFF, AUTO);
 		}
 	} else if (alarmType == RTC_ALARM_PSM_OFF) {
 		if (light.psmOffTime[HOUR] == date.hour) {
-			printf_ts("psm off\n");
 			Relay_Status(RELAY_ON, LIGHT_ON, AUTO);
 		}
 	} else {
