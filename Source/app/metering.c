@@ -47,6 +47,30 @@ static uint8 std_checksum(uint8 *from, int size)
 	return checksum;
 }
 
+static void read_light_status(uint8 *rxBuf)
+{
+	meterLightStatus_t *rx = (meterLightStatus_t *)rxBuf;
+
+	if (rx->stx != METER_STX) {
+		printf("Invalid Meter STX\n");
+		return;
+	}
+
+	if (rx->etx != METER_ETX) {
+		printf("Invalid Meter ETX\n");
+		return;
+	}
+
+	if (rx->checkSum != std_checksum(rxBuf, sizeof(meterLightStatus_t))) {
+		printf("Invalid Checksum\n");
+		return;
+	}
+
+	printf_ts("light on : %d-%d\n", light.onTime[HOUR], light.onTime[MINUTE]);
+	memcpy(&light, &rx->light, sizeof(light_t));
+	printf_ts("light on : %d-%d\n", light.onTime[HOUR], light.onTime[MINUTE]);
+}
+
 static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 {
 	elecMeterResp_t *rx = (elecMeterResp_t *)rxBuf;
@@ -180,6 +204,10 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 	BOOL result = FALSE;
 
 	if (meterType == E_METER) {
+		if (buf[1] == 0xB1) {
+			read_light_status(buf);
+			return TRUE;
+		}
 		result = read_electric_meter(buf, pUnit);
 	}
 

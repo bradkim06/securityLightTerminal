@@ -49,6 +49,14 @@ typedef struct {
 	uint8 etx;
 } lcdReq_t;
 
+typedef struct {
+	uint8 stx;
+	uint8 msgType;
+	light_t light;
+	uint8 checkSum;
+	uint8 etx;
+} meterLightStatus_t;
+
 //! \brief Type for Power variables
 //!
 typedef int64_t EM_Power_t;
