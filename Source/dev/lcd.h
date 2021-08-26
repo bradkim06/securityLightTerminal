@@ -3,4 +3,6 @@
 
 #include "uart.h"
 #include "var_type.h"
+
+void initButton(void);
 #endif // _LCD_DRIVER_H_

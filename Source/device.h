@@ -9,8 +9,10 @@
 //============================================
 // TERMINAL DEVICE COMMON PORT NUMBER
 //============================================
-#define REED_SENSOR_P2_PIN 1 // P2.1
-#define PUSH_BUTTON_P2_PIN 2 // P2.2, not use
+#define BUTTON_ENTER 4
+#define BUTTON_STOP 5
+#define BUTTON_UP 6
+#define BUTTON_DOWN 7
 
 #define TEST_MODE_DETECT_P1_PIN 0 // P2.1
 #define HTM115W_DETECT_P8_PIN 1 // P8.1

@@ -139,6 +139,22 @@ BOOL METER_sendRequest(uint8 meterType)
 	return result;
 }
 
+void LCD_sendReq(uint8 lcdCmd)
+{
+	lcdReq_t msg;
+	lcdReq_t *pMsg = &msg;
+
+	memset(&msg, 0, sizeof(lcdReq_t));
+
+	pMsg->stx = TERMINAL_STX;
+	pMsg->msgType = REQ_LCD;
+	pMsg->lcdCmd = lcdCmd;
+	pMsg->checkSum = std_checksum((uint8 *)&pMsg->stx, sizeof(lcdReq_t));
+	pMsg->etx = TERMINAL_ETX;
+
+	UART_send(UART_A0, &msg, sizeof(evMeterReq_t), FALSE);
+}
+
 void METER_enable(uint8 meterType)
 {
 #if (REPEATER_DEVICE == 0)

@@ -20,6 +20,7 @@
 #define SET_LIGHT_TIME 0xA2
 #define SET_RTC_TIME 0xA3
 #define SET_CALIB_FACTOR 0xA4
+#define REQ_LCD 0xA5
 
 /* Meter -> Terminal */
 #define METER_STX 0x5B
@@ -39,6 +40,14 @@ typedef struct {
 	uint8 checkSum;
 	uint8 etx;
 } evMeterReq_t;
+
+typedef struct {
+	uint8 stx;
+	uint8 msgType;
+	uint8 lcdCmd;
+	uint8 checkSum;
+	uint8 etx;
+} lcdReq_t;
 
 //! \brief Type for Power variables
 //!
@@ -120,5 +129,6 @@ void METER_enable(uint8 meterType);
 
 void METER_bypassReq(uint8 *body, int bodyLen);
 BOOL METER_bypassResp();
+void LCD_sendReq(uint8 lcdCmd);
 
 #endif //__METERING_H__

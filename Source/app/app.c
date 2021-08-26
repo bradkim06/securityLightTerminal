@@ -134,21 +134,6 @@ __interrupt void Port_1(void)
 	}
 }
 
-// Port 2 interrupt service routine - Reed, Tamper, Flood
-// #pragma vector = PORT2_VECTOR
-// __interrupt void Port_2(void)
-// {
-// 	if (P2IFG & BM(REED_SENSOR_P2_PIN)) {
-// 		P2IFG &= ~BM(REED_SENSOR_P2_PIN); // P1.2 IFG cleared
-// 		if (TEST_isTestMode()) {
-// 			OSAL_startEventTimer(TEST_getTaskId(), TEST_EVENT_SENSOR_REED, (uint32)10);
-// 		} else {
-// 			OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)500);
-// 		}
-// 		WAKEUP_DEVICE();
-// 	}
-// }
-
 #pragma vector = UNMI_VECTOR
 __interrupt void UNMI_ISR(void)
 {
@@ -208,6 +193,7 @@ void APP_init(uint8 taskId)
 	BATT_init();
 	NFC_init();
 	ALARM_init();
+	initButton();
 
 	FLASH_updateResetCount(&conf);
 	APP_showConfig(&conf);
