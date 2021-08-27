@@ -60,6 +60,8 @@
 #define ATCMD_QLWFOTAIND "AT+QLWFOTAIND" // Get LWM2M FOTA update mode
 #define ATCMD_QLWSREGIND "AT+QLWSREGIND" // Send LwM2M register
 #define ATCMD_QLWULDATA "AT+QLWULDATA" // Send LwM2M uplink
+#define ATCMD_QLWULDATAEX "AT+QLWULDATAEX" // Send LwM2M confirmable uplink
+#define ATCMD_NMGR "AT+NMGR" // Check Downlink
 
 // LWM2M event notify value
 #define LWM2M_EVENT_REG_FINISH 0
@@ -799,18 +801,25 @@ static uint8 ascii2Hex(char ch)
 	return hex;
 }
 
-static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
+static BOOL parseNNMI(const char *pHead, const int *len, uint32 *nextDelay)
+{
+}
+
+static BOOL parseQLWULDATAEX(const char *pHead, const int *len, uint32 *nextDelay)
 {
 	if (strstr(pHead, ATCMD_RESP_DEFAULT)) {
 		nbInfo.pfUlCnt++;
+	}
+
+#define LWM2M_UPLINK_STATUS "+QLWULDATASTATUS:4"
+	char *p = NULL;
+	if ((p = strstr(pHead, LWM2M_UPLINK_STATUS))) {
 		nbCtx.status.waitDL = 1;
 	}
 
 #define LWM2M_DOWNLINK "+NNMI:"
-	char *p = NULL;
 	if ((p = strstr(pHead, LWM2M_DOWNLINK))) {
 		nbInfo.pfDlCnt++;
-		nbCtx.status.waitDL = 0;
 
 		p += strlen(LWM2M_DOWNLINK);
 		int len = atoi(p);
@@ -839,12 +848,9 @@ static BOOL parseQLWULDATA(const char *pHead, const int *len, uint32 *nextDelay)
 				ascii2Hex(*(p + i * 2 + 0)) * 0x10 + ascii2Hex(*(p + i * 2 + 1));
 		}
 
-		if (NBMSG_recvAckMsg(dlData, len)) {
-			return TRUE;
-		}
+		NBMSG_recvAckMsg(dlData, len);
 		return TRUE;
 	}
-
 	return FALSE;
 }
 
@@ -1002,8 +1008,8 @@ static void transfer()
 		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseLwm2mRegStart,
 			   ATCMD_QLWSREGIND "=0");
 	}
-	ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseQLWULDATA, ATCMD_QLWULDATA "=0,%d,%s",
-		   RegisteredDataLen, RegisteredData);
+	ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseQLWULDATAEX,
+		   ATCMD_QLWULDATAEX "=0,%d,%s,0x0100,0", RegisteredDataLen, RegisteredData);
 	// Free original Data afeter Seding Uplink registration is finished
 	free(RegisteredData);
 	RegisteredData = NULL;
@@ -1154,9 +1160,9 @@ static NbIotError_t getErrorCode(AtCmd_t *atCmd)
 		char *p = strtok(atCmd->cmd, "=");
 		if (strstr(p, ATCMD_CIMI)) {
 			return NBIOT_ERROR_USIM_INVALID;
-		} else if (strstr(p, ATCMD_QLWULDATA)) {
-			return (nbCtx.status.waitDL) ? NBIOT_ERROR_PF_DL_FAIL :
-						       NBIOT_ERROR_PF_UL_FAIL;
+		} else if (strstr(p, ATCMD_QLWULDATAEX)) {
+			return (nbCtx.status.waitDL) ? NBIOT_ERROR_UDP_DL_FAIL :
+						       NBIOT_ERROR_UDP_UL_FAIL;
 		} else if (strstr(p, ATCMD_NSOST)) {
 			return (nbCtx.status.waitDL) ? NBIOT_ERROR_UDP_DL_FAIL :
 						       NBIOT_ERROR_UDP_UL_FAIL;
