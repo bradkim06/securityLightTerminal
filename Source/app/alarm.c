@@ -161,6 +161,14 @@ void normalScheduler()
 
 		AlarmList[0].minute = light.onTime[MINUTE];
 		AlarmList[1].minute = light.offTime[MINUTE];
+		if (light.psm) {
+			AlarmList[2].type = RTC_ALARM_PSM_ON;
+			AlarmList[2].minute = light.psmOnTime[MINUTE];
+			if (light.psm == PSM_RELIGHT) {
+				AlarmList[3].type = RTC_ALARM_PSM_OFF;
+				AlarmList[3].minute = light.psmOffTime[MINUTE];
+			}
+		}
 	}
 
 	// 시간 동기화에 의한 알람 중복 등록을 피하기 위해 이전 알람 이벤트에 의한 순차 등록으로 수정.

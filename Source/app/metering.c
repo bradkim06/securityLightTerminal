@@ -127,8 +127,6 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 
 static BOOL send_meteringEV(void)
 {
-	static uint8_t prevDay = 0;
-
 	Date_t date;
 	RTC_read(&date);
 
@@ -138,10 +136,10 @@ static BOOL send_meteringEV(void)
 	memset(&msg, 0, sizeof(evMeterReq_t));
 
 	pMsg->stx = TERMINAL_STX;
-	if (date.day != prevDay) {
-		prevDay = date.day;
+	if (ALARM_isTimeSync()) {
 		memcpy(&pMsg->time, &date, sizeof(struct Time));
 	}
+
 	memcpy(&pMsg->light, &light, sizeof(light_t));
 	pMsg->msgType = REQ_READ_METER;
 	pMsg->checkSum = std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t));
