@@ -265,6 +265,8 @@ void calcSunrise(Date_t *date)
 		       light.setOnTime[MINUTE]);
 		printf("[ Set Time    ] : %02d:%02d\n", light.setOffTime[HOUR],
 		       light.setOffTime[MINUTE]);
+		memcpy(light.onTime, light.setOnTime, 2);
+		memcpy(light.offTime, light.setOffTime, 2);
 	}
 
 	printf("=============================================\n");
@@ -279,11 +281,9 @@ BOOL updateSunTime(Date_t *date)
 
 	if (prevDay != date->day) {
 		printf_ts("Day Changed prev(%d) current(%d)\n", prevDay, date->day);
-	}
-	/* else if (memcmp(&prevSetting, &light, sizeof(light_t))) { */
-	/* printf_ts("Light Setting Changed\n"); */
-	/* } */
-	else {
+	} else if (memcmp(&prevSetting, &light, sizeof(light_t))) {
+		printf_ts("Light Setting Changed\n");
+	} else {
 		needChange = FALSE;
 	}
 

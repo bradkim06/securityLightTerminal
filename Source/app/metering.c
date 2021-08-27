@@ -12,6 +12,7 @@
 #include "lcd.h"
 #include "rtc.h"
 #include "uart.h"
+#include "sunrise.h"
 
 #define METER_INTERRUPT_HIGH()                                                                     \
 	do {                                                                                       \
@@ -68,6 +69,10 @@ static void read_light_status(uint8 *rxBuf)
 
 	if (memcmp(&light, &rx->light, sizeof(light_t))) {
 		memcpy(&light, &rx->light, sizeof(light_t));
+
+		Date_t date;
+		RTC_read(&date);
+		updateSunTime(&date);
 
 		APP_runMetering(IMMEDIATE_METERING, WORKER);
 	}
