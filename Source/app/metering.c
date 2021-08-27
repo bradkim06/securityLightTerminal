@@ -74,6 +74,8 @@ static void read_light_status(uint8 *rxBuf)
 		RTC_read(&date);
 		updateSunTime(&date);
 
+		FLASH_saveConfigInfo(&conf);
+
 		APP_runMetering(IMMEDIATE_METERING, WORKER);
 	}
 }
