@@ -205,7 +205,6 @@ static void notifyParser(const char *pHead, const int *len)
 		nbCtx.cellreg = NBIOT_CELLREG_NO_SERVICE;
 	}
 
-// Check no service event.  if detected, attach flag clear.
 #define NOTIFY_ATCMD_ERROR "ERROR"
 	if ((p = strstr(pHead, NOTIFY_ATCMD_ERROR))) {
 		nbCtx.status.error = 1;
@@ -849,6 +848,7 @@ static BOOL parseQLWULDATAEX(const char *pHead, const int *len, uint32 *nextDela
 		}
 
 		NBMSG_recvAckMsg(dlData, len);
+		nbCtx.status.waitDL = 0;
 		return TRUE;
 	}
 	return FALSE;

@@ -231,6 +231,8 @@ static int insert_oneData(NbiotMeterData_t *p)
 
 	p->alarm = pUnitData->meterStatus;
 	p->lampStatus = getRelayStatus();
+	memcpy(&p->onTime, light.onTime, 2);
+	memcpy(&p->offTime, light.offTime, 2);
 	memcpy(&p->volt, &pUnitData->volt, sizeof(pUnitData->volt));
 	memcpy(&p->curr, &pUnitData->curr, sizeof(pUnitData->curr));
 	memcpy(&p->shortCurr, &pUnitData->shortCurr, sizeof(pUnitData->shortCurr));
