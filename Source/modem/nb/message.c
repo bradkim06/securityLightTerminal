@@ -12,6 +12,7 @@
 #include "rtc.h"
 #include "test.h"
 #include "uart.h"
+#include "device.h"
 
 #define CHECKSUM_OFS 3
 
@@ -266,6 +267,7 @@ static int insert_params(NbiotMeterParams_t *p)
 static int getCurrentDataMessage(uchar *buf)
 {
 	NbiotDataReport_t *p = (NbiotDataReport_t *)buf;
+	memset(buf, 0, sizeof(NbiotDataReport_t));
 
 	p->protocol = PROTOCOL_VERSION;
 
@@ -311,6 +313,9 @@ static BOOL checkResetCmd(uchar *buf, int len)
 		return FALSE;
 	}
 
+	printf_ts("Reset Request\n");
+	SYSTEM_RESET();
+
 	return TRUE;
 }
 
@@ -322,6 +327,12 @@ static BOOL checkLampCtrl(uchar *buf, int len)
 	if (p->checksum != checksum) {
 		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
 		return FALSE;
+	}
+
+	if (p->lampStatus == 1) {
+		Relay_Status(RELAY_ON, LIGHT_ON, SERVER);
+	} else if (p->lampStatus == 2) {
+		Relay_Status(RELAY_OFF, LIGHT_OFF, SERVER);
 	}
 
 	return TRUE;

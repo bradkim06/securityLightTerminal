@@ -285,10 +285,14 @@ static BOOL parseQaReportFinish(const char *pHead, const int *len, uint32 *nextD
 
 static BOOL parseDoHwReset(const char *pHead, const int *len, uint32 *nextDelay)
 {
-	*nextDelay = DELAY_NBIOT_BOOTUP;
-	MODEM_turnOff();
-	MODEM_turnOn();
-	return TRUE;
+	if (strstr(pHead, "OK")) {
+		*nextDelay = DELAY_NBIOT_BOOTUP;
+		MODEM_turnOff();
+		MODEM_turnOn();
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 static BOOL parseBootup(const char *pHead, const int *len, uint32 *nextDelay)
@@ -323,15 +327,11 @@ static BOOL parseLwm2mFotaUpdate(const char *pHead, const int *len, uint32 *next
 
 static BOOL parseLwm2mFotaWait(const char *pHead, const int *len, uint32 *nextDelay)
 {
-	if (nbCtx.lwm2m.fotaDownReq) {
-		ATCMD_push(TIMEOUT_FOTA_DOWNLOAD, RETRY_LWM2M_FOTA, parseLwm2mFotaDown,
-			   ATCMD_QLWFOTAIND "=2");
-		ATCMD_push(TIMEOUT_FOTA_UPDATE, RETRY_LWM2M_FOTA, parseLwm2mFotaUpdate,
-			   ATCMD_QLWFOTAIND "=4");
-		return TRUE;
-	}
-
-	return FALSE;
+	ATCMD_push(TIMEOUT_FOTA_DOWNLOAD, RETRY_LWM2M_FOTA, parseLwm2mFotaDown,
+		   ATCMD_QLWFOTAIND "=2");
+	ATCMD_push(TIMEOUT_FOTA_UPDATE, RETRY_LWM2M_FOTA, parseLwm2mFotaUpdate,
+		   ATCMD_QLWFOTAIND "=4");
+	return TRUE;
 }
 
 static BOOL parseLwm2mFotaDown(const char *pHead, const int *len, uint32 *nextDelay)
@@ -719,10 +719,6 @@ static BOOL parseCCLK(const char *pHead, const int *len, uint32 *nextDelay)
 		ALARM_writeTime(&date);
 		RTC_read(&nbInfo.lastAttachTime);
 
-		if (modemCtx.currentProc == MODEM_PROC_INIT) {
-			updateSunTime(&date);
-			APP_runMetering(NO_REPORT, AUTO);
-		}
 		return TRUE;
 	}
 
@@ -838,6 +834,7 @@ static BOOL parseQLWULDATAEX(const char *pHead, const int *len, uint32 *nextDela
 
 #define LWM2M_DOWNLINK "+NNMI:"
 	if ((p = strstr(pHead, LWM2M_DOWNLINK))) {
+		nbCtx.status.waitDL = 0;
 		nbInfo.pfDlCnt++;
 
 		p += strlen(LWM2M_DOWNLINK);
@@ -868,7 +865,6 @@ static BOOL parseQLWULDATAEX(const char *pHead, const int *len, uint32 *nextDela
 		}
 
 		NBMSG_recvAckMsg(dlData, len);
-		nbCtx.status.waitDL = 0;
 		return TRUE;
 	}
 	return FALSE;
@@ -1028,7 +1024,7 @@ static void transfer()
 		ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseLwm2mRegStart,
 			   ATCMD_QLWSREGIND "=0");
 	}
-	ATCMD_push(TIMEOUT_LWM2M_RECV, RETRY_LWM2M_RECV, parseQLWULDATAEX,
+	ATCMD_push(TIMEOUT_DOWNLINK, RETRY_UPLINK, parseQLWULDATAEX,
 		   ATCMD_QLWULDATAEX "=0,%d,%s,0x0100,0", RegisteredDataLen, RegisteredData);
 	// Free original Data afeter Seding Uplink registration is finished
 	free(RegisteredData);
@@ -1047,15 +1043,18 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 
 	if (nbCtx.cellreg == NBIOT_CELLREG_ATTACHED) {
 		if (nbCtx.lwm2m.regFinish) {
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOkWithDelay,
-				   ATCMD_QLWSREGIND "=1");
+			ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+				      ATCMD_QLWSREGIND "=1");
 		}
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseCGATT,
-			   ATCMD_CGATT "=0");
+		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
+			      ATCMD_CGATT "=0");
+	} else {
+		isHwReset |= (nbCtx.currentStep == NBIOT_STEP_TRANSFER) ? FALSE : TRUE;
 	}
 
 	if (isHwReset) {
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseDoHwReset, ATCMD);
+		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseDoHwReset, ATCMD);
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD);
 	} else {
 		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
 	}
@@ -1092,21 +1091,33 @@ BOOL NBIOT_sendDataProcess()
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
 		attach();
+		if (modemCtx.currentProc == MODEM_PROC_INIT) {
+			nbCtx.nextStep = NBIOT_STEP_CHECK_METERING;
+		} else {
+			nbCtx.nextStep = NBIOT_STEP_TRANSFER;
+		}
+	} else if (nbCtx.currentStep == NBIOT_STEP_CHECK_METERING) {
+		Date_t date;
+		RTC_read(&date);
+
+		updateSunTime(&date);
+		APP_runMetering(NO_REPORT, AUTO);
 		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 		transfer();
+		nbCtx.nextStep = NBIOT_STEP_CHECK_FOTA;
+	} else if (nbCtx.currentStep == NBIOT_STEP_CHECK_FOTA) {
 		nbCtx.nextStep = NBIOT_STEP_FOTA;
 	} else if (nbCtx.currentStep == NBIOT_STEP_FOTA) {
 		if (nbCtx.lwm2m.fotaDownReq) {
 			fota();
+		} else {
+			printf_ts("none fota request\n");
 		}
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_DETACH_NW) {
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_FINISH) {
-		if (nbCtx.cellreg != NBIOT_CELLREG_ATTACHED) {
-			nbCtx.status.psmOn = 0;
-		}
 		return TRUE;
 	} else {
 		printf_ts("Unknown Step\n");
@@ -1171,7 +1182,7 @@ static NbIotError_t getErrorCode(AtCmd_t *atCmd)
 {
 	// If FOTA request is not exist and psm on, that is not fail
 	if (nbCtx.currentStep == NBIOT_STEP_FOTA) {
-		if (!nbCtx.lwm2m.fotaDownReq && nbCtx.status.psmOn) {
+		if (!nbCtx.lwm2m.fotaDownReq) {
 			return NBIOT_ERROR_NONE;
 		}
 	}
@@ -1226,6 +1237,7 @@ void NBIOT_finishProcess()
 	if (nbCtx.currentStep != NBIOT_STEP_FINISH && nbCtx.error == NBIOT_ERROR_NONE) {
 		nbCtx.error = getErrorCode(ATCMD_pull());
 	}
+
 	NBIOT_DBG("stop working (step : %s, error : %02Xh)\n", NBIOT_STEP_STR(nbCtx.currentStep),
 		  nbCtx.error);
 

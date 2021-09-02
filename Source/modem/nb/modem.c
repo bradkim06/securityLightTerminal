@@ -37,80 +37,76 @@ ModemContext_t modemCtx;
 
 void MODEM_turnOn()
 {
-	if (!modemCtx.isPowerOn) {
-		MODEM_DBG("power on\n");
+	MODEM_DBG("power on\n");
 
 #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO)
-		// LDO work turn on power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
+	// LDO work turn on power (P2.0)
+	P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+	P2DIR |= BM(MODEM_VCC1_P2_PIN);
+	P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
 
-		MISC_delayMs(100);
+	MISC_delayMs(100);
 
-		// MOSFET work turn on power (P1.1)
-		P1SEL &= ~BM(MODEM_VCC2_P1_PIN);
-		P1DIR |= BM(MODEM_VCC2_P1_PIN);
-		P1OUT &= ~BM(MODEM_VCC2_P1_PIN); // make low
+	// MOSFET work turn on power (P1.1)
+	P1SEL &= ~BM(MODEM_VCC2_P1_PIN);
+	P1DIR |= BM(MODEM_VCC2_P1_PIN);
+	P1OUT &= ~BM(MODEM_VCC2_P1_PIN); // make low
 
-		MISC_delayMs(10);
+	MISC_delayMs(10);
 #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_LDO_ONLY)
-		// LDO work turn on power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
+	// LDO work turn on power (P2.0)
+	P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+	P2DIR |= BM(MODEM_VCC1_P2_PIN);
+	P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
 
-		MISC_delayMs(100);
+	MISC_delayMs(100);
 #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY)
-		// turn on power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
+	// turn on power (P2.0)
+	P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+	P2DIR |= BM(MODEM_VCC1_P2_PIN);
+	P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
 
-		MISC_delayMs(10);
+	MISC_delayMs(10);
 #endif
-		modemCtx.isPowerOn = TRUE;
-	}
+	modemCtx.isPowerOn = TRUE;
 }
 
 void MODEM_turnOff()
 {
-	if (modemCtx.isPowerOn) {
-		MODEM_DBG("power off\n");
-		NBIOT_release();
+	MODEM_DBG("power off\n");
+	NBIOT_release();
 
 #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_LDO)
-		// MOSFET work off power (P1.1)
-		P1SEL &= ~BM(MODEM_VCC2_P1_PIN);
-		P1DIR |= BM(MODEM_VCC2_P1_PIN);
-		P1OUT |= BM(MODEM_VCC2_P1_PIN); // make high
+	// MOSFET work off power (P1.1)
+	P1SEL &= ~BM(MODEM_VCC2_P1_PIN);
+	P1DIR |= BM(MODEM_VCC2_P1_PIN);
+	P1OUT |= BM(MODEM_VCC2_P1_PIN); // make high
 
-		MISC_delayMs(10);
+	MISC_delayMs(10);
 
-		// LDO work turn off power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
+	// LDO work turn off power (P2.0)
+	P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+	P2DIR |= BM(MODEM_VCC1_P2_PIN);
+	P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
 
-		MISC_delayMs(100);
+	MISC_delayMs(100);
 #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_LDO_ONLY)
-		// LDO work turn off power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
+	// LDO work turn off power (P2.0)
+	P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+	P2DIR |= BM(MODEM_VCC1_P2_PIN);
+	P2OUT &= ~BM(MODEM_VCC1_P2_PIN); // make low
 
-		MISC_delayMs(100);
+	MISC_delayMs(100);
 #elif (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY)
-		// turn off power (P2.0)
-		P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
-		P2DIR |= BM(MODEM_VCC1_P2_PIN);
-		P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
+	// turn off power (P2.0)
+	P2SEL &= ~BM(MODEM_VCC1_P2_PIN);
+	P2DIR |= BM(MODEM_VCC1_P2_PIN);
+	P2OUT |= BM(MODEM_VCC1_P2_PIN); // make high
 
-		MISC_delayMs(10);
+	MISC_delayMs(10);
 #endif
 
-		modemCtx.isPowerOn = FALSE;
-	}
+	modemCtx.isPowerOn = FALSE;
 }
 
 void MODEM_sleep()
@@ -491,9 +487,11 @@ static void eventRunProc()
 	if (NBIOT_sendDataProcess()) {
 		OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_FIN_PROC);
 	} else {
-		if (modemCtx.currentProc == MODEM_PROC_INIT &&
-		    nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
-			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 2000);
+		if (nbCtx.currentStep == NBIOT_STEP_CHECK_FOTA) {
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 5000);
+		} else if (nbCtx.currentStep == NBIOT_STEP_CHECK_METERING &&
+			   modemCtx.currentProc == MODEM_PROC_INIT) {
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 5000);
 		} else {
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
 		}
@@ -554,23 +552,25 @@ static void eventTimeoutCmd()
 	if (ATCMD_retry(&timeout)) {
 		OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_TIMEOUT_ATCMD, timeout);
 	} else {
-		int maxRetry;
-		maxRetry =
+		int maxRetry =
 			(nbCtx.currentStep == NBIOT_STEP_BIP) ?
 				MODEM_BIP_RETRY :
 				(nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) ?
 				MODEM_ATTACH_RETRY :
 				(nbCtx.currentStep == NBIOT_STEP_TRANSFER) ? MODEM_ONEM2M_RETRY : 0;
-		MODEM_DBG("current retry step count (%d/%d)\n", modemCtx.retry + 1, maxRetry);
 		if (modemCtx.retry < maxRetry) {
-			BOOL isHwReset = (modemCtx.retry == (maxRetry - 1)) ? TRUE : FALSE;
+			modemCtx.retry++;
+			MODEM_DBG("current retry step count (%d/%d)\n", modemCtx.retry, maxRetry);
+
+			BOOL isHwReset = (modemCtx.retry == maxRetry) ? TRUE : FALSE;
 			BOOL isNeedAttach =
 				(nbCtx.currentStep == NBIOT_STEP_TRANSFER) ? TRUE : FALSE;
 			NBIOT_retryProcess(isNeedAttach, isHwReset);
 
 			nbCtx.nextStep = nbCtx.currentStep; // Set retry step to NEXT STEP
-			modemCtx.retry++;
-			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
+
+			MODEM_DBG("next retry delay 1 minute\n");
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 60000);
 		} else {
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_FIN_PROC);
 		}
@@ -580,9 +580,9 @@ static void eventTimeoutCmd()
 event32_t MODEM_tasks(uint8 taskId, event32_t events)
 {
 	// 모뎀 종료 후 이미 등록된 event에 대한 처리를 막기위한 처리.
-	if (modemCtx.isStop) {
-		return 0;
-	}
+	/* if (modemCtx.isStop) { */
+	/* 	return 0; */
+	/* } */
 
 	if (events & MODEM_EVENT_RUN_PROC) {
 		eventRunProc();

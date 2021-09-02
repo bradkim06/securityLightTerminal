@@ -116,6 +116,7 @@ BOOL ATCMD_retry(uint32 *timeout)
 		}
 		return TRUE;
 	} else {
+		ATCMD_release();
 		ATCMD_DBG("retry fail (count over)\n");
 		return FALSE;
 	}
@@ -154,6 +155,7 @@ BOOL ATCMD_read(uint32 *nextDelay)
 	} else {
 		ATCMD_DBG("parser is not registered\n");
 	}
+
 	return FALSE;
 }
 

@@ -31,8 +31,9 @@
 #define TIMEOUT_UDP_SEND 5000
 #define TIMEOUT_UDP_RECV 3000
 #define TIMEOUT_LWM2M_RECV 60000
+#define TIMEOUT_DOWNLINK 60000
 #define TIMEOUT_ENTER_PSM 30000
-#define TIMEOUT_FOTA_DOWN_REQ 30000
+#define TIMEOUT_FOTA_DOWN_REQ 5000
 #define TIMEOUT_FOTA_DOWNLOAD 120000 // 120 sec
 #define TIMEOUT_FOTA_UPDATE 60000 // 60 sec
 #define TIMEOUT_FOTA_COMPLETE 60000
@@ -45,6 +46,7 @@
 #define RETRY_UDP_RECV 1
 #define RETRY_LWM2M_SEND 1
 #define RETRY_LWM2M_RECV 0
+#define RETRY_UPLINK 2
 #define RETRY_LWM2M_FOTA 0
 
 #define DELAY_NBIOT_BOOTUP 2000
@@ -61,13 +63,15 @@ typedef enum {
 
 // Modem access step
 typedef enum {
-	NBIOT_STEP_FINISH,
 	NBIOT_STEP_IDLE,
 	NBIOT_STEP_BIP,
 	NBIOT_STEP_INIT, // Initialize step
 	NBIOT_STEP_ATTACH_NW, // Connecting N/W
+	NBIOT_STEP_CHECK_METERING, // Connecting N/W
 	NBIOT_STEP_TRANSFER, // Send UDP uplink
+	NBIOT_STEP_CHECK_FOTA,
 	NBIOT_STEP_FOTA,
+	NBIOT_STEP_FINISH,
 	NBIOT_STEP_DETACH_NW,
 	NBIOT_STEP_UNKNOWN = 0xFF,
 } NbIotStep_t;
@@ -189,8 +193,12 @@ typedef struct {
 		 "INIT" :                                                                          \
 		 ((x) == NBIOT_STEP_ATTACH_NW) ?                                                   \
 		 "ATTACH" :                                                                        \
+		 ((x) == NBIOT_STEP_CHECK_METERING) ?                                              \
+		 "CHECK METERING" :                                                                \
 		 ((x) == NBIOT_STEP_DETACH_NW) ?                                                   \
 		 "DETACH" :                                                                        \
+		 ((x) == NBIOT_STEP_CHECK_FOTA) ?                                                  \
+		 "CHECK FOTA" :                                                                    \
 		 ((x) == NBIOT_STEP_FOTA) ?                                                        \
 		 "FOTA" :                                                                          \
 		 ((x) == NBIOT_STEP_TRANSFER) ? "TRANSFER" :                                       \
