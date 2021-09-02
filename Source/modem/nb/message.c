@@ -355,34 +355,34 @@ static BOOL checkChangeConf(uchar *buf, int len)
 
 static BOOL checkValidAck(uchar *buf, int len)
 {
-	BOOL retVal = FALSE;
+	BOOL retVal = TRUE;
 
 #define ACK_PROTOCOL 0xC1
-	if (buf[0] != ACK_PROTOCOL) {
+	if (buf[0] == ACK_PROTOCOL) {
+		switch (buf[2]) {
+		case DATA_ACK:
+			retVal = checkDataAck(buf, len);
+			break;
+		case RESET_COMMAND:
+			retVal = checkResetCmd(buf, len);
+			break;
+		case LAMP_CTRL:
+			retVal = checkLampCtrl(buf, len);
+			break;
+		case REQ_CONFIG:
+			retVal = checkReadConf(buf, len);
+			break;
+		case CHANGE_CONFIG:
+			retVal = checkChangeConf(buf, len);
+			break;
+
+		default:
+			break;
+		}
+	} else {
 		printf_ts("protocol version not match need(0x%02X) recv(0x%02X)\n", ACK_PROTOCOL,
 			  buf[0]);
-		return FALSE;
-	}
-
-	switch (buf[2]) {
-	case DATA_ACK:
-		retVal = checkDataAck(buf, len);
-		break;
-	case RESET_COMMAND:
-		retVal = checkResetCmd(buf, len);
-		break;
-	case LAMP_CTRL:
-		retVal = checkLampCtrl(buf, len);
-		break;
-	case REQ_CONFIG:
-		retVal = checkReadConf(buf, len);
-		break;
-	case CHANGE_CONFIG:
-		retVal = checkChangeConf(buf, len);
-		break;
-
-	default:
-		break;
+		retVal = FALSE;
 	}
 
 	return retVal;
@@ -390,13 +390,7 @@ static BOOL checkValidAck(uchar *buf, int len)
 
 int NBMSG_recvAckMsg(uchar *buf, int len)
 {
-	if (checkValidAck(buf, len)) {
-		NbiotAck_t *p = (NbiotAck_t *)buf;
-
-		return TRUE;
-	}
-
-	return FALSE;
+	return checkValidAck(buf, len);
 }
 
 char *NBMSG_getQaReport(int *messageLen)

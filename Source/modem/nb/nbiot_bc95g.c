@@ -104,6 +104,20 @@ NbIotInfo_t nbInfo;
 static int RegisteredDataLen = 0;
 static char *RegisteredData = NULL;
 
+static uint8 ascii2Hex(char ch)
+{
+	uint8 hex = 0;
+
+	if (ch >= 'A' && ch <= 'F') {
+		hex = (ch - 'A') + 10;
+	} else if (ch >= 'a' & ch <= 'f') {
+		hex = (ch - 'a') + 10;
+	} else if (ch >= '0' & ch <= '9') {
+		hex = ch - '0';
+	}
+	return hex;
+}
+
 /*
  ***************************************************************
     AT command parser
@@ -112,6 +126,30 @@ static char *RegisteredData = NULL;
 static void notifyParser(const char *pHead, const int *len)
 {
 	char *p = NULL;
+
+#define LWM2M_DOWNLINK "+NNMI:"
+	if ((p = strstr(pHead, LWM2M_DOWNLINK))) {
+		nbInfo.pfDlCnt++;
+
+		p += strlen(LWM2M_DOWNLINK);
+		int len = atoi(p);
+
+		printf_ts("DL : data len (current :%d)\n", len);
+
+		// skip first comma
+		if ((p = strstr(p, ",")) == NULL) {
+			printf_ts("DL : can't find comma\n");
+		}
+		p++;
+
+		uchar dlData[len];
+		for (int i = 0; i < len; i++) {
+			dlData[i] =
+				ascii2Hex(*(p + i * 2 + 0)) * 0x10 + ascii2Hex(*(p + i * 2 + 1));
+		}
+
+		NBMSG_recvAckMsg(dlData, len);
+	}
 
 #define NOTIFY_LWM2M_EVENT "+QLWEVTIND:"
 	if ((p = strstr(pHead, NOTIFY_LWM2M_EVENT))) {
@@ -784,24 +822,6 @@ static BOOL parseNSOCR(const char *pHead, const int *len, uint32 *nextDelay)
 	}
 
 	return FALSE;
-}
-
-static uint8 ascii2Hex(char ch)
-{
-	uint8 hex = 0;
-
-	if (ch >= 'A' && ch <= 'F') {
-		hex = (ch - 'A') + 10;
-	} else if (ch >= 'a' & ch <= 'f') {
-		hex = (ch - 'a') + 10;
-	} else if (ch >= '0' & ch <= '9') {
-		hex = ch - '0';
-	}
-	return hex;
-}
-
-static BOOL parseNNMI(const char *pHead, const int *len, uint32 *nextDelay)
-{
 }
 
 static BOOL parseQLWULDATAEX(const char *pHead, const int *len, uint32 *nextDelay)
