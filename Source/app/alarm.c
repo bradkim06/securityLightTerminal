@@ -132,8 +132,8 @@ static BOOL checkLightAlarm(Date_t date, uint8 time[], int idx)
 	int hourdiff, mindiff;
 	BOOL retVal = FALSE;
 
-	printf_ts("%s - [%02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type), time[HOUR],
-		  time[MINUTE]);
+	/* printf_ts("%s - [%02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type), time[HOUR], */
+	/* 	  time[MINUTE]); */
 	hourdiff = time[HOUR] - date.hour;
 
 	if (hourdiff == 0) {

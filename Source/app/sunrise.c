@@ -11,13 +11,6 @@
 #include "common.h"
 #include "uart.h"
 
-#define LMODE_STR(x)                                                                               \
-	(((x) == LMODE_INTERNAL) ? "Terminal Internal Algorithm" :                                 \
-				   ((x) == LMODE_SETTING) ? "Server Setting Time" : "unknown")
-#define TIMEBASE_STR(x)                                                                            \
-	(((x) == SUNRISE_BASE) ? "Sunrise Time" :                                                  \
-				 ((x) == CIVIL_BASE) ? "Civil Twilight Time" : "unknown")
-
 const double pi = 3.14159;
 
 double rads;

@@ -1303,6 +1303,26 @@ void NBIOT_finishProcess()
 	printf("[ ACCESS TIME  ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastAccessTime.year,
 	       nbInfo.lastAccessTime.mon, nbInfo.lastAccessTime.day, nbInfo.lastAccessTime.hour,
 	       nbInfo.lastAccessTime.min, nbInfo.lastAccessTime.sec);
+	printf("[ LIGHT MODE   ] %s\n", LMODE_STR(light.mode));
+	printf("[ LIGHT BASE   ] %s\n", TIMEBASE_STR(light.mode));
+	printf("[ LIGHT ON     ] %02dh %02dm\n", light.onTime[HOUR], light.onTime[MINUTE]);
+	printf("[ LIGHT OFF    ] %02dh %02dm\n", light.offTime[HOUR], light.offTime[MINUTE]);
+	printf("[ PSM MODE     ] %s\n", PSM_MODE_STR(light.psm));
+	if (light.psm) {
+#define MONTH 0
+#define DAY 1
+		printf("[ PSM ON DAY   ] %02dm %02dd\n", light.psmOnDay[MONTH],
+		       light.psmOnTime[DAY]);
+		printf("[ PSM OFF DAY  ] %02dm %02dd\n", light.psmOffDay[MONTH],
+		       light.psmOffDay[DAY]);
+		printf("[ PSM ON       ] %02dh %02dm\n", light.psmOnTime[HOUR],
+		       light.psmOnTime[MINUTE]);
+		if (light.psm == PSM_RELIGHT) {
+			printf("[ PSM OFF      ] %02dh %02dm\n", light.psmOffTime[HOUR],
+			       light.psmOffTime[MINUTE]);
+		}
+	}
+
 	for (int i = 0; i < NUM_OF_NBIOT_ERROR_LOG; i++) {
 		char *log = QUEUE_get(nbInfo.errorLog, i);
 		if (log == NULL) {
