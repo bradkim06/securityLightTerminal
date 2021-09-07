@@ -329,17 +329,28 @@ static BOOL checkLampCtrl(uchar *buf, int len)
 		return FALSE;
 	}
 
+	OSAL_stopEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE);
+
 	if (p->lampStatus == 1) {
 		Relay_Status(RELAY_ON, SERVER_REQ, SERVER);
 	} else if (p->lampStatus == 2) {
 		Relay_Status(RELAY_OFF, SERVER_REQ, SERVER);
 	}
 
+	uint32_t forceTimeOut = 0;
+
 	if (p->forceMin > 0) {
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, 60000 * p->forceMin);
+#define ONE_MINUTE 60000
+
+		forceTimeOut = ONE_MINUTE * p->forceMin;
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, forceTimeOut);
 	} else {
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, 60000 * 30);
+#define DEFAULT_RESTORE_30MIN 1800000
+		forceTimeOut = DEFAULT_RESTORE_30MIN;
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, forceTimeOut);
 	}
+
+	printf_ts("force Timeout (%d)minute \n", forceTimeOut / 60000);
 
 	return TRUE;
 }

@@ -28,6 +28,7 @@
 static Queue_t *CommandQueue = NULL;
 
 static ATCMD_NOTIFY_PARSER NOTIFY_PARSER = NULL;
+static SERVER_NNMI_PARSER NNMI_PARSER = NULL;
 
 static void atCmdFree(void *data)
 {
@@ -39,12 +40,13 @@ static void atCmdFree(void *data)
 	}
 }
 
-void ATCMD_init(ATCMD_NOTIFY_PARSER parser)
+void ATCMD_init(ATCMD_NOTIFY_PARSER notifyParser, SERVER_NNMI_PARSER nnmiParser)
 {
 	if (CommandQueue == NULL) {
 		CommandQueue = QUEUE_malloc(atCmdFree);
 	}
-	NOTIFY_PARSER = parser;
+	NOTIFY_PARSER = notifyParser;
+	NNMI_PARSER = nnmiParser;
 }
 
 void ATCMD_release()
@@ -139,6 +141,7 @@ BOOL ATCMD_read(uint32 *nextDelay)
 
 	if (QUEUE_isEmpty(CommandQueue)) {
 		ATCMD_DBG("queue is empty in parse\n");
+		NNMI_PARSER(buf, &len);
 		return FALSE;
 	}
 

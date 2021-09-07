@@ -60,6 +60,7 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 	case RELAY_NO_CHANGE:
 		break;
 	default:
+		P3OUT &= ~RELAY_PIN;
 		break;
 	}
 

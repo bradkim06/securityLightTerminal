@@ -17,6 +17,7 @@
 // TYPES
 //=========================================================
 typedef void (*ATCMD_NOTIFY_PARSER)(const char *, const int *);
+typedef void (*SERVER_NNMI_PARSER)(const char *, const int *);
 typedef BOOL (*ATCMD_PARSER)(const char *, const int *, uint32 *);
 typedef struct {
 	uint32 timeout;
@@ -25,7 +26,7 @@ typedef struct {
 	ATCMD_PARSER parser;
 } AtCmd_t;
 
-void ATCMD_init(ATCMD_NOTIFY_PARSER parser);
+void ATCMD_init(ATCMD_NOTIFY_PARSER notifyParser, SERVER_NNMI_PARSER nnmiParser);
 void ATCMD_release();
 BOOL ATCMD_write(uint32 *timeout);
 BOOL ATCMD_retry(uint32 *timeout);

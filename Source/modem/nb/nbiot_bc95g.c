@@ -123,7 +123,7 @@ static uint8 ascii2Hex(char ch)
     AT command parser
  ***************************************************************
  */
-static void notifyParser(const char *pHead, const int *len)
+static void nnmiParser(const char *pHead, const int *len)
 {
 	char *p = NULL;
 
@@ -150,6 +150,11 @@ static void notifyParser(const char *pHead, const int *len)
 
 		NBMSG_recvAckMsg(dlData, len);
 	}
+}
+
+static void notifyParser(const char *pHead, const int *len)
+{
+	char *p = NULL;
 
 #define NOTIFY_LWM2M_EVENT "+QLWEVTIND:"
 	if ((p = strstr(pHead, NOTIFY_LWM2M_EVENT))) {
@@ -1150,7 +1155,7 @@ void NBIOT_init()
 	RegisteredData = NULL;
 	RegisteredDataLen = 0;
 
-	ATCMD_init(notifyParser);
+	ATCMD_init(notifyParser, nnmiParser);
 	ATCMD_release();
 }
 

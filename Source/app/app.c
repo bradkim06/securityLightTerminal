@@ -197,6 +197,7 @@ static void meteringCompleted()
 
 	if (Metering.type != NO_REPORT) {
 		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
+		printf_ts("Report type %d, cause %d\n", Metering.type, Metering.cause);
 	} else {
 		sendMeterReport();
 	}
@@ -317,7 +318,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_FORCE_RESTORE) {
-		Relay_Status(RELAY_TOGGLE, SERVER_REQ, SERVER);
+		Relay_Status(RELAY_TOGGLE, SERVER_REQ, FORCE);
 		return (events ^ APP_EVENT_FORCE_RESTORE);
 	}
 
@@ -328,8 +329,6 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	if (events & APP_EVENT_LIGHT_REPORT) {
 		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
 			APP_runMetering(Metering.type, Metering.cause);
-		} else {
-			OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)60000);
 		}
 		return (events ^ APP_EVENT_LIGHT_REPORT);
 	}
