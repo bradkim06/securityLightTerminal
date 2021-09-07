@@ -641,8 +641,6 @@ void recvMeterBypassRequest(byte *data, uint8 len)
 	if (copyToAsyncCmd(data, len) == 0) {
 		return;
 	}
-
-	OSAL_setEvent(APP_getTaskId(), APP_EVENT_METER_BYPASS);
 }
 
 ///////////////////////////////

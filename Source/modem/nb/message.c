@@ -335,6 +335,12 @@ static BOOL checkLampCtrl(uchar *buf, int len)
 		Relay_Status(RELAY_OFF, SERVER_REQ, SERVER);
 	}
 
+	if (p->forceMin > 0) {
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, 60000 * p->forceMin);
+	} else {
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, 60000 * 30);
+	}
+
 	return TRUE;
 }
 

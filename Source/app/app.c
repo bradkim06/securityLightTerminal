@@ -195,7 +195,7 @@ static void meteringCompleted()
 		return;
 	}
 
-	if (Metering.type != MODEM_PROC_NO_REPORT) {
+	if (Metering.type != NO_REPORT) {
 		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
 	} else {
 		sendMeterReport();
@@ -237,7 +237,7 @@ void APP_runMetering(MeteringType_t meteringType, Cause_t cause)
 	Metering.nRetry = 1;
 
 	METER_sendRequest(Metering.meterType);
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)400);
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)500);
 }
 
 void APP_runPeriodicReport()
@@ -316,9 +316,9 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 		return (events ^ APP_EVENT_METER_TIMEOUT);
 	}
 
-	if (events & APP_EVENT_METER_BYPASS) {
-		NFCAPP_meterBypassReq();
-		return (events ^ APP_EVENT_METER_BYPASS);
+	if (events & APP_EVENT_FORCE_RESTORE) {
+		Relay_Status(RELAY_TOGGLE, SERVER_REQ, SERVER);
+		return (events ^ APP_EVENT_FORCE_RESTORE);
 	}
 
 	if (events & APP_EVENT_IMMEDIATE_METERING) {
@@ -326,7 +326,11 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_LIGHT_REPORT) {
-		APP_runMetering(Metering.type, Metering.cause);
+		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
+			APP_runMetering(Metering.type, Metering.cause);
+		} else {
+			OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)60000);
+		}
 		return (events ^ APP_EVENT_LIGHT_REPORT);
 	}
 

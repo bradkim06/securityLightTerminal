@@ -278,6 +278,11 @@ void ALARM_run()
 		return;
 	}
 
+	if (MODEM_getState() != DEVICE_STATUS_IDLE) {
+		ALARM_schedule();
+		return;
+	}
+
 	Date_t date;
 	RTC_read(&date);
 
