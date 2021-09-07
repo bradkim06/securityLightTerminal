@@ -76,7 +76,7 @@ static void read_light_status(uint8 *rxBuf)
 
 		FLASH_saveConfigInfo(&conf);
 
-		APP_runMetering(IMMEDIATE_METERING, WORKER);
+		APP_runMetering(WORKER_REQ, WORKER);
 	}
 }
 
@@ -108,7 +108,7 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 
 #define LAMP_ERROR 0x02
 	if (lightStatus == RELAY_ON) {
-		if (pUnit->curr < 20) {
+		if (pUnit->curr < 30) {
 			printf_ts("Lamp Error : %d\n", lightStatus);
 			pUnit->meterStatus |= LAMP_ERROR;
 		}

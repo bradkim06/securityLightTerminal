@@ -154,28 +154,6 @@ __interrupt void UNMI_ISR(void)
 	}
 }
 
-/* Comment APP_prepareToSleep */
-void APP_prepareToSleep()
-{
-	/* 	BOOL isLcdOn = FALSE; */
-	/* 	if (Metering.type == INITIAL_METERING || */
-	/* 	    Metering.type == IMMEDIATE_METERING_FOR_REPORT) { */
-	/* 		isLcdOn = TRUE; */
-	/* 	} */
-
-	/* 	if (conf.sleepMode) { */
-	/* 		MODEM_stop(TRUE, isLcdOn); */
-	/* 		LCD_displayString("SLEEP"); */
-	/* 	} else { */
-	/* 		MODEM_stop(FALSE, isLcdOn); */
-	/* 		LCD_redraw(); */
-	/* 		if (Metering.success == 0) { */
-	/* 			LCD_displayError(LCD_ERROR_METERING); */
-	/* 		} */
-	/* 		ALARM_schedule(); */
-	/* 	} */
-}
-
 void APP_init(uint8 taskId)
 {
 	AppTaskId = taskId;
@@ -313,7 +291,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 {
 	if (events & APP_EVENT_IMMEDIATE_REPORT) {
 		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
-			APP_runMetering(IMMEDIATE_METERING, WORKER);
+			APP_runMetering(WORKER_REQ, WORKER);
 		}
 		return (events ^ APP_EVENT_IMMEDIATE_REPORT);
 	}
@@ -344,13 +322,11 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_IMMEDIATE_METERING) {
-		/* APP_runMetering(IMMEDIATE_METERING); */
 		return (events ^ APP_EVENT_IMMEDIATE_METERING);
 	}
 
 	if (events & APP_EVENT_LIGHT_REPORT) {
 		APP_runMetering(Metering.type, Metering.cause);
-		/* APP_runMetering(IMMEDIATE_METERING); */
 		return (events ^ APP_EVENT_LIGHT_REPORT);
 	}
 

@@ -174,8 +174,6 @@ typedef struct {
 	uchar protocol;
 	uchar len;
 	uchar mtype;
-	uchar stabt1;
-	uchar stabt2;
 	uchar checksum;
 } NbiotAck_t;
 

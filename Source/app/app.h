@@ -15,7 +15,7 @@
 #define APP_EVENT_METER_TIMEOUT 0x00000010
 #define APP_EVENT_METER_BYPASS 0x00000020
 #define APP_EVENT_NFC_WAIT 0x00000040
-#define APP_EVENT_IMMEDIATE_METERING 0x00000080
+/* #define APP_EVENT_IMMEDIATE_METERING 0x00000080 */
 #define APP_EVENT_IMMEDIATE_REPORT 0x00000100
 #define APP_EVENT_CHANGE_CONFIG 0x00000200
 #define APP_EVENT_REBOOT 0x80000000
@@ -29,6 +29,8 @@ typedef enum {
 	STABILIZE_ON,
 	STABILIZE_OFF,
 	IMMEDIATE_METERING,
+	SERVER_REQ,
+	WORKER_REQ,
 	NO_REPORT,
 } MeteringType_t;
 
@@ -55,8 +57,6 @@ extern uint8 AppTaskId;
 char *APP_getFwVer();
 uint8 APP_getTaskId();
 void APP_init(uint8 taskId);
-/* Comment APP_prepareToSleep */
-/* void APP_prepareToSleep(); */
 
 void APP_runPeriodicReport();
 void APP_bypassMetering(uint8 *body, int bodyLen);

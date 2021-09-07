@@ -330,9 +330,9 @@ static BOOL checkLampCtrl(uchar *buf, int len)
 	}
 
 	if (p->lampStatus == 1) {
-		Relay_Status(RELAY_ON, LIGHT_ON, SERVER);
+		Relay_Status(RELAY_ON, SERVER_REQ, SERVER);
 	} else if (p->lampStatus == 2) {
-		Relay_Status(RELAY_OFF, LIGHT_OFF, SERVER);
+		Relay_Status(RELAY_OFF, SERVER_REQ, SERVER);
 	}
 
 	return TRUE;
@@ -347,6 +347,8 @@ static BOOL checkReadConf(uchar *buf, int len)
 		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
 		return FALSE;
 	}
+
+	APP_runMetering(SERVER_REQ, SERVER);
 
 	return TRUE;
 }
