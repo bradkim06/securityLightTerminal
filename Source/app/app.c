@@ -197,7 +197,6 @@ static void meteringCompleted()
 
 	if (Metering.type != NO_REPORT) {
 		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
-		printf_ts("Report type %d, cause %d\n", Metering.type, Metering.cause);
 	} else {
 		sendMeterReport();
 	}

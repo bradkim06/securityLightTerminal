@@ -219,6 +219,9 @@ void MODEM_run(ModemProc_t proc, Cause_t cause)
 	modemCtx.currentProc = proc;
 	modemCtx.cause = cause;
 
+	printf_ts("Report type %d(%s), cause %d(%s)\n", proc, MODEM_PROC_STR(proc), cause,
+		  LIGHT_CAUSE_STR(cause));
+
 	if (proc == MODEM_PROC_INIT) {
 		NBIOT_open();
 		MODEM_enable();

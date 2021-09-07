@@ -321,9 +321,7 @@ void sendServerConnectReport(int reqType)
 	if (reqType == 1) { // 접속 시작 명령
 		if (accessState == ACCESS_STATE_IDLE) {
 			// 모뎀이 보고 중이면 새로운 보고를 지시하지 않음
-			OSAL_stopEventTimer(APP_getTaskId(), APP_EVENT_IMMEDIATE_REPORT);
-			OSAL_startEventTimer(APP_getTaskId(), APP_EVENT_IMMEDIATE_REPORT,
-					     (uint32)500);
+			OSAL_setEvent(APP_getTaskId(), APP_EVENT_IMMEDIATE_REPORT);
 			//            printf("server access started\n");
 		} else {
 			//            printf("server access requested ... but should wait few

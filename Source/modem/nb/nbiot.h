@@ -204,6 +204,28 @@ typedef struct {
 		 ((x) == NBIOT_STEP_TRANSFER) ? "TRANSFER" :                                       \
 						((x) == NBIOT_STEP_FINISH) ? "FINISH" : "UNKNOWN")
 
+#define MODEM_PROC_STR(x)                                                                          \
+	(((x) == MODEM_PROC_INIT) ?                                                                \
+		 "INIT" :                                                                          \
+		 ((x) == MODEM_PROC_PERIOD_REPORT) ?                                               \
+		 "PERIOD" :                                                                        \
+		 ((x) == MODEM_PROC_LIGHT_ON) ?                                                    \
+		 "LIGHT ON" :                                                                      \
+		 ((x) == MODEM_PROC_LIGHT_OFF) ?                                                   \
+		 "LIGHT OFF" :                                                                     \
+		 ((x) == MODEM_PROC_STAB_ON) ?                                                     \
+		 "STABILIZE ON" :                                                                  \
+		 ((x) == MODEM_PROC_STAB_OFF) ?                                                    \
+		 "STABILIZE OFF" :                                                                 \
+		 ((x) == MODEM_PROC_SERVER) ? "SERVER" :                                           \
+					      ((x) == MODEM_PROC_WORKER) ? "WORKER" : "UNKNOWN")
+
+#define LIGHT_CAUSE_STR(x)                                                                         \
+	(((x) == AUTO) ? "AUTO" :                                                                  \
+			 ((x) == WORKER) ?                                                         \
+			 "WORKER" :                                                                \
+			 ((x) == SERVER) ? "SERVER" : ((x) == FORCE) ? "FORCE" : "UNKNOWN")
+
 extern NbIotContext_t nbCtx;
 extern NbIotInfo_t nbInfo;
 
