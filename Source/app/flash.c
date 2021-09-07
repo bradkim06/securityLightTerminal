@@ -23,11 +23,17 @@ static uint8 calChecksum(uint8 *p, int len)
 	return checksum;
 }
 
-static void initLightConfig(FlashId_t *pInfo)
+static void initLightConfig(light_t *light)
 {
-	memset(&pInfo->light, 0, sizeof(light_t));
-	pInfo->light.mode = LMODE_INTERNAL;
-	pInfo->light.timeBase = SUNRISE_BASE;
+	memset(light, 0, sizeof(light_t));
+	light->mode = LMODE_INTERNAL;
+	light->timeBase = SUNRISE_BASE;
+#define MONTH 0
+#define DAY 1
+	light->psmOnDay[MONTH] = 1;
+	light->psmOnDay[DAY] = 1;
+	light->psmOffDay[MONTH] = 12;
+	light->psmOffDay[DAY] = 31;
 
 	// 초광산단서로 7
 	// inlat = 37.529215;
@@ -36,10 +42,6 @@ static void initLightConfig(FlashId_t *pInfo)
 	// inlat = 36.35061;
 	// inlon = 127.38477;
 	//
-	double latit = 36.35061;
-	double longit = 127.38477;
-	setGps(latit, pInfo->latitInt, pInfo->latitDec);
-	setGps(longit, pInfo->longitInt, pInfo->longitDec);
 }
 
 /**************************************************
@@ -124,12 +126,14 @@ static void readConfig(FlashConfig_t *pInfo)
 		printf("Config: both side are false\n");
 		memcpy((uint8 *)pInfo, (uint8 *)&info_a, sizeof(FlashConfig_t));
 
-#if NBIOT_DEVICE
 		MISC_ipToHexArray((char *)ONEM2M_FOTA_SERVER_IP, pInfo->fotaIp);
 		pInfo->fotaPort[0] = LO_UINT16(ONEM2M_FOTA_SERVER_PORT);
 		pInfo->fotaPort[1] = HI_UINT16(ONEM2M_FOTA_SERVER_PORT);
 		pInfo->fotaInterval = ONEM2M_FOTA_DAY_INTERVAL;
-#endif
+		pInfo->debugPrint = TRUE;
+		pInfo->isShortInterval = FALSE;
+		pInfo->reportInterval = 4;
+		pInfo->isModemInit = FALSE;
 
 		pInfo->meterType = E_METER;
 		memset(pInfo->resetCount, 0, 2);
@@ -212,8 +216,14 @@ static void readID(FlashId_t *pInfo)
 		memcpy((uint8 *)pInfo, (uint8 *)&info_b, sizeof(FlashId_t));
 		printf("ID: both side are false\n");
 		// 두개의 영역이 모두 깨지더라도 Serial Number는 지우지 않음.
-		initLightConfig(pInfo);
+		initLightConfig(&pInfo->light);
 		lightStatus = 0;
+
+		double latit = 36.35061;
+		double longit = 127.38477;
+		setGps(latit, pInfo->latitInt, pInfo->latitDec);
+		setGps(longit, pInfo->longitInt, pInfo->longitDec);
+
 #if 0
         memset((uint8 *)pInfo, 0xff, sizeof(FlashId_t));
         memset(pInfo->serialNum, '0', SERIAL_NUM_LEN);
