@@ -258,10 +258,11 @@ static int insert_params(NbiotMeterParams_t *p)
 	memcpy(&p->psmOffTime, &light.psmOffTime, sizeof(p->psmOffTime));
 	memcpy(&p->psmOnDay, &light.psmOnDay, sizeof(p->psmOnDay));
 	memcpy(&p->psmOffDay, &light.psmOffDay, sizeof(p->psmOffDay));
+	p->stabOffset = light.stabOffset;
 	p->dimmingMode = light.dimmingMode;
 	p->dimmingLv = light.dimmingLv;
 
-	return sizeof(NbiotMeterParams_t); // 21
+	return sizeof(NbiotMeterParams_t); // 22
 }
 
 static int getCurrentDataMessage(uchar *buf)

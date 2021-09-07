@@ -166,9 +166,10 @@ typedef struct {
 	uchar psmOffTime[2];
 	uchar psmOnDay[2];
 	uchar psmOffDay[2];
+	uchar stabOffset;
 	uchar dimmingMode;
 	uchar dimmingLv;
-} NbiotMeterParams_t; // 21
+} NbiotMeterParams_t; // 22
 
 typedef struct {
 	uchar protocol;

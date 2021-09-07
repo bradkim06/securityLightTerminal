@@ -38,7 +38,7 @@
 static uint8 std_checksum(uint8 *from, int size)
 {
 	// size - 2 -> Not Calculate ETX, Checksum
-	size = size - 2;
+	size = size - 3;
 	uint8 checksum = 0;
 
 	for (int i = 0; i < size; i++) {
@@ -138,12 +138,12 @@ static BOOL send_meteringEV(void)
 	memset(&msg, 0, sizeof(evMeterReq_t));
 
 	pMsg->stx = TERMINAL_STX;
+	pMsg->msgType = REQ_READ_METER;
 	if (ALARM_isTimeSync()) {
 		memcpy(&pMsg->time, &date, sizeof(struct Time));
 	}
 
 	memcpy(&pMsg->light, &light, sizeof(light_t));
-	pMsg->msgType = REQ_READ_METER;
 	pMsg->checkSum = std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t));
 	pMsg->etx = TERMINAL_ETX;
 
