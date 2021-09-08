@@ -491,10 +491,9 @@ static void eventRunProc()
 		OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_FIN_PROC);
 	} else {
 		if (nbCtx.currentStep == NBIOT_STEP_CHECK_FOTA) {
-			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 5000);
-		} else if (nbCtx.currentStep == NBIOT_STEP_CHECK_METERING &&
-			   modemCtx.currentProc == MODEM_PROC_INIT) {
-			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 5000);
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 3000);
+		} else if (nbCtx.currentStep == NBIOT_STEP_CHECK_METERING) {
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 1000);
 		} else {
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
 		}

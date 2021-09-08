@@ -1105,9 +1105,13 @@ BOOL NBIOT_sendDataProcess()
 		Date_t date;
 		RTC_read(&date);
 
-		updateSunTime(&date);
-		APP_runMetering(NO_REPORT, AUTO);
-		nbCtx.nextStep = NBIOT_STEP_TRANSFER;
+		if (updateSunTime(&date)) {
+			APP_runMetering(NO_REPORT, AUTO);
+		}
+
+		if (Metering.inProcess == 0) {
+			nbCtx.nextStep = NBIOT_STEP_TRANSFER;
+		}
 	} else if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 		transfer();
 		nbCtx.nextStep = NBIOT_STEP_CHECK_FOTA;
@@ -1308,20 +1312,19 @@ void NBIOT_finishProcess()
 	if (light.mode == LMODE_INTERNAL) {
 		printf("[ LIGHT BASE   ] %s\n", TIMEBASE_STR(light.mode));
 	}
-	printf("[ LIGHT ON     ] %02d : %02d\n", light.onTime[HOUR], light.onTime[MINUTE]);
-	printf("[ LIGHT OFF    ] %02d : %02d\n", light.offTime[HOUR], light.offTime[MINUTE]);
+	printf("[ LIGHT ON     ] %02d:%02d\n", light.onTime[HOUR], light.onTime[MINUTE]);
+	printf("[ LIGHT OFF    ] %02d:%02d\n", light.offTime[HOUR], light.offTime[MINUTE]);
 	printf("[ PSM MODE     ] %s\n", PSM_MODE_STR(light.psm));
 	if (light.psm) {
 #define MONTH 0
 #define DAY 1
-		printf("[ PSM ON DAY   ] %02d - %02d\n", light.psmOnDay[MONTH],
-		       light.psmOnDay[DAY]);
-		printf("[ PSM OFF DAY  ] %02d - %02d\n", light.psmOffDay[MONTH],
+		printf("[ PSM ON DAY   ] %02d-%02d\n", light.psmOnDay[MONTH], light.psmOnDay[DAY]);
+		printf("[ PSM OFF DAY  ] %02d-%02d\n", light.psmOffDay[MONTH],
 		       light.psmOffDay[DAY]);
-		printf("[ PSM ON       ] %02d : %02d\n", light.psmOnTime[HOUR],
+		printf("[ PSM ON       ] %02d:%02d\n", light.psmOnTime[HOUR],
 		       light.psmOnTime[MINUTE]);
 		if (light.psm == PSM_RELIGHT) {
-			printf("[ PSM OFF      ] %02d : %02d\n", light.psmOffTime[HOUR],
+			printf("[ PSM OFF      ] %02d:%02d\n", light.psmOffTime[HOUR],
 			       light.psmOffTime[MINUTE]);
 		}
 	}

@@ -234,7 +234,7 @@ void APP_runMetering(MeteringType_t meteringType, Cause_t cause)
 	Metering.meterType = conf.meterType;
 	Metering.success = 0;
 
-	Metering.nRetry = 1;
+	Metering.nRetry = 2;
 
 	METER_sendRequest(Metering.meterType);
 	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)500);
