@@ -173,6 +173,7 @@ BOOL ATCMD_read(uint32 *nextDelay)
 BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser, const char *cmd, ...)
 {
 	char buffer[LEN_MAX_MODEM_TX];
+	int parseFail = TRUE;
 
 	if (cmd != NULL) {
 		va_list arg;
@@ -184,11 +185,10 @@ BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser, const char *c
 	ATCMD_WRITER(buffer);
 
 	do {
-		uint32 time = timeout;
+		uint32 ms = TIMER_getMsec();
 
-		while (time) {
-			MISC_delayMs(50);
-			time -= 50;
+		while (TIMER_getMsecDiff(ms) < timeout) {
+			MISC_delayMs(100);
 
 			if (checkRxIdle()) {
 				uint32 nextDelay = ATCMD_DEFAULT_NEXT_INTERVAL;
@@ -205,6 +205,7 @@ BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser, const char *c
 				if (parser(buf, &len, &nextDelay)) {
 					MISC_delayMs((int)nextDelay);
 					retry = 0;
+					parseFail = FALSE;
 					break;
 				}
 			}
@@ -212,6 +213,9 @@ BOOL ATCMD_Instant(uint32 timeout, int retry, ATCMD_PARSER parser, const char *c
 
 		if (retry > 0) {
 			ATCMD_WRITER(buffer);
+		} else if (parseFail) {
+			printf_ts("parse fail\n");
+			return FALSE;
 		}
 	} while (retry--);
 
