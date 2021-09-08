@@ -177,14 +177,14 @@ void normalScheduler()
 	// 2. 알람 동작 완료 후 Idle 시간 5분.
 	// 3. 시간 오차를 고려하여 실제 알람 시간의 +-1분 오차를 고려.
 
-	int diff, lastDiff = 61;
+	int diff, lastDiff = 60;
 	BOOL isLight = 0;
 	RtcAlarm_t *pNext = NULL;
 	for (int idx = 0; idx < RTC_ALARM_COUNT; idx++) {
 		int hourdiff;
 
 		diff = AlarmList[idx].minute - date.min;
-		if (diff <= 1) {
+		if (diff < 1) {
 			// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기 위해 1시간을 더한다.
 			diff += 60;
 		}
@@ -310,8 +310,6 @@ void ALARM_run()
 	} else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);
 	}
-
-	ALARM_schedule();
 }
 
 void ALARM_isr()

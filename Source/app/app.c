@@ -344,7 +344,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 
 	if (events & APP_EVENT_CHANGE_CONFIG) {
 		FLASH_saveConfigInfo(&conf);
-		REBOOT_SYSTEM();
+		APP_runMetering(WORKER_REQ, WORKER);
 		return (events ^ APP_EVENT_CHANGE_CONFIG);
 	}
 
