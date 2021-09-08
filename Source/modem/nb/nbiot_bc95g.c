@@ -134,8 +134,6 @@ static void nnmiParser(const char *pHead, const int *len)
 		p += strlen(LWM2M_DOWNLINK);
 		int len = atoi(p);
 
-		printf_ts("DL : data len (current :%d)\n", len);
-
 		// skip first comma
 		if ((p = strstr(p, ",")) == NULL) {
 			printf_ts("DL : can't find comma\n");
@@ -854,8 +852,6 @@ static BOOL parseQLWULDATAEX(const char *pHead, const int *len, uint32 *nextDela
 			return FALSE;
 		}
 
-		printf_ts("DL : data len (current :%d)\n", len);
-
 		// skip first comma
 		if ((p = strstr(p, ",")) == NULL) {
 			printf_ts("DL : can't find comma\n");
@@ -1310,7 +1306,7 @@ void NBIOT_finishProcess()
 	printf("=============================================================\n");
 	printf("[ LIGHT MODE   ] %s\n", LMODE_STR(light.mode));
 	if (light.mode == LMODE_INTERNAL) {
-		printf("[ LIGHT BASE   ] %s\n", TIMEBASE_STR(light.mode));
+		printf("[ LIGHT BASE   ] %s\n", TIMEBASE_STR(light.timeBase));
 	}
 	printf("[ LIGHT ON     ] %02d:%02d\n", light.onTime[HOUR], light.onTime[MINUTE]);
 	printf("[ LIGHT OFF    ] %02d:%02d\n", light.offTime[HOUR], light.offTime[MINUTE]);

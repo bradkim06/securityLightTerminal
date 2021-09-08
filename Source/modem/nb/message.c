@@ -13,6 +13,7 @@
 #include "test.h"
 #include "uart.h"
 #include "device.h"
+#include "sunrise.h"
 
 #define CHECKSUM_OFS 3
 
@@ -301,6 +302,7 @@ static BOOL checkDataAck(uchar *buf, int len)
 		return FALSE;
 	}
 
+	printf_ts("Report Ack\n");
 	return TRUE;
 }
 
@@ -342,7 +344,6 @@ static BOOL checkLampCtrl(uchar *buf, int len)
 
 	if (p->forceMin > 0) {
 #define ONE_MINUTE 60000
-
 		forceTimeOut = ONE_MINUTE * p->forceMin;
 		OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, forceTimeOut);
 	} else {
@@ -373,13 +374,44 @@ static BOOL checkReadConf(uchar *buf, int len)
 
 static BOOL checkChangeConf(uchar *buf, int len)
 {
-	ChangeConf_t *p = (ChangeConf_t *)buf;
-	uchar checksum = cal_checksum(&p->mtype, len - CHECKSUM_OFS);
+	ChangeConf_t *ptr = (ChangeConf_t *)buf;
+	uchar checksum = cal_checksum(&ptr->mtype, len - CHECKSUM_OFS);
 
-	if (p->checksum != checksum) {
-		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum, p->checksum);
+	if (ptr->checksum != checksum) {
+		printf_ts("checksum not match calc(0x%02X), recv(0x%02X)\n", checksum,
+			  ptr->checksum);
 		return FALSE;
 	}
+
+	NbiotMeterParams_t *p = &ptr->params;
+
+	p->rInterval = conf.reportInterval;
+	conf.reportInterval = p->rInterval;
+	light.mode = p->mode;
+	light.timeBase = p->timeBase;
+	light.region = p->timeTable;
+	light.mode = p->mode;
+	memcpy(&light.setOnTime, p->setOnTime, sizeof(light.setOnTime));
+	memcpy(&light.setOffTime, p->setOffTime, sizeof(light.setOffTime));
+	light.onOfs = p->onOfs;
+	light.offOfs = p->offOfs;
+	light.psm = p->psmMode;
+	memcpy(&light.psmOnTime, &p->psmOnTime, sizeof(p->psmOnTime));
+	memcpy(&light.psmOffTime, &p->psmOffTime, sizeof(p->psmOffTime));
+	memcpy(&light.psmOnDay, &p->psmOnDay, sizeof(p->psmOnDay));
+	memcpy(&light.psmOffDay, &p->psmOffDay, sizeof(p->psmOffDay));
+	light.stabOffset = p->stabOffset;
+	light.dimmingMode = p->dimmingMode;
+	light.dimmingLv = p->dimmingLv;
+
+	Date_t date;
+	RTC_read(&date);
+
+	updateSunTime(&date);
+
+	FLASH_saveConfigInfo(&conf);
+
+	APP_runMetering(SERVER_REQ, SERVER);
 
 	return TRUE;
 }
