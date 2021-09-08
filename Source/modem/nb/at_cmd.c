@@ -7,6 +7,7 @@
 //#include "assert.h"
 #include "uart.h"
 #include "test.h"
+#include "device.h"
 
 #if defined(DEBUG)
 #define ATCMD_DBG(...)                                                                             \
@@ -126,16 +127,22 @@ BOOL ATCMD_retry(uint32 *timeout)
 
 BOOL ATCMD_read(uint32 *nextDelay)
 {
+	if (NOTIFY_PARSER == NULL) {
+		REBOOT_SYSTEM();
+	}
+	if (NNMI_PARSER == NULL) {
+		REBOOT_SYSTEM();
+	}
+
 	char buf[LEN_MAX_MODEM_RX];
 	int len = ATCMD_READER(buf);
 	buf[len - 1] = '\0';
 
-	if (NOTIFY_PARSER != NULL) {
-		NOTIFY_PARSER(buf, &len);
-	}
+	NOTIFY_PARSER(buf, &len);
 
 	if (CommandQueue == NULL) {
 		ATCMD_DBG("queue is not malloc in parse\n");
+		REBOOT_SYSTEM();
 		return FALSE;
 	}
 
@@ -157,6 +164,7 @@ BOOL ATCMD_read(uint32 *nextDelay)
 		}
 	} else {
 		ATCMD_DBG("parser is not registered\n");
+		REBOOT_SYSTEM();
 	}
 
 	return FALSE;
