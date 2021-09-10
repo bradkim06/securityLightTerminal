@@ -127,17 +127,17 @@ void shortScheduler()
 		  ALARM_TYPE_STR(NextAlarm->type));
 }
 
-static BOOL checkLightAlarm(Date_t date, uint8 time[], int idx)
+static BOOL checkLightAlarm(Date_t *date, uint8 time[], int idx)
 {
 	int hourdiff, mindiff;
 	BOOL retVal = FALSE;
 
-	/* printf_ts("%s - [%02d:%02d:00]\n", ALARM_TYPE_STR(AlarmList[idx].type), time[HOUR], */
-	/* 	  time[MINUTE]); */
-	hourdiff = time[HOUR] - date.hour;
+	hourdiff = time[HOUR] - date->hour;
+	/* printf_ts("%s - [%02d:%02d:00] diffhour : %d\n", ALARM_TYPE_STR(AlarmList[idx].type), */
+	/* 	  time[HOUR], time[MINUTE], hourdiff); */
 
 	if (hourdiff == 0) {
-		mindiff = time[MINUTE] - date.min;
+		mindiff = time[MINUTE] - date->min;
 
 		if (mindiff > 0) {
 			retVal = TRUE;
@@ -191,47 +191,41 @@ void normalScheduler()
 
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
-				if (checkLightAlarm(date, light.onTime, idx)) {
+				if (checkLightAlarm(&date, light.onTime, idx)) {
 					isLight = TRUE;
 				}
 			} else if (idx == RTC_ALARM_LIGHT_OFF) {
-				if (checkLightAlarm(date, light.offTime, idx)) {
+				if (checkLightAlarm(&date, light.offTime, idx)) {
 					isLight = TRUE;
 				}
 			}
 
 			if (light.psm) {
 				if (idx == RTC_ALARM_PSM_ON) {
-					if (checkLightAlarm(date, light.psmOnTime, idx)) {
+					if (checkLightAlarm(&date, light.psmOnTime, idx)) {
 						isLight = TRUE;
 					}
 				}
 
 				if (light.psm == PSM_RELIGHT) {
 					if (idx == RTC_ALARM_PSM_OFF) {
-						if (checkLightAlarm(date, light.psmOffTime, idx)) {
+						if (checkLightAlarm(&date, light.psmOffTime, idx)) {
 							isLight = TRUE;
 						}
 					}
 				}
 			}
 
-			if (idx == RTC_ALARM_REPORT) {
-				if (isLight) {
-					break;
-				}
-			} else {
-				if (!isLight) {
-					continue;
+			// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
+			if (diff > 1) {
+				if (diff <= lastDiff) {
+					pNext = &AlarmList[idx];
+					lastDiff = diff;
 				}
 			}
-		}
 
-		// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
-		if (diff > 1) {
-			if (diff <= lastDiff) {
-				pNext = &AlarmList[idx];
-				lastDiff = diff;
+			if (isLight) {
+				break;
 			}
 		}
 	}
@@ -279,6 +273,7 @@ void ALARM_run()
 	}
 
 	if (MODEM_getState() != DEVICE_STATUS_IDLE) {
+		printf_ts("modem status : %d\n", MODEM_getState());
 		ALARM_schedule();
 		return;
 	}
@@ -310,6 +305,8 @@ void ALARM_run()
 	} else {
 		printf_ts("unknow alarm type(%d)\n", alarmType);
 	}
+
+	ALARM_schedule();
 }
 
 void ALARM_isr()
