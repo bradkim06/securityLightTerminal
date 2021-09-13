@@ -927,17 +927,54 @@ static void bip()
 	ATCMD_push(TIMEOUT_BIP, RETRY_BIP, parseCIMI, ATCMD_CIMI);
 }
 
-static void init()
+static BOOL init()
 {
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNCCID, ATCMD_NCCID);
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseCGSN, ATCMD_CGSN "=1");
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQGMR, ATCMD_QGMR);
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQREGSWT, ATCMD_QREGSWT "?");
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWEPNS, ATCMD_QLWEPNS "?");
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWSERVERIP,
-		   ATCMD_QLWSERVERIP "?");
-	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWMBSPS, ATCMD_QLWMBSPS "?");
+	static int initStep = 0;
 
+	if (modemCtx.stepChanged) {
+		initStep = 0;
+		modemCtx.stepChanged = FALSE;
+	}
+
+	switch (initStep) {
+	case 0: {
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseNCCID, ATCMD_NCCID);
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseCGSN, ATCMD_CGSN "=1");
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQGMR, ATCMD_QGMR);
+		initStep++;
+	} break;
+
+	case 1: {
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQREGSWT,
+			   ATCMD_QREGSWT "?");
+		initStep++;
+	} break;
+	case 2: {
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWEPNS,
+			   ATCMD_QLWEPNS "?");
+		initStep++;
+	} break;
+	case 3: {
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWSERVERIP,
+			   ATCMD_QLWSERVERIP "?");
+		initStep++;
+	} break;
+	case 4: {
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseQLWMBSPS,
+			   ATCMD_QLWMBSPS "?");
+		initStep++;
+	} break;
+
+	default:
+		return TRUE;
+		break;
+	}
+
+	return FALSE;
+}
+
+static void setting()
+{
 	if (!conf.isModemInit) {
 		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_CFUN "=0");
@@ -1088,7 +1125,11 @@ BOOL NBIOT_sendDataProcess()
 		bip();
 		nbCtx.nextStep = NBIOT_STEP_INIT;
 	} else if (nbCtx.currentStep == NBIOT_STEP_INIT) {
-		init();
+		if (init()) {
+			nbCtx.nextStep = NBIOT_STEP_SETTING;
+		}
+	} else if (nbCtx.currentStep == NBIOT_STEP_SETTING) {
+		setting();
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
 		attach();

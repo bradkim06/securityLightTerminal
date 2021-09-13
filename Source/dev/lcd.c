@@ -20,7 +20,7 @@ __interrupt void Port_2(void)
 {
 	static uint32 ms = 1000;
 
-	if (TIMER_getMsecDiff(ms) > 100) {
+	if (TIMER_getMsecDiff(ms) > 500) {
 		ms = TIMER_getMsec();
 	} else {
 		P2IFG &= ~0xF0;

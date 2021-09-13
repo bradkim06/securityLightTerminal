@@ -72,7 +72,7 @@ BOOL ATCMD_write(uint32 *timeout)
 	}
 
 	if (QUEUE_isEmpty(CommandQueue)) {
-		ATCMD_DBG("queue is empty in send\n");
+		/* ATCMD_DBG("queue is empty in send\n"); */
 		return FALSE;
 	}
 
@@ -147,7 +147,7 @@ BOOL ATCMD_read(uint32 *nextDelay)
 	}
 
 	if (QUEUE_isEmpty(CommandQueue)) {
-		ATCMD_DBG("queue is empty in parse\n");
+		/* ATCMD_DBG("queue is empty in parse\n"); */
 		NNMI_PARSER(buf, &len);
 		return FALSE;
 	}

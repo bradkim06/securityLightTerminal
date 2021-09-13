@@ -66,6 +66,7 @@ typedef enum {
 	NBIOT_STEP_IDLE,
 	NBIOT_STEP_BIP,
 	NBIOT_STEP_INIT, // Initialize step
+	NBIOT_STEP_SETTING,
 	NBIOT_STEP_ATTACH_NW, // Connecting N/W
 	NBIOT_STEP_CHECK_METERING, // Connecting N/W
 	NBIOT_STEP_TRANSFER, // Send UDP uplink
@@ -191,6 +192,8 @@ typedef struct {
 		 "BIP" :                                                                           \
 		 ((x) == NBIOT_STEP_INIT) ?                                                        \
 		 "INIT" :                                                                          \
+		 ((x) == NBIOT_STEP_SETTING) ?                                                     \
+		 "SET MODEM" :                                                                     \
 		 ((x) == NBIOT_STEP_ATTACH_NW) ?                                                   \
 		 "ATTACH" :                                                                        \
 		 ((x) == NBIOT_STEP_CHECK_METERING) ?                                              \

@@ -101,6 +101,7 @@ typedef struct {
 	Cause_t cause;
 	BOOL isStop;
 	BOOL isPowerOn;
+	BOOL stepChanged;
 	uint8 taskId;
 	uint8 retry;
 } ModemContext_t;

@@ -523,6 +523,7 @@ static void eventSendCmd()
 			MODEM_DBG("next step (%s)\n", NBIOT_STEP_STR(nbCtx.nextStep));
 			nbCtx.currentStep = nbCtx.nextStep;
 			modemCtx.retry = 0;
+			modemCtx.stepChanged = TRUE;
 
 			if (nbCtx.currentStep == NBIOT_STEP_TRANSFER) {
 				int len = 0;
