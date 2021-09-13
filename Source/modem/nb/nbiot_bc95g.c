@@ -645,16 +645,16 @@ static BOOL parseQGMR(const char *pHead, const int *len, uint32 *nextDelay)
 	return FALSE;
 }
 
-static BOOL parseCGATT(const char *pHead, const int *len, uint32 *nextDelay)
-{
-	if (strstr(pHead, ATCMD_RESP_DEFAULT)) {
-		// CGATT only use when attached modem detach
-		nbCtx.cellreg = NBIOT_CELLREG_NOT_REG;
-		*nextDelay = DELAY_NBIOT_UPLINK;
-		return TRUE;
-	}
-	return FALSE;
-}
+/* static BOOL parseCGATT(const char *pHead, const int *len, uint32 *nextDelay) */
+/* { */
+/* 	if (strstr(pHead, ATCMD_RESP_DEFAULT)) { */
+/* 		// CGATT only use when attached modem detach */
+/* 		nbCtx.cellreg = NBIOT_CELLREG_NOT_REG; */
+/* 		*nextDelay = DELAY_NBIOT_UPLINK; */
+/* 		return TRUE; */
+/* 	} */
+/* 	return FALSE; */
+/* } */
 
 static BOOL parseCEREG(const char *pHead, const int *len, uint32 *nextDelay)
 {
@@ -970,17 +970,17 @@ static void attach()
 		   ATCMD_NUESTATS "=RADIO");
 }
 
-static void detach()
-{
-	if (nbCtx.cellreg == NBIOT_CELLREG_ATTACHED) {
-		if (nbCtx.lwm2m.regFinish) {
-			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOkWithDelay,
-				   ATCMD_QLWSREGIND "=1");
-		}
-		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseCGATT,
-			   ATCMD_CGATT "=0");
-	}
-}
+/* static void detach() */
+/* { */
+/* 	if (nbCtx.cellreg == NBIOT_CELLREG_ATTACHED) { */
+/* 		if (nbCtx.lwm2m.regFinish) { */
+/* 			ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOkWithDelay, */
+/* 				   ATCMD_QLWSREGIND "=1"); */
+/* 		} */
+/* 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseCGATT, */
+/* 			   ATCMD_CGATT "=0"); */
+/* 	} */
+/* } */
 
 static void transfer()
 {
@@ -1275,34 +1275,34 @@ void NBIOT_finishProcess()
 	}
 
 #if defined(DEBUG)
-	printf("=============================================================\n");
-	printf("[ MODEM STATUS ] CMD ERROR(%d) PSM(%d) SET MODEM(%d) WAIT DL(%d)\n",
-	       nbCtx.status.error, nbCtx.status.psmOn, nbCtx.status.setCfg, nbCtx.status.waitDL);
-	printf("[ PROCESS      ] QA REPORT(%d) UPDATE REG(%d) FOTA(%d)\n", nbCtx.proc.updateQa,
-	       nbCtx.proc.updateReg, nbCtx.proc.runFota);
-	printf("[ OPERATION    ] LAST(%s) NEXT(%s) ERROR(%02Xh) CEREG(%d)\n",
-	       NBIOT_STEP_STR(nbCtx.currentStep), NBIOT_STEP_STR(nbCtx.nextStep), nbCtx.error,
-	       nbCtx.cellreg);
-	printf("[ LWM2M STATUS ] REG FIN/UD/DEL(%d/%d/%d) BS(%d) 16241(%d)\n",
-	       nbCtx.lwm2m.regFinish, nbCtx.lwm2m.regUpdate, nbCtx.lwm2m.regDelete,
-	       nbCtx.lwm2m.bsFinish, nbCtx.lwm2m.obsObj16241);
-	printf("[ FOTA STATUS  ] DOWN REQ(%d) UPDATE REQ(%d) FINISH(%d)\n", nbCtx.lwm2m.fotaDownReq,
-	       nbCtx.lwm2m.fotaUpdateReq, nbCtx.lwm2m.fotaFinish);
-	printf("[ UL/DL COUNT  ] UDP : %d/%d, LWM2M : %d/%d\n", nbInfo.udpUlCnt, nbInfo.udpDlCnt,
-	       nbInfo.pfUlCnt, nbInfo.pfDlCnt);
-	printf("[ ATTACH TIME  ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastAttachTime.year,
-	       nbInfo.lastAttachTime.mon, nbInfo.lastAttachTime.day, nbInfo.lastAttachTime.hour,
-	       nbInfo.lastAttachTime.min, nbInfo.lastAttachTime.sec);
-	printf("[ QA SEND TIME ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastQaReportTime.year,
-	       nbInfo.lastQaReportTime.mon, nbInfo.lastQaReportTime.day,
-	       nbInfo.lastQaReportTime.hour, nbInfo.lastQaReportTime.min,
-	       nbInfo.lastQaReportTime.sec);
-	printf("[ CERTIFY TIME ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastCertifyTime.year,
-	       nbInfo.lastCertifyTime.mon, nbInfo.lastCertifyTime.day, nbInfo.lastCertifyTime.hour,
-	       nbInfo.lastCertifyTime.min, nbInfo.lastCertifyTime.sec);
-	printf("[ ACCESS TIME  ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastAccessTime.year,
-	       nbInfo.lastAccessTime.mon, nbInfo.lastAccessTime.day, nbInfo.lastAccessTime.hour,
-	       nbInfo.lastAccessTime.min, nbInfo.lastAccessTime.sec);
+	/* printf("=============================================================\n"); */
+	/* printf("[ MODEM STATUS ] CMD ERROR(%d) PSM(%d) SET MODEM(%d) WAIT DL(%d)\n", */
+	/*        nbCtx.status.error, nbCtx.status.psmOn, nbCtx.status.setCfg, nbCtx.status.waitDL); */
+	/* printf("[ PROCESS      ] QA REPORT(%d) UPDATE REG(%d) FOTA(%d)\n", nbCtx.proc.updateQa, */
+	/*        nbCtx.proc.updateReg, nbCtx.proc.runFota); */
+	/* printf("[ OPERATION    ] LAST(%s) NEXT(%s) ERROR(%02Xh) CEREG(%d)\n", */
+	/*        NBIOT_STEP_STR(nbCtx.currentStep), NBIOT_STEP_STR(nbCtx.nextStep), nbCtx.error, */
+	/*        nbCtx.cellreg); */
+	/* printf("[ LWM2M STATUS ] REG FIN/UD/DEL(%d/%d/%d) BS(%d) 16241(%d)\n", */
+	/*        nbCtx.lwm2m.regFinish, nbCtx.lwm2m.regUpdate, nbCtx.lwm2m.regDelete, */
+	/*        nbCtx.lwm2m.bsFinish, nbCtx.lwm2m.obsObj16241); */
+	/* printf("[ FOTA STATUS  ] DOWN REQ(%d) UPDATE REQ(%d) FINISH(%d)\n", nbCtx.lwm2m.fotaDownReq, */
+	/*        nbCtx.lwm2m.fotaUpdateReq, nbCtx.lwm2m.fotaFinish); */
+	/* printf("[ UL/DL COUNT  ] UDP : %d/%d, LWM2M : %d/%d\n", nbInfo.udpUlCnt, nbInfo.udpDlCnt, */
+	/*        nbInfo.pfUlCnt, nbInfo.pfDlCnt); */
+	/* printf("[ ATTACH TIME  ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastAttachTime.year, */
+	/*        nbInfo.lastAttachTime.mon, nbInfo.lastAttachTime.day, nbInfo.lastAttachTime.hour, */
+	/*        nbInfo.lastAttachTime.min, nbInfo.lastAttachTime.sec); */
+	/* printf("[ QA SEND TIME ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastQaReportTime.year, */
+	/*        nbInfo.lastQaReportTime.mon, nbInfo.lastQaReportTime.day, */
+	/*        nbInfo.lastQaReportTime.hour, nbInfo.lastQaReportTime.min, */
+	/*        nbInfo.lastQaReportTime.sec); */
+	/* printf("[ CERTIFY TIME ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastCertifyTime.year, */
+	/*        nbInfo.lastCertifyTime.mon, nbInfo.lastCertifyTime.day, nbInfo.lastCertifyTime.hour, */
+	/*        nbInfo.lastCertifyTime.min, nbInfo.lastCertifyTime.sec); */
+	/* printf("[ ACCESS TIME  ] %04d-%02d-%02d %02d:%02d:%02d\n", nbInfo.lastAccessTime.year, */
+	/*        nbInfo.lastAccessTime.mon, nbInfo.lastAccessTime.day, nbInfo.lastAccessTime.hour, */
+	/*        nbInfo.lastAccessTime.min, nbInfo.lastAccessTime.sec); */
 	printf("=============================================================\n");
 	printf("[ LIGHT MODE   ] %s\n", LMODE_STR(light.mode));
 	if (light.mode == LMODE_INTERNAL) {

@@ -129,20 +129,19 @@ void shortScheduler()
 
 static BOOL checkLightAlarm(Date_t *date, uint8 time[], int idx)
 {
-	int hourdiff, mindiff;
+	/* int hourdiff, mindiff; */
 	BOOL retVal = FALSE;
 
-	hourdiff = time[HOUR] - date->hour;
 	/* printf_ts("%s - [%02d:%02d:00] diffhour : %d\n", ALARM_TYPE_STR(AlarmList[idx].type), */
-	/* 	  time[HOUR], time[MINUTE], hourdiff); */
+	/* 	  time[HOUR], time[MINUTE], time[HOUR] - date->hour); */
 
-	if (hourdiff == 0) {
-		mindiff = time[MINUTE] - date->min;
+	if ((time[HOUR] - date->hour) == 0) {
+		/* mindiff = time[MINUTE] - date->min; */
 
-		if (mindiff > 0) {
+		if ((time[MINUTE] - date->min) > 0) {
 			retVal = TRUE;
 		}
-	} else if (hourdiff == 1) {
+	} else if ((time[HOUR] - date->hour) == 1) {
 		retVal = TRUE;
 	} else {
 		retVal = FALSE;
@@ -181,14 +180,6 @@ void normalScheduler()
 	BOOL isLight = 0;
 	RtcAlarm_t *pNext = NULL;
 	for (int idx = 0; idx < RTC_ALARM_COUNT; idx++) {
-		int hourdiff;
-
-		diff = AlarmList[idx].minute - date.min;
-		if (diff < 1) {
-			// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기 위해 1시간을 더한다.
-			diff += 60;
-		}
-
 		if (TimeSyncFlag) {
 			if (idx == RTC_ALARM_LIGHT_ON) {
 				if (checkLightAlarm(&date, light.onTime, idx)) {
@@ -216,16 +207,26 @@ void normalScheduler()
 				}
 			}
 
+			if (isLight) {
+				pNext = &AlarmList[idx];
+				break;
+			} else if (idx != RTC_ALARM_REPORT) {
+				continue;
+			}
+
+			diff = AlarmList[idx].minute - date.min;
+
+			if (diff < 1) {
+				// diff 값이 음수이거나 차이가 없는 경우 다음 시간에 event를 발생시키기 위해 1시간을 더한다.
+				diff += 60;
+			}
+
 			// diff 값이 0이거나 1인 알람을 설정할 경우 알람이 발생하지 않을 수 있으므로 제외한다.
 			if (diff > 1) {
 				if (diff <= lastDiff) {
 					pNext = &AlarmList[idx];
 					lastDiff = diff;
 				}
-			}
-
-			if (isLight) {
-				break;
 			}
 		}
 	}

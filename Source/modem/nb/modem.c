@@ -571,8 +571,9 @@ static void eventTimeoutCmd()
 
 			nbCtx.nextStep = nbCtx.currentStep; // Set retry step to NEXT STEP
 
-			MODEM_DBG("next retry delay 1 minute\n");
-			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 60000);
+			/* MODEM_DBG("next retry delay 1 minute\n"); */
+			/* OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 60000); */
+			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
 		} else {
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_FIN_PROC);
 		}

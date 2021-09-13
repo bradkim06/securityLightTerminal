@@ -220,11 +220,11 @@ void calcSunrise(Date_t *date)
 	if (settm > 24.0)
 		settm -= 24.0;
 
-	printf("=============================================\n");
-	printf("[ Current Day ] : %04d-%02d-%02d\n", (int)y, (int)m, (int)day);
-	printf("[ Light Mode  ] : %s\n", LMODE_STR(light.mode));
-	printf("[ Rise Offset ] : %02dmin\n", light.onOfs);
-	printf("[ Set Offset  ] : %02dmin\n", light.offOfs);
+	/* printf("=============================================\n"); */
+	/* printf("[ Current Day ] : %04d-%02d-%02d\n", (int)y, (int)m, (int)day); */
+	/* printf("[ Light Mode  ] : %s\n", LMODE_STR(light.mode)); */
+	/* printf("[ Rise Offset ] : %02dmin\n", light.onOfs); */
+	/* printf("[ Set Offset  ] : %02dmin\n", light.offOfs); */
 
 	sunriseTime_t rise, set, twrise, twset;
 
@@ -234,9 +234,9 @@ void calcSunrise(Date_t *date)
 	gethrmn(twpm, &twset);
 
 	if (light.mode == LMODE_INTERNAL) {
-		printf("[ Latitude    ] : %3.1f\n", (float)latit);
-		printf("[ longitude   ] : %3.1f\n", (float)longit);
-		printf("[ TimeBase    ] : %s\n", TIMEBASE_STR(light.timeBase));
+		/* printf("[ Latitude    ] : %3.1f\n", (float)latit); */
+		/* printf("[ longitude   ] : %3.1f\n", (float)longit); */
+		/* printf("[ TimeBase    ] : %s\n", TIMEBASE_STR(light.timeBase)); */
 		if (light.timeBase == SUNRISE_BASE) {
 			addOffset(&rise, &set);
 			light.onTime[HOUR] = (uint8)set.hour;
@@ -250,14 +250,14 @@ void calcSunrise(Date_t *date)
 			light.offTime[HOUR] = (uint8)twrise.hour;
 			light.offTime[MINUTE] = (uint8)twrise.min;
 		}
-		printf("[ Rise Time   ] : %02d:%02d\n", light.offTime[HOUR], light.offTime[MINUTE]);
-		printf("[ Set Time    ] : %02d:%02d\n", light.onTime[HOUR], light.onTime[MINUTE]);
+		/* printf("[ Rise Time   ] : %02d:%02d\n", light.offTime[HOUR], light.offTime[MINUTE]); */
+		/* printf("[ Set Time    ] : %02d:%02d\n", light.onTime[HOUR], light.onTime[MINUTE]); */
 	} else if (light.mode == LMODE_SETTING) {
-		addOffset((sunriseTime_t *)light.setOnTime, (sunriseTime_t *)light.setOffTime);
-		printf("[ Rise Time   ] : %02d:%02d\n", light.setOnTime[HOUR],
-		       light.setOnTime[MINUTE]);
-		printf("[ Set Time    ] : %02d:%02d\n", light.setOffTime[HOUR],
-		       light.setOffTime[MINUTE]);
+		/* addOffset((sunriseTime_t *)light.setOnTime, (sunriseTime_t *)light.setOffTime); */
+		/* printf("[ Rise Time   ] : %02d:%02d\n", light.setOnTime[HOUR], */
+		/*        light.setOnTime[MINUTE]); */
+		/* printf("[ Set Time    ] : %02d:%02d\n", light.setOffTime[HOUR], */
+		/*        light.setOffTime[MINUTE]); */
 		memcpy(light.onTime, light.setOnTime, 2);
 		memcpy(light.offTime, light.setOffTime, 2);
 	}

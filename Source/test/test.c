@@ -374,7 +374,7 @@ void TEST_gpioWrite(int port, int pin, int status)
 #define OUTPUT 0
 	volatile unsigned char *portAddress = gpioPortSelect(port, OUTPUT);
 
-	printf("port(%d) pin(%d) status(0x%02X)\n", port, pin, portAddress);
+	/* printf("port(%d) pin(%d) status(0x%02X)\n", port, pin, portAddress); */
 
 	if (status) {
 		*portAddress |= BM(pin);
@@ -382,7 +382,7 @@ void TEST_gpioWrite(int port, int pin, int status)
 		*portAddress &= ~BM(pin);
 	}
 
-	printf("P%dOUT address : 0x%02X, status : 0x%02X\n", port, portAddress, *portAddress);
+	/* printf("P%dOUT address : 0x%02X, status : 0x%02X\n", port, portAddress, *portAddress); */
 }
 
 void TEST_gpioRead(int port)
@@ -390,7 +390,7 @@ void TEST_gpioRead(int port)
 #define INPUT 1
 	volatile unsigned char *portAddress = gpioPortSelect(port, INPUT);
 
-	printf("P%dIN address : 0x%02X, status : 0x%02X\n", port, portAddress, *portAddress);
+	/* printf("P%dIN address : 0x%02X, status : 0x%02X\n", port, portAddress, *portAddress); */
 }
 
 void TEST_shortInterval(int flag)
@@ -412,7 +412,7 @@ void TEST_setMeterType(int type)
 	if (type == 1) {
 		conf.meterType = E_METER;
 	} else {
-		printf("Meter type error, see below\n");
+		/* printf("Meter type error, see below\n"); */
 		printf(" 1 : Security Light\n");
 		return;
 	}
@@ -574,13 +574,13 @@ void TEST_run()
 	TEST_initModem();
 	PRINT_resume();
 
-	printf("\n\n\n\n");
+	/* printf("\n\n\n\n"); */
 	printf("===========================================\n");
 	printf("             TEST MODE ");
 	printf("(NB-IoT)\n");
 	printf("   Compiled at (%s / %s)\n", __DATE__, __TIME__);
 	printf("===========================================\n");
-	printf("\n");
+	/* printf("\n"); */
 
 	SHELL_init();
 	SHELL_run();

@@ -223,23 +223,3 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 
 	return result;
 }
-
-BOOL METER_bypassResp()
-{
-	//TODO METER_bypassResp
-	/* Comment METER_bypassResp() */
-	/* uint8 buf[LEN_MAX_METER_RX]; */
-	/* memset(buf, 0, LEN_MAX_METER_RX); */
-	/* int len = UART_receive(UART_A3, buf, LEN_MAX_METER_RX); */
-
-	/* if (buf[0] != STD_RESP_START || buf[3] != STD_RESP_START) { */
-	/* 	printf("invalid message\n"); */
-	/* 	return FAIL; */
-	/* } */
-
-	/* // PRINT_hexBuffer(rxMsg, len); */
-	/* // 4 - stx1,l1field, l2field, stx2 */
-	/* // 5 - stx1,l1field, l2field, stx2, etx */
-	/* NFCAPP_meterBypassResp(buf + 4, len - 5); */
-	/* return SUCCESS; */
-}

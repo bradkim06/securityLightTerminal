@@ -525,7 +525,7 @@ void recvNodeConfSet(byte *data, uint8 len)
 
 void recvMeterReq(byte *data, uint8 len)
 {
-	NfcMeterReq_t *p = (NfcMeterReq_t *)data;
+	/* NfcMeterReq_t *p = (NfcMeterReq_t *)data; */
 
 	APP_runMetering(NO_REPORT, WORKER);
 	// sendMeterReport();

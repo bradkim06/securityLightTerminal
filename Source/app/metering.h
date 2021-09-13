@@ -136,7 +136,6 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
 void METER_enable(uint8 meterType);
 
 void METER_bypassReq(uint8 *body, int bodyLen);
-BOOL METER_bypassResp();
 void LCD_sendReq(uint8 lcdCmd);
 
 #endif //__METERING_H__
