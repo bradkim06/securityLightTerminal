@@ -11,6 +11,8 @@
 #include "rtc.h"
 #include "test.h"
 #include "sunrise.h"
+#include "metering.h"
+#include "device.h"
 
 #if defined(DEBUG)
 #define NBIOT_DBG(...)                                                                             \
@@ -365,6 +367,7 @@ static BOOL parseNRB(const char *pHead, const int *len, uint32 *nextDelay)
 {
 #define ATCMD_RESP_NRB_CAUSE_APP "REBOOT_CAUSE_"
 	if (strstr(pHead, ATCMD_RESP_NRB_CAUSE_APP)) {
+		*nextDelay = DELAY_NBIOT_BOOTUP;
 		nbCtx.lwm2m.value = 0;
 		return TRUE;
 	}
@@ -999,6 +1002,8 @@ static void attach()
 		nbCtx.status.setCfg = 0;
 		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseNRB, ATCMD_NRB);
 	}
+
+	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_CGATT "=1");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_CEREG "=5");
 	ATCMD_push(TIMEOUT_ATTACH, RETRY_ATTACH, parseCEREG, ATCMD_CEREG "?");
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_NPSMR "=1");
@@ -1098,6 +1103,7 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 	}
 
 	if (isNeedAttach) {
+		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_CGATT "=1");
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_CEREG "=5");
 		ATCMD_push(TIMEOUT_ATTACH, RETRY_ATTACH, parseCEREG, ATCMD_CEREG "?");
 		ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_NPSMR "=1");
@@ -1119,6 +1125,7 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 BOOL NBIOT_sendDataProcess()
 {
 	if (nbCtx.currentStep == NBIOT_STEP_IDLE) {
+		LCD_sendReq(COMM_STATUS_ON);
 		idle();
 		nbCtx.nextStep = NBIOT_STEP_BIP;
 	} else if (nbCtx.currentStep == NBIOT_STEP_BIP) {
@@ -1132,6 +1139,7 @@ BOOL NBIOT_sendDataProcess()
 		setting();
 		nbCtx.nextStep = NBIOT_STEP_ATTACH_NW;
 	} else if (nbCtx.currentStep == NBIOT_STEP_ATTACH_NW) {
+		LCD_sendReq(COMM_STATUS_ON);
 		attach();
 		if (modemCtx.currentProc == MODEM_PROC_INIT) {
 			nbCtx.nextStep = NBIOT_STEP_CHECK_METERING;
@@ -1164,6 +1172,7 @@ BOOL NBIOT_sendDataProcess()
 	} else if (nbCtx.currentStep == NBIOT_STEP_DETACH_NW) {
 		nbCtx.nextStep = NBIOT_STEP_FINISH;
 	} else if (nbCtx.currentStep == NBIOT_STEP_FINISH) {
+		/* LCD_sendReq(COMM_STATUS_OFF); */
 		return TRUE;
 	} else {
 		printf_ts("Unknown Step\n");
@@ -1377,6 +1386,7 @@ void NBIOT_finishProcess()
 	}
 	printf("=============================================================\n");
 #endif
+	LCD_sendReq(COMM_STATUS_OFF);
 }
 
 void NBIOT_release()

@@ -9,6 +9,9 @@
 //============================================
 // TERMINAL DEVICE COMMON PORT NUMBER
 //============================================
+#define COMM_STATUS_ON 2
+#define COMM_STATUS_OFF 3
+
 #define BUTTON_ENTER 4
 #define BUTTON_STOP 5
 #define BUTTON_UP 6

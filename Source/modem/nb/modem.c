@@ -15,6 +15,7 @@
 #include "alarm.h"
 #include "lcd.h"
 #include "test.h"
+#include "metering.h"
 
 #if defined(DEBUG)
 #define MODEM_DBG(...)                                                                             \
@@ -502,13 +503,7 @@ static void eventRunProc()
 
 static void eventFinish()
 {
-	// update & print last context
 	NBIOT_finishProcess();
-	// if (modemCtx.currentProc == MODEM_PROC_PERIODIC_REPORT) {
-	// 	if (nbCtx.error == NBIOT_ERROR_NONE) {
-	// 	}
-	// }
-	// APP_ctrlReportTime();
 	ALARM_schedule();
 }
 
@@ -574,7 +569,8 @@ static void eventTimeoutCmd()
 
 			/* MODEM_DBG("next retry delay 1 minute\n"); */
 			/* OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 60000); */
-			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD);
+			/* OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD); */
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 5000);
 		} else {
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_FIN_PROC);
 		}
