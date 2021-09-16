@@ -316,7 +316,9 @@ static BOOL checkResetCmd(uchar *buf, int len)
 		return FALSE;
 	}
 
+	Relay_Status(RELAY_OFF, NO_REPORT, SERVER);
 	printf_ts("Reset Request\n");
+
 	SYSTEM_RESET();
 
 	return TRUE;
