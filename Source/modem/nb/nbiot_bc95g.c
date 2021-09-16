@@ -318,7 +318,7 @@ static BOOL parseLwm2mBootstrap(const char *pHead, const int *len, uint32 *nextD
 
 static BOOL parseLwm2mRegStart(const char *pHead, const int *len, uint32 *nextDelay)
 {
-	if (nbCtx.lwm2m.regFinish && nbCtx.lwm2m.obsObj16241) {
+	if (nbCtx.lwm2m.regFinish && nbCtx.lwm2m.obsObj10250) {
 		if (ALARM_isTimeSync()) {
 			RTC_read(&nbInfo.lastCertifyTime);
 		}
@@ -584,6 +584,7 @@ static BOOL parseQREGSWT(const char *pHead, const int *len, uint32 *nextDelay)
 {
 #define ATCMD_RESP_QREGSWT "+QREGSWT:"
 #define DISABLE_LWM2M 2
+#define AUTO_LWM2M 1
 #define MANUAL_LWM2M 0
 	char *p = NULL;
 	if ((p = strstr(pHead, ATCMD_RESP_QREGSWT))) {
@@ -923,9 +924,9 @@ static void idle()
 
 static void bip()
 {
-	if (!nbCtx.status.psmOn) {
-		ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseBootup, ATCMD);
-	}
+	/* if (!nbCtx.status.psmOn) { */
+	ATCMD_push(TIMEOUT_NRB, RETRY_NRB, parseBootup, ATCMD);
+	/* } */
 	ATCMD_push(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk, ATCMD_CPSMS "=0");
 	ATCMD_push(TIMEOUT_BIP, RETRY_BIP, parseCIMI, ATCMD_CIMI);
 }
@@ -1091,8 +1092,6 @@ void NBIOT_retryProcess(BOOL isNeedAttach, BOOL isHwReset)
 		}
 		ATCMD_Instant(TIMEOUT_NBIOT_DEFAULT, RETRY_NBIOT_DEFAULT, parseOk,
 			      ATCMD_CGATT "=0");
-	} else {
-		isHwReset |= (nbCtx.currentStep == NBIOT_STEP_TRANSFER) ? FALSE : TRUE;
 	}
 
 	if (isHwReset) {

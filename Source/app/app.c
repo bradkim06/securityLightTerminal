@@ -195,10 +195,8 @@ static void meteringCompleted()
 		return;
 	}
 
-	if (Metering.type != NO_REPORT) {
+	if (Metering.type != NO_REPORT && Metering.type != NFC_METERING) {
 		MODEM_run((ModemProc_t)Metering.type, Metering.cause);
-	} else {
-		sendMeterReport();
 	}
 }
 
@@ -281,7 +279,13 @@ static void meteringRecvResponse()
 		Metering.inProcess = 0;
 		Metering.success = 1;
 		METER_addTempData(&unit);
+		if (Metering.type == NFC_METERING) {
+			sendMeterReport();
+			return;
+		}
+
 		meteringCompleted();
+
 	} else {
 		OSAL_setEvent(AppTaskId, APP_EVENT_METER_TIMEOUT);
 	}

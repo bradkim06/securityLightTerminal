@@ -31,6 +31,7 @@ typedef enum {
 	SERVER_REQ,
 	WORKER_REQ,
 	NO_REPORT,
+	NFC_METERING,
 } MeteringType_t;
 
 typedef enum {

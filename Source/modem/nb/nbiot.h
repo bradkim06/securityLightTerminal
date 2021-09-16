@@ -49,7 +49,7 @@
 #define RETRY_UPLINK 2
 #define RETRY_LWM2M_FOTA 0
 
-#define DELAY_NBIOT_BOOTUP 2000
+#define DELAY_NBIOT_BOOTUP 3000
 #define DELAY_NBIOT_UPLINK 5000
 
 // Modem cell registration status(= attach status)

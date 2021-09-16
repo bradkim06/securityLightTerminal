@@ -570,7 +570,7 @@ static void eventTimeoutCmd()
 			/* MODEM_DBG("next retry delay 1 minute\n"); */
 			/* OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 60000); */
 			/* OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD); */
-			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 5000);
+			OSAL_startEventTimer(modemCtx.taskId, MODEM_EVENT_SEND_ATCMD, 10000);
 		} else {
 			OSAL_setEvent(modemCtx.taskId, MODEM_EVENT_FIN_PROC);
 		}

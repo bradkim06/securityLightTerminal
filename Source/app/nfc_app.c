@@ -527,8 +527,7 @@ void recvMeterReq(byte *data, uint8 len)
 {
 	/* NfcMeterReq_t *p = (NfcMeterReq_t *)data; */
 
-	APP_runMetering(NO_REPORT, WORKER);
-	// sendMeterReport();
+	APP_runMetering(NFC_METERING, WORKER);
 }
 
 void recvServerConnectReq(byte *data, uint8 len)
@@ -710,37 +709,30 @@ static void recvNbiotIdSet(byte *data, uint8 len)
 static void recvPsmModeSet(byte *data, uint8 len)
 {
 	NfcPsmModeSet_t *p = (NfcPsmModeSet_t *)data;
-	BOOL isChange = FALSE;
 
-	if (p->psm != light.psm) {
-		light.psm = p->psm;
-		BYTE_bcdToInt(&p->psmStartTime[HOUR], &light.psmOnTime[HOUR]);
-		BYTE_bcdToInt(&p->psmStartTime[MINUTE], &light.psmOnTime[MINUTE]);
-		BYTE_bcdToInt(&p->psmEndTime[HOUR], &light.psmOffTime[HOUR]);
-		BYTE_bcdToInt(&p->psmEndTime[MINUTE], &light.psmOffTime[MINUTE]);
+	light_t prevSetting;
+	memcpy(&prevSetting, &light, sizeof(light_t));
 
-		BYTE_bcdToInt(&p->psmStartDate[HOUR], &light.psmOnDay[HOUR]);
-		BYTE_bcdToInt(&p->psmStartDate[MINUTE], &light.psmOnDay[MINUTE]);
-		BYTE_bcdToInt(&p->psmEndDate[HOUR], &light.psmOffDay[HOUR]);
-		BYTE_bcdToInt(&p->psmEndDate[MINUTE], &light.psmOffDay[MINUTE]);
-		isChange = TRUE;
-	}
+	light.psm = p->psm;
+	BYTE_bcdToInt(&p->psmStartTime[HOUR], &light.psmOnTime[HOUR]);
+	BYTE_bcdToInt(&p->psmStartTime[MINUTE], &light.psmOnTime[MINUTE]);
+	BYTE_bcdToInt(&p->psmEndTime[HOUR], &light.psmOffTime[HOUR]);
+	BYTE_bcdToInt(&p->psmEndTime[MINUTE], &light.psmOffTime[MINUTE]);
 
-	if (p->dimmMode != light.dimmingMode) {
-		light.dimmingMode = p->dimmMode;
-		isChange = TRUE;
-	}
+	BYTE_bcdToInt(&p->psmStartDate[HOUR], &light.psmOnDay[HOUR]);
+	BYTE_bcdToInt(&p->psmStartDate[MINUTE], &light.psmOnDay[MINUTE]);
+	BYTE_bcdToInt(&p->psmEndDate[HOUR], &light.psmOffDay[HOUR]);
+	BYTE_bcdToInt(&p->psmEndDate[MINUTE], &light.psmOffDay[MINUTE]);
 
-	if (p->dimmLv) {
-		light.dimmingLv = p->dimmLv;
-		isChange = TRUE;
-	}
+	light.dimmingMode = p->dimmMode;
 
-	if (isChange) {
-		OSAL_setEvent(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG);
-	}
+	light.dimmingLv = p->dimmLv;
 
 	sendPsmResp(REPORT_TYPE_SET);
+
+	if (memcmp(&prevSetting, &light, sizeof(light_t))) {
+		OSAL_startEventTimer(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG, 5000);
+	}
 }
 
 static void recvGpsSet(byte *data, uint8 len)
@@ -754,6 +746,8 @@ static void recvGpsSet(byte *data, uint8 len)
 		memcpy(conf.latitDec, p->latitDec, 3);
 		memcpy(conf.longitInt, p->longitInt, 2);
 		memcpy(conf.longitDec, p->longitDec, 3);
+
+		OSAL_startEventTimer(APP_getTaskId(), APP_EVENT_CHANGE_CONFIG, 5000);
 	}
 
 	sendGpsResp(REPORT_TYPE_SET);
@@ -765,7 +759,7 @@ static void recvGpsSet(byte *data, uint8 len)
 
 void printNfcMsg(int dir, byte *msg, uint8 len)
 {
-#if 1
+#if 0
 	printf("\n[%s] MSG_TYPE(%02X) (%02X)", dir ? "TX" : "RX", *(msg + 10), *(msg + 10));
 
 	char *p = (char *)(msg + 10);

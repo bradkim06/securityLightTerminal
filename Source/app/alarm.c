@@ -132,8 +132,8 @@ static BOOL checkLightAlarm(Date_t *date, uint8 time[], int idx)
 	/* int hourdiff, mindiff; */
 	BOOL retVal = FALSE;
 
-	/* printf_ts("%s - [%02d:%02d:00] diffhour : %d\n", ALARM_TYPE_STR(AlarmList[idx].type), */
-	/* 	  time[HOUR], time[MINUTE], time[HOUR] - date->hour); */
+	printf_ts("%s - [%02d:%02d:00] diffhour : %d\n", ALARM_TYPE_STR(AlarmList[idx].type),
+		  time[HOUR], time[MINUTE], time[HOUR] - date->hour);
 
 	if ((time[HOUR] - date->hour) == 0) {
 		/* mindiff = time[MINUTE] - date->min; */
@@ -150,6 +150,19 @@ static BOOL checkLightAlarm(Date_t *date, uint8 time[], int idx)
 	return retVal;
 }
 
+static BOOL checkPsmDate(Date_t *date)
+{
+	BOOL retVal = FALSE;
+
+	if ((date->mon >= light.psmOnDay[MONTH]) && (date->mon <= light.psmOffDay[MONTH])) {
+		if ((date->day >= light.psmOnDay[DAY]) && (date->day <= light.psmOffDay[DAY])) {
+			retVal = TRUE;
+		}
+	}
+
+	return retVal;
+}
+
 void normalScheduler()
 {
 	Date_t date;
@@ -160,6 +173,7 @@ void normalScheduler()
 
 		AlarmList[0].minute = light.onTime[MINUTE];
 		AlarmList[1].minute = light.offTime[MINUTE];
+
 		if (light.psm) {
 			AlarmList[2].type = RTC_ALARM_PSM_ON;
 			AlarmList[2].minute = light.psmOnTime[MINUTE];
@@ -192,16 +206,19 @@ void normalScheduler()
 			}
 
 			if (light.psm) {
-				if (idx == RTC_ALARM_PSM_ON) {
-					if (checkLightAlarm(&date, light.psmOnTime, idx)) {
-						isLight = TRUE;
-					}
-				}
-
-				if (light.psm == PSM_RELIGHT) {
-					if (idx == RTC_ALARM_PSM_OFF) {
-						if (checkLightAlarm(&date, light.psmOffTime, idx)) {
+				if (checkPsmDate(&date)) {
+					if (idx == RTC_ALARM_PSM_ON) {
+						if (checkLightAlarm(&date, light.psmOnTime, idx)) {
 							isLight = TRUE;
+						}
+					}
+
+					if (light.psm == PSM_RELIGHT) {
+						if (idx == RTC_ALARM_PSM_OFF) {
+							if (checkLightAlarm(&date, light.psmOffTime,
+									    idx)) {
+								isLight = TRUE;
+							}
 						}
 					}
 				}
