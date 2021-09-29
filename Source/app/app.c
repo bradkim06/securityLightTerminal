@@ -235,7 +235,7 @@ void APP_runMetering(MeteringType_t meteringType, Cause_t cause)
 	Metering.nRetry = 2;
 
 	METER_sendRequest(Metering.meterType);
-	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)500);
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1000);
 }
 
 void APP_runPeriodicReport()
@@ -255,7 +255,7 @@ static void meteringTimeout()
 		// 약간의 시간 gap을 준 뒤 재검침 시도
 		MISC_delayMs(100);
 		METER_sendRequest(Metering.meterType);
-		OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)400);
+		OSAL_startEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT, (uint32)1000);
 	} else {
 		printf_ts("retry : %d\n", Metering.nRetry);
 		Metering.inProcess = 0;

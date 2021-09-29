@@ -35,13 +35,15 @@
 		P10OUT |= 0x20;                                                                    \
 	} while (0);
 
+uchar meterBuf[0x50];
+
 static uint8 std_checksum(uint8 *from, int size)
 {
 	// size - 2 -> Not Calculate ETX, Checksum
 	size = size - 3;
 	uint8 checksum = 0;
 
-	for (int i = 0; i < size; i++) {
+	for (volatile int i = 0; i < size; i++) {
 		checksum += *(from + i);
 	}
 
@@ -78,6 +80,28 @@ static void read_light_status(uint8 *rxBuf)
 
 		APP_runMetering(WORKER_REQ, WORKER);
 	}
+}
+
+static void meter_report_req(uint8 *rxBuf)
+{
+	meterReportReq_t *rx = (meterReportReq_t *)rxBuf;
+
+	if (rx->stx != METER_STX) {
+		printf("Invalid Meter STX\n");
+		return;
+	}
+
+	if (rx->etx != METER_ETX) {
+		printf("Invalid Meter ETX\n");
+		return;
+	}
+
+	if (rx->checkSum != std_checksum(rxBuf, sizeof(meterReportReq_t))) {
+		printf("Invalid Checksum\n");
+		return;
+	}
+
+	APP_runMetering(WORKER_REQ, WORKER);
 }
 
 static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
@@ -132,10 +156,12 @@ static BOOL send_meteringEV(void)
 	Date_t date;
 	RTC_read(&date);
 
-	evMeterReq_t msg;
-	evMeterReq_t *pMsg = &msg;
+	int len = sizeof(evMeterReq_t);
 
-	memset(&msg, 0, sizeof(evMeterReq_t));
+	uint8 buf[LEN_MAX_METER_TX];
+	evMeterReq_t *pMsg = (evMeterReq_t *)buf;
+
+	memset(buf, 0, sizeof(evMeterReq_t));
 
 	pMsg->stx = TERMINAL_STX;
 	pMsg->msgType = REQ_READ_METER;
@@ -144,10 +170,17 @@ static BOOL send_meteringEV(void)
 	}
 
 	memcpy(&pMsg->light, &light, sizeof(light_t));
-	pMsg->checkSum = std_checksum((uint8 *)&pMsg->stx, sizeof(evMeterReq_t));
+
+	uint8 checksum = 0;
+	for (volatile int i = 0; i < len - 2; i++) {
+		checksum += buf[i];
+	}
+
+	pMsg->checkSum = checksum;
+	/* pMsg->checkSum = std_checksum(buf, len); */
 	pMsg->etx = TERMINAL_ETX;
 
-	UART_send(UART_A0, &msg, sizeof(evMeterReq_t), FALSE);
+	UART_send(UART_A0, buf, len, FALSE);
 	return TRUE;
 }
 
@@ -195,7 +228,7 @@ void METER_enable(uint8 meterType)
 	UartInitParam_t param = {
 		.isRxEnable = TRUE,
 		.isTxEnable = TRUE,
-		.baudrate = UART_BAUDRATE_38400,
+		.baudrate = UART_BAUDRATE_9600,
 		.parity = UART_PARITY_NONE,
 		.stopbit = UART_STOPBIT_ONE,
 		.charLen = UART_8BITS_CHAR,
@@ -216,6 +249,9 @@ BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 	if (meterType == E_METER) {
 		if (buf[1] == 0xB1) {
 			read_light_status(buf);
+			return TRUE;
+		} else if (buf[1] == 0xB2) {
+			meter_report_req(buf);
 			return TRUE;
 		}
 		result = read_electric_meter(buf, pUnit);

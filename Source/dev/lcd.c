@@ -9,7 +9,7 @@ void initButton(void)
 	P2DIR &= ~ALL_BUTTON; // Set to Input
 	P2REN &= ~ALL_BUTTON; // Input
 
-	P2IES &= ALL_BUTTON; // Low ->Hi edge
+	P2IES |= ALL_BUTTON; // Low ->Hi edge
 	P2IFG &= ~ALL_BUTTON; // IFG cleared
 	P2IE |= ALL_BUTTON; // Interrupt enabled
 }
