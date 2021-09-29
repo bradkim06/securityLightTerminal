@@ -64,13 +64,6 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 		break;
 	}
 
-#define RELAY_STATUS_STR(x)                                                                        \
-	(((x) == RELAY_OFF) ?                                                                      \
-		 "OFF" :                                                                           \
-		 ((x) == RELAY_NO_CHANGE) ?                                                        \
-		 "NO CHANGE" :                                                                     \
-		 ((x) == RELAY_ON) ? "ON" : ((x) == RELAY_TOGGLE) ? "TOGGLE" : "UNKNOWN")
-
 	printf_ts("Relay Status : %s[Command], %s[Status]\n", RELAY_STATUS_STR(on),
 		  RELAY_STATUS_STR((P3OUT & RELAY_PIN)));
 
@@ -80,9 +73,9 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 		return;
 	}
 
-	if (on == RELAY_ON) {
+	if (lightStatus == RELAY_ON) {
 		printf_ts("light on\n");
-	} else if (on == RELAY_OFF) {
+	} else if (lightStatus == RELAY_OFF) {
 		printf_ts("light off\n");
 	}
 

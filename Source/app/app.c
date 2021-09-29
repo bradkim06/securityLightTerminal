@@ -274,8 +274,8 @@ static void meteringRecvResponse()
 	OSAL_stopEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT);
 
 	MeterUnitData_t unit;
-	BOOL result = METER_recvResponse(Metering.meterType, &unit);
-	if (result == TRUE) {
+	int result = METER_recvResponse(Metering.meterType, &unit);
+	if (result == 1) {
 		Metering.inProcess = 0;
 		Metering.success = 1;
 		METER_addTempData(&unit);
@@ -285,7 +285,10 @@ static void meteringRecvResponse()
 		}
 
 		meteringCompleted();
-
+	} else if (result == 2) {
+		return;
+	} else if (result == 3) {
+		return;
 	} else {
 		OSAL_setEvent(AppTaskId, APP_EVENT_METER_TIMEOUT);
 	}

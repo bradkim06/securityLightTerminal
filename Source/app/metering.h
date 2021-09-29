@@ -138,7 +138,7 @@ typedef struct {
 } elecMeterResp_t;
 
 BOOL METER_sendRequest(uint8 meterType);
-BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
+int METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit);
 
 void METER_enable(uint8 meterType);
 

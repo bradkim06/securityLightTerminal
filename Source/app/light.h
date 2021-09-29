@@ -3,6 +3,10 @@
 
 #include "var_type.h"
 
+// Light Status
+#define LSTATUS_ON 2
+#define LSTATUS_OFF 0
+
 // Light Termianl Mode
 #define LMODE_INTERNAL 1
 #define LMODE_SETTING 2

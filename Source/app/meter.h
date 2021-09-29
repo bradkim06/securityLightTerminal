@@ -3,6 +3,13 @@
 
 #include "lcd.h"
 
+#define RELAY_STATUS_STR(x)                                                                        \
+	(((x) == RELAY_OFF) ?                                                                      \
+		 "OFF" :                                                                           \
+		 ((x) == RELAY_NO_CHANGE) ?                                                        \
+		 "NO CHANGE" :                                                                     \
+		 ((x) == RELAY_ON) ? "ON" : ((x) == RELAY_TOGGLE) ? "TOGGLE" : "UNKNOWN")
+
 //=======================================
 // Electric Meter Type
 //=======================================

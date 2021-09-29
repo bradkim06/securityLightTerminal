@@ -1353,6 +1353,7 @@ void NBIOT_finishProcess()
 	/*        nbInfo.lastAccessTime.mon, nbInfo.lastAccessTime.day, nbInfo.lastAccessTime.hour, */
 	/*        nbInfo.lastAccessTime.min, nbInfo.lastAccessTime.sec); */
 	printf("=============================================================\n");
+	printf("[ LIGHT STATUS ] %s\n", RELAY_STATUS_STR(P3OUT & RELAY_PIN));
 	printf("[ LIGHT MODE   ] %s\n", LMODE_STR(light.mode));
 	if (light.mode == LMODE_INTERNAL) {
 		printf("[ LIGHT BASE   ] %s\n", TIMEBASE_STR(light.timeBase));

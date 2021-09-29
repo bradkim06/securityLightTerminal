@@ -101,7 +101,9 @@ static void meter_report_req(uint8 *rxBuf)
 		return;
 	}
 
-	APP_runMetering(WORKER_REQ, WORKER);
+	Relay_Status(RELAY_TOGGLE, WORKER_REQ, WORKER);
+#define THREE_MINUTE 180000
+	OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, THREE_MINUTE);
 }
 
 static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
@@ -238,23 +240,28 @@ void METER_enable(uint8 meterType)
 #endif
 }
 
-BOOL METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
+int METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 {
+#define METERING_OK 1
+#define LSTATUS_OK 2
+#define M_REPORT_OK 3
+
 	uint8 buf[LEN_MAX_METER_RX];
 	memset(buf, 0, LEN_MAX_METER_RX);
 	int len = UART_receive(UART_A0, buf, LEN_MAX_METER_RX);
 
-	BOOL result = FALSE;
+	int result = 0;
 
 	if (meterType == E_METER) {
-		if (buf[1] == 0xB1) {
+		if (buf[1] == 0xB0) {
+			result = read_electric_meter(buf, pUnit);
+		} else if (buf[1] == 0xB1) {
 			read_light_status(buf);
-			return TRUE;
+			return 2;
 		} else if (buf[1] == 0xB2) {
 			meter_report_req(buf);
-			return TRUE;
+			return 3;
 		}
-		result = read_electric_meter(buf, pUnit);
 	}
 
 	return result;

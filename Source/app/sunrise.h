@@ -1,6 +1,8 @@
 #ifndef __SUNRISE_H__
 #define __SUNRISE_H__
 
+#define LSTATUS_STR(x) (((x) == LMODE_INTERNAL) ? "ON" : ((x) == LMODE_SETTING) ? "OFF" : "unknown")
+
 #define LMODE_STR(x)                                                                               \
 	(((x) == LMODE_INTERNAL) ? "Terminal Internal Algorithm" :                                 \
 				   ((x) == LMODE_SETTING) ? "Server Setting Time" : "unknown")
