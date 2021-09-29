@@ -132,16 +132,23 @@ static BOOL checkLightAlarm(Date_t *date, uint8 time[], int idx)
 	/* int hourdiff, mindiff; */
 	BOOL retVal = FALSE;
 
-	printf_ts("%s - [%02d:%02d:00] diffhour : %d\n", ALARM_TYPE_STR(AlarmList[idx].type),
-		  time[HOUR], time[MINUTE], time[HOUR] - date->hour);
+	uint8 hour = time[HOUR];
 
-	if ((time[HOUR] - date->hour) == 0) {
+	printf_ts("%s - [%02d:%02d:00] ", ALARM_TYPE_STR(AlarmList[idx].type), hour, time[MINUTE]);
+
+	if (hour == 0) {
+		hour = 24;
+	}
+
+	printf("diffhour : %d\n", hour - date->hour);
+
+	if ((hour - date->hour) == 0) {
 		/* mindiff = time[MINUTE] - date->min; */
 
 		if ((time[MINUTE] - date->min) > 0) {
 			retVal = TRUE;
 		}
-	} else if ((time[HOUR] - date->hour) == 1) {
+	} else if ((hour - date->hour) == 1) {
 		retVal = TRUE;
 	} else {
 		retVal = FALSE;
