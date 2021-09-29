@@ -262,7 +262,7 @@ void calcSunrise(Date_t *date)
 		memcpy(light.offTime, light.setOffTime, 2);
 	}
 
-	printf("=============================================\n");
+	/* printf("=============================================\n"); */
 }
 
 BOOL updateSunTime(Date_t *date)

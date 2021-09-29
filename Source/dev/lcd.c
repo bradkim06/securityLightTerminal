@@ -18,14 +18,19 @@ void initButton(void)
 #pragma vector = PORT2_VECTOR
 __interrupt void Port_2(void)
 {
-	static uint32 ms = 1000;
+// DC Fault Interrupt
+#define DC_PWR_FLT_PIN 2
+	if (P2IFG & BM(DC_PWR_FLT_PIN)) {
+		APP_runMetering(PERIODIC_METERING, AUTO);
+	}
 
+	static uint32 ms = 1000;
+	// Button
 	if (TIMER_getMsecDiff(ms) > 500) {
 		ms = TIMER_getMsec();
 	} else {
 		P2IFG &= ~0xF0;
 	}
-
 	if (P2IFG & BM(BUTTON_ENTER)) {
 		P2IFG &= ~BM(BUTTON_ENTER);
 		LCD_sendReq(BUTTON_ENTER);

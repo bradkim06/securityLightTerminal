@@ -274,11 +274,14 @@ static void meteringTimeout()
 
 static void meteringRecvResponse()
 {
+#define METERING_RECV 1
+#define LSTATUS_RECV 2
+#define M_REPORT_RECV 3
 	OSAL_stopEventTimer(AppTaskId, APP_EVENT_METER_TIMEOUT);
 
 	MeterUnitData_t unit;
 	int result = METER_recvResponse(Metering.meterType, &unit);
-	if (result == 1) {
+	if (result == METERING_RECV) {
 		Metering.inProcess = 0;
 		Metering.success = 1;
 		METER_addTempData(&unit);
@@ -288,9 +291,9 @@ static void meteringRecvResponse()
 		}
 
 		meteringCompleted();
-	} else if (result == 2) {
+	} else if (result == LSTATUS_RECV) {
 		return;
-	} else if (result == 3) {
+	} else if (result == M_REPORT_RECV) {
 		return;
 	} else {
 		OSAL_setEvent(AppTaskId, APP_EVENT_METER_TIMEOUT);
@@ -326,6 +329,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 
 	if (events & APP_EVENT_FORCE_RESTORE) {
 		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
+			printf_ts("Light Status Force Restore Start\n");
 			Relay_Status(RELAY_TOGGLE, SERVER_REQ, FORCE);
 		} else {
 			OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, (uint32)10000);
@@ -334,6 +338,7 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_IMMEDIATE_METERING) {
+		APP_runMetering(NFC_METERING, WORKER);
 		return (events ^ APP_EVENT_IMMEDIATE_METERING);
 	}
 

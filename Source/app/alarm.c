@@ -140,15 +140,21 @@ static BOOL checkLightAlarm(Date_t *date, uint8 time[], int idx)
 		hour = 24;
 	}
 
-	printf("diffhour : %d\n", hour - date->hour);
+	int diffHour = hour - date->hour;
 
-	if ((hour - date->hour) == 0) {
+	if (diffHour < 0) {
+		diffHour += 24;
+	}
+
+	printf("diffhour : %d\n", diffHour);
+
+	if (diffHour == 0) {
 		/* mindiff = time[MINUTE] - date->min; */
 
 		if ((time[MINUTE] - date->min) > 0) {
 			retVal = TRUE;
 		}
-	} else if ((hour - date->hour) == 1) {
+	} else if (diffHour == 1) {
 		retVal = TRUE;
 	} else {
 		retVal = FALSE;

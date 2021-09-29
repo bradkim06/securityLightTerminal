@@ -132,15 +132,23 @@ static BOOL read_electric_meter(uint8 *rxBuf, MeterUnitData_t *pUnit)
 	pUnit->power = rx->power;
 	pUnit->cumPower = rx->cumPower;
 
-#define LAMP_ERROR 0x02
+	printf("==================================================\n");
+	printf("                 Metring Alarm\n");
 	if (lightStatus == RELAY_ON) {
 		if (pUnit->curr < 30) {
-			printf_ts("Lamp Error : %d\n", lightStatus);
+#define LAMP_ERROR 0x02
+			printf_ts("Lamp Error\n", lightStatus);
 			pUnit->meterStatus |= LAMP_ERROR;
 		}
 	}
 
-	printf("==================================================\n");
+#define DC_PWR_FLT_PIN 0x04
+	int isDcNormal = P2IN & DC_PWR_FLT_PIN;
+	if (isDcNormal == 0) {
+		printf("DC Power Fault\n");
+#define POWER_ERROR 0x01
+		pUnit->meterStatus |= POWER_ERROR;
+	}
 	printf("                 Metring Print\n");
 	printf("[ meterStatus   ] : 0x%02X \n", pUnit->meterStatus);
 	printf("[ voltage       ] : %lumV 0x%lX\n", pUnit->volt, pUnit->volt);
@@ -242,9 +250,8 @@ void METER_enable(uint8 meterType)
 
 int METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 {
-#define METERING_OK 1
-#define LSTATUS_OK 2
-#define M_REPORT_OK 3
+#define LSTATUS_RECV 2
+#define M_REPORT_RECV 3
 
 	uint8 buf[LEN_MAX_METER_RX];
 	memset(buf, 0, LEN_MAX_METER_RX);
@@ -257,10 +264,10 @@ int METER_recvResponse(uint8 meterType, MeterUnitData_t *pUnit)
 			result = read_electric_meter(buf, pUnit);
 		} else if (buf[1] == 0xB1) {
 			read_light_status(buf);
-			return 2;
+			return LSTATUS_RECV;
 		} else if (buf[1] == 0xB2) {
 			meter_report_req(buf);
-			return 3;
+			return M_REPORT_RECV;
 		}
 	}
 

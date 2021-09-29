@@ -525,9 +525,7 @@ void recvNodeConfSet(byte *data, uint8 len)
 
 void recvMeterReq(byte *data, uint8 len)
 {
-	/* NfcMeterReq_t *p = (NfcMeterReq_t *)data; */
-
-	APP_runMetering(NFC_METERING, WORKER);
+	OSAL_setEvent(APP_getTaskId(), APP_EVENT_IMMEDIATE_METERING);
 }
 
 void recvServerConnectReq(byte *data, uint8 len)
