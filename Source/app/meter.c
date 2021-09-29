@@ -79,8 +79,8 @@ void Relay_Status(int on, MeteringType_t type, Cause_t cause)
 		printf_ts("light off\n");
 	}
 
-	Metering.type = type;
-	Metering.cause = cause;
+	keepReportType = type;
+	keepCauseType = cause;
 	OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)10000);
 }
 

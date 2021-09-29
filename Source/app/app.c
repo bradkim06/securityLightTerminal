@@ -28,6 +28,9 @@ Metering_t Metering;
  */
 uint8 AppTaskId;
 
+int keepReportType = 0;
+int keepCauseType = 0;
+
 /**
  * @brief Terminal configuration context(Global context)
  */
@@ -297,9 +300,7 @@ static void meteringRecvResponse()
 event32_t APP_tasks(uint8 taskId, event32_t events)
 {
 	if (events & APP_EVENT_IMMEDIATE_REPORT) {
-		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
-			APP_runMetering(WORKER_REQ, WORKER);
-		}
+		APP_runMetering(WORKER_REQ, WORKER);
 		return (events ^ APP_EVENT_IMMEDIATE_REPORT);
 	}
 
@@ -324,7 +325,11 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_FORCE_RESTORE) {
-		Relay_Status(RELAY_TOGGLE, SERVER_REQ, FORCE);
+		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
+			Relay_Status(RELAY_TOGGLE, SERVER_REQ, FORCE);
+		} else {
+			OSAL_startEventTimer(AppTaskId, APP_EVENT_FORCE_RESTORE, (uint32)10000);
+		}
 		return (events ^ APP_EVENT_FORCE_RESTORE);
 	}
 
@@ -334,7 +339,9 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 
 	if (events & APP_EVENT_LIGHT_REPORT) {
 		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
-			APP_runMetering(Metering.type, Metering.cause);
+			APP_runMetering(keepReportType, keepCauseType);
+		} else {
+			OSAL_startEventTimer(AppTaskId, APP_EVENT_LIGHT_REPORT, (uint32)10000);
 		}
 		return (events ^ APP_EVENT_LIGHT_REPORT);
 	}
@@ -350,8 +357,12 @@ event32_t APP_tasks(uint8 taskId, event32_t events)
 	}
 
 	if (events & APP_EVENT_CHANGE_CONFIG) {
-		FLASH_saveConfigInfo(&conf);
-		APP_runMetering(WORKER_REQ, WORKER);
+		if (MODEM_getState() == DEVICE_STATUS_IDLE) {
+			FLASH_saveConfigInfo(&conf);
+			APP_runMetering(WORKER_REQ, WORKER);
+		} else {
+			OSAL_startEventTimer(AppTaskId, APP_EVENT_CHANGE_CONFIG, (uint32)10000);
+		}
 		return (events ^ APP_EVENT_CHANGE_CONFIG);
 	}
 

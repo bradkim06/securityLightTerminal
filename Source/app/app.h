@@ -20,6 +20,9 @@
 #define APP_EVENT_CHANGE_CONFIG 0x00000200
 #define APP_EVENT_REBOOT 0x80000000
 
+extern int keepReportType;
+extern int keepCauseType;
+
 typedef enum {
 	NOT_ACIVE_METERING = 0,
 	INITIAL_METERING,
