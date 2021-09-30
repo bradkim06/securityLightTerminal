@@ -232,7 +232,7 @@ void sendNodeConfReport(uint8 reportType, int error)
 	sendNodeConfReportV1(reportType, error);
 }
 
-void sendMeterReport(void)
+void sendMeterReport(uint8 state)
 {
 	byte msg[64];
 	memset(msg, 0, sizeof(msg));
@@ -242,7 +242,9 @@ void sendMeterReport(void)
 
 	p->mtype = 0x5C;
 	p->mversion = NFC_PROTOCOL_VER_1;
+	p->batt = BATT_getLastVoltage() & 0xff;
 	readRtcV1(p->year);
+	p->state = state;
 	MISC_intToBCD(&pUnitData->volt, p->volt, 4);
 	MISC_intToBCD(&pUnitData->curr, p->curr, 4);
 	MISC_intToBCD(&pUnitData->shortCurr, p->shortCurr, 4);
@@ -525,7 +527,30 @@ void recvNodeConfSet(byte *data, uint8 len)
 
 void recvMeterReq(byte *data, uint8 len)
 {
-	OSAL_setEvent(APP_getTaskId(), APP_EVENT_IMMEDIATE_METERING);
+	NfcMeterReq_t *p = (NfcMeterReq_t *)data;
+
+	uint8 state = p->reqMode;
+#define READY_REQ 0
+#define RESULT_REQ 1
+	if (p->reqMode == READY_REQ) {
+		APP_runMetering(NO_REPORT, WORKER);
+	} else if (p->reqMode == RESULT_REQ) {
+		if (Metering.inProcess) {
+#define MEASURING 0
+			state = MEASURING;
+		} else {
+#define MEASURING_OK 1
+			state = MEASURING_OK;
+			OSAL_setEvent(APP_getTaskId(), APP_EVENT_IMMEDIATE_METERING);
+		}
+
+		if (MODEM_getState() != DEVICE_STATUS_IDLE) {
+#define MODEM_NO_IDLE 2
+			state = MODEM_NO_IDLE;
+		}
+	}
+
+	sendMeterReport(state);
 }
 
 void recvServerConnectReq(byte *data, uint8 len)

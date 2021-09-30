@@ -286,7 +286,6 @@ static void meteringRecvResponse()
 		Metering.success = 1;
 		METER_addTempData(&unit);
 		if (Metering.type == NFC_METERING) {
-			sendMeterReport();
 			return;
 		}
 

@@ -135,6 +135,7 @@ typedef struct {
 	NfcHeader_t header;
 	uint8 mtype;
 	uint8 mversion;
+	uint8 reqMode;
 	uint8 year[2];
 	uint8 mon;
 	uint8 day;
@@ -322,6 +323,7 @@ typedef struct {
 	uint8 hour;
 	uint8 min;
 	uint8 sec;
+	uint8 state;
 	uint8 volt[4];
 	uint8 curr[4];
 	uint8 shortCurr[4];
@@ -418,6 +420,6 @@ void NFCAPP_runMessage(byte *data, uint8 len);
 void NFCAPP_meterBypassResp(uint8 *body, int bodyLen);
 void NFCAPP_meterBypassReq();
 void NFCAPP_clearAsyncCmd();
-void sendMeterReport(void);
+void sendMeterReport(uint8 state);
 
 #endif // _MESSAGE_HEADER_

@@ -32,7 +32,7 @@ typedef struct {
 	uint32 volt;
 	uint32 curr;
 	uint32 shortCurr;
-	int32 power;
+	uint32 power;
 	uint32 cumPower;
 } MeterUnitData_t;
 
