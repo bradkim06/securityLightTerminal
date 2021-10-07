@@ -82,15 +82,6 @@ void initPort()
 	P2SEL = 0x00;
 	P2DIR = 0xFF;
 
-	// P2.2 DC_POWER_FAULT Input
-#define DC_PWR_FLT_PIN 2
-	P2DIR &= ~BM(DC_PWR_FLT_PIN);
-	P2REN &= ~BM(DC_PWR_FLT_PIN);
-
-	P2IES |= BM(DC_PWR_FLT_PIN); // Low ->Hi edge
-	P2IFG &= ~BM(DC_PWR_FLT_PIN); // IFG cleared
-	P2IE |= BM(DC_PWR_FLT_PIN); // Interrupt enabled
-
 #if (DEVICE_REVISION == DEV_REV_PWRCTRL_MOSFET_ONLY)
 	// P2.5 (MCU_RESET) : NC 되었으므로 ouput low
 	// P2.3 (NRESET)    : NC 되었으므로 ouput low
